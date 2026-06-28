@@ -354,7 +354,7 @@ export default function App() {
           </div>
         )}
 
-        <div className="grid gap-5 xl:grid-cols-2">
+        <div className="grid min-w-0 gap-4 sm:gap-5 xl:grid-cols-2">
           <ImportPanel
             rawHtml={rawHtml}
             setRawHtml={setRawHtml}

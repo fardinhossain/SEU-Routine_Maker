@@ -37,14 +37,14 @@ export default function ImportPanel({
   }
 
   return (
-    <section className="panel h-full p-5 sm:p-6" aria-labelledby="import-heading">
+    <section className="panel min-w-0 h-full p-4 sm:p-6" aria-labelledby="import-heading">
       <div className="mb-5 flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div>
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-mint-400">
             <span className="step-number">1</span>
             Import data
           </div>
-          <h2 id="import-heading" className="text-xl font-semibold text-white">Add your UMS export</h2>
+          <h2 id="import-heading" className="text-lg font-semibold text-white sm:text-xl">Add your UMS export</h2>
           <p className="mt-1 text-sm text-slate-400">Upload the saved page or paste its raw HTML.</p>
         </div>
         <div className="flex w-full shrink-0 flex-wrap justify-start gap-2 sm:w-auto sm:justify-end">
@@ -56,7 +56,7 @@ export default function ImportPanel({
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[.8fr_1.2fr]">
+      <div className="grid min-w-0 gap-3 sm:gap-4 lg:grid-cols-[.8fr_1.2fr]">
         <button
           type="button"
           disabled={parsing}
@@ -68,7 +68,7 @@ export default function ImportPanel({
             setDragging(false);
             loadFile(event.dataTransfer.files[0]);
           }}
-          className={`group flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed px-5 text-center transition ${
+          className={`group flex min-h-36 min-w-0 w-full flex-col items-center justify-center rounded-xl border border-dashed px-4 text-center transition sm:min-h-44 sm:rounded-2xl sm:px-5 ${
             dragging ? "border-mint-400 bg-mint-400/10" : "border-white/15 bg-white/[.025] hover:border-mint-400/45 hover:bg-mint-400/[.035]"
           }`}
         >
@@ -86,7 +86,7 @@ export default function ImportPanel({
           />
         </button>
 
-        <label className="block">
+        <label className="block min-w-0 max-w-full">
           <span className="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400">
             <FileCode2 size={14} /> Or paste raw HTML
           </span>
@@ -96,7 +96,7 @@ export default function ImportPanel({
             onBlur={() => {
               if (rawHtml.trim()) onParse(rawHtml);
             }}
-            className="field min-h-36 resize-y font-mono text-xs leading-5 lg:min-h-44"
+            className="field min-h-28 min-w-0 max-w-full resize-y font-mono text-xs leading-5 sm:min-h-36 lg:min-h-44"
             placeholder={'<div class="ums-grid-offered-section">…</div>'}
             spellCheck="false"
           />

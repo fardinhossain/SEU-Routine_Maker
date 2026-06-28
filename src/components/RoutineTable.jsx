@@ -43,8 +43,8 @@ const RoutineTable = forwardRef(function RoutineTable(
   );
 
   return (
-    <section ref={ref} className="print-area overflow-hidden rounded-3xl border border-[#34445c]/70 bg-ink-800 shadow-glow">
-      <div className="flex flex-col gap-4 border-b border-white/[.07] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+    <section ref={ref} className="print-area max-w-full overflow-hidden rounded-2xl border border-[#34445c]/70 bg-ink-800 shadow-glow sm:rounded-3xl">
+      <div className="flex flex-col gap-4 border-b border-white/[.07] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-5">
         <div className="flex items-center gap-3">
           <span className="grid h-11 w-11 place-items-center rounded-2xl bg-mint-400/10 text-mint-300">
             <CalendarRange size={21} />
@@ -54,16 +54,16 @@ const RoutineTable = forwardRef(function RoutineTable(
             <p className="text-sm text-slate-500">Seven days, one clear view.</p>
           </div>
         </div>
-        <div className="flex divide-x divide-white/10 rounded-xl border border-white/[.07] bg-white/[.025] text-center">
-          <div className="px-4 py-2">
+        <div className="flex w-full divide-x divide-white/10 rounded-xl border border-white/[.07] bg-white/[.025] text-center sm:w-auto">
+          <div className="flex-1 px-2 py-2 sm:px-4">
             <strong className="block text-sm text-slate-100">{selectedCourses.length}</strong>
             <span className="text-[10px] uppercase tracking-wider text-slate-500">Courses</span>
           </div>
-          <div className="px-4 py-2">
+          <div className="flex-1 px-2 py-2 sm:px-4">
             <strong className="block text-sm text-slate-100">{sessions}</strong>
             <span className="text-[10px] uppercase tracking-wider text-slate-500">Sessions</span>
           </div>
-          <div className="px-4 py-2">
+          <div className="flex-1 px-2 py-2 sm:px-4">
             <strong className="block text-sm text-slate-100">{(weeklyMinutes / 60).toFixed(1)}h</strong>
             <span className="text-[10px] uppercase tracking-wider text-slate-500">Weekly</span>
           </div>
@@ -74,11 +74,11 @@ const RoutineTable = forwardRef(function RoutineTable(
         <table className="w-full min-w-max border-collapse text-left">
           <thead>
             <tr className="bg-black/10">
-              <th className="sticky left-0 z-20 min-w-24 border-b border-r border-white/[.07] bg-[#111d31] px-4 py-4 text-[10px] font-semibold uppercase tracking-[.18em] text-slate-500">
+              <th className="sticky left-0 z-20 min-w-20 border-b border-r border-white/[.07] bg-[#111d31] px-3 py-4 text-[10px] font-semibold uppercase tracking-[.18em] text-slate-500 sm:min-w-24 sm:px-4">
                 Day
               </th>
               {routine.slots.map((slot) => (
-                <th key={slot.key} className="min-w-[176px] border-b border-r border-white/[.07] px-4 py-3 last:border-r-0">
+                <th key={slot.key} className="min-w-[150px] border-b border-r border-white/[.07] px-3 py-3 last:border-r-0 sm:min-w-[176px] sm:px-4">
                   <span className="block font-mono text-sm font-semibold text-slate-200">{formatTime12(slot.start)}</span>
                   <span className="mt-0.5 block font-mono text-[10px] font-normal text-slate-500">
                     to{" "}
@@ -96,13 +96,13 @@ const RoutineTable = forwardRef(function RoutineTable(
           <tbody>
             {WEEK_DAYS.map((day) => (
               <tr key={day}>
-                <th className="sticky left-0 z-10 border-b border-r border-white/[.07] bg-[#111d31] px-4 py-5 align-top text-xs font-bold tracking-[.14em] text-slate-400">
+                <th className="sticky left-0 z-10 border-b border-r border-white/[.07] bg-[#111d31] px-3 py-4 align-top text-xs font-bold tracking-[.14em] text-slate-400 sm:px-4 sm:py-5">
                   {day}
                 </th>
                 {routine.slots.map((slot) => {
                   const cellEntries = routine.entries.filter((entry) => entry.day === day && entry.slotKey === slot.key);
                   return (
-                    <td key={`${day}-${slot.key}`} className="h-28 border-b border-r border-white/[.07] p-2 align-top last:border-r-0">
+                    <td key={`${day}-${slot.key}`} className="h-24 border-b border-r border-white/[.07] p-1.5 align-top last:border-r-0 sm:h-28 sm:p-2">
                       <div className="space-y-2">
                         {cellEntries.map((entry) => (
                           <CourseCard

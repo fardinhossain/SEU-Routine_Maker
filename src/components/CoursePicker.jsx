@@ -65,13 +65,13 @@ export default function CoursePicker({
   }
 
   return (
-    <section className="panel h-full p-5 sm:p-6" aria-labelledby="courses-heading">
+    <section className="panel min-w-0 h-full p-4 sm:p-6" aria-labelledby="courses-heading">
       <div className="mb-5">
         <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-mint-400">
           <span className="step-number">2</span>
           Pick sections
         </div>
-        <h2 id="courses-heading" className="text-xl font-semibold text-white">Choose your courses</h2>
+        <h2 id="courses-heading" className="text-lg font-semibold text-white sm:text-xl">Choose your courses</h2>
         <p className="mt-1 text-sm text-slate-400">Use comma, spaces, or a new line between codes.</p>
       </div>
 
@@ -80,7 +80,7 @@ export default function CoursePicker({
         <textarea
           value={codeInput}
           onChange={(event) => setCodeInput(event.target.value)}
-          className="field min-h-28 resize-y font-mono text-sm uppercase"
+          className="field min-h-24 min-w-0 max-w-full resize-y font-mono text-sm uppercase sm:min-h-28"
           placeholder={"CSE361.3\nCSE362.2\nCSE443.4"}
           spellCheck="false"
         />

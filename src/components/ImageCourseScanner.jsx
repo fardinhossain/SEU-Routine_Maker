@@ -127,7 +127,7 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
   }
 
   return (
-    <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-black/10 p-3.5">
+    <div className="mt-4 min-w-0 max-w-full rounded-xl border border-dashed border-white/15 bg-black/10 p-3 sm:rounded-2xl sm:p-3.5">
       <input
         ref={inputRef}
         type="file"

@@ -4,7 +4,7 @@ export default function ShortNameEditor({ courses, shortNames, onChange }) {
   if (!courses.length) return null;
 
   return (
-    <section className="panel p-5 sm:p-6">
+    <section className="panel min-w-0 p-4 sm:p-6">
       <div className="mb-4 flex items-start gap-3">
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-400/10 text-violet-300">
           <PencilLine size={17} />
