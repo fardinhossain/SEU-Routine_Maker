@@ -83,11 +83,11 @@ export default function App() {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const fadeTimer = window.setTimeout(() => setLoadingScreenLeaving(true), 4500);
+    const fadeTimer = window.setTimeout(() => setLoadingScreenLeaving(true), 2500);
     const removeTimer = window.setTimeout(() => {
       setShowLoadingScreen(false);
       document.body.style.overflow = previousOverflow;
-    }, 5000);
+    }, 3000);
 
     return () => {
       window.clearTimeout(fadeTimer);

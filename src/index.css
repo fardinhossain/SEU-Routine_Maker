@@ -107,7 +107,7 @@ textarea:focus-visible {
 .loader-progress {
   width: 100%;
   transform-origin: left;
-  animation: loader-progress 4.5s linear both;
+  animation: loader-progress 2.5s linear both;
 }
 
 .loader-orbit {
