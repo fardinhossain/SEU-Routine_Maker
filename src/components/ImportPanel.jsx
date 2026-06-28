@@ -53,17 +53,6 @@ export default function ImportPanel({
               <CheckCircle2 size={13} /> {courseCount} parsed
             </span>
           )}
-          {rawHtml && (
-            <button
-              type="button"
-              onClick={clearHtmlInput}
-              disabled={parsing}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[.035] px-2.5 py-1 text-xs font-medium text-slate-400 transition hover:border-rose-400/20 hover:bg-rose-400/[.06] hover:text-rose-300 disabled:cursor-not-allowed disabled:opacity-50"
-              title="Clear uploaded or pasted HTML while keeping parsed sections"
-            >
-              <Trash2 size={12} /> Clear HTML
-            </button>
-          )}
         </div>
       </div>
 
@@ -114,10 +103,24 @@ export default function ImportPanel({
         </label>
       </div>
 
-      {successMessage && !parsing && (
-        <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-mint-400/20 bg-mint-400/[.07] px-3.5 py-3 text-sm text-mint-300" role="status">
-          <CheckCircle2 className="mt-0.5 shrink-0" size={17} />
-          <span>{successMessage}</span>
+      {!parsing && (successMessage || rawHtml) && (
+        <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:items-stretch">
+          {successMessage && (
+            <div className="flex flex-1 items-start gap-2.5 rounded-xl border border-mint-400/20 bg-mint-400/[.07] px-3.5 py-3 text-sm text-mint-300" role="status">
+              <CheckCircle2 className="mt-0.5 shrink-0" size={17} />
+              <span>{successMessage}</span>
+            </div>
+          )}
+          {rawHtml && (
+            <button
+              type="button"
+              onClick={clearHtmlInput}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-400/15 bg-rose-400/[.045] px-4 py-3 text-sm font-medium text-rose-300/80 transition hover:border-rose-400/30 hover:bg-rose-400/[.09] hover:text-rose-200"
+              title="Clear uploaded or pasted HTML while keeping parsed sections"
+            >
+              <Trash2 size={15} /> Clear HTML
+            </button>
+          )}
         </div>
       )}
 
