@@ -58,7 +58,7 @@ export default function DataPolicyModal({ onClose }) {
               <ShieldCheck size={20} />
             </span>
             <div>
-              <h2 id="data-policy-title" className="text-lg font-semibold text-white">Data Policy</h2>
+              <h2 id="data-policy-title" className="text-lg font-semibold text-white">User Data Policy</h2>
               <p className="mt-0.5 text-xs text-slate-500">Private by design · Last updated June 2026</p>
             </div>
           </div>
