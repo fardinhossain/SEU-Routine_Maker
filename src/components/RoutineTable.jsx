@@ -81,7 +81,13 @@ const RoutineTable = forwardRef(function RoutineTable(
                 <th key={slot.key} className="min-w-[176px] border-b border-r border-white/[.07] px-4 py-3 last:border-r-0">
                   <span className="block font-mono text-sm font-semibold text-slate-200">{slot.start}</span>
                   <span className="mt-0.5 block font-mono text-[10px] font-normal text-slate-500">
-                    to {slot.ends.join(" / ")}
+                    to{" "}
+                    {slot.ends.map((end, index) => (
+                      <span key={end}>
+                        <strong className="font-semibold text-white">{end}</strong>
+                        {index < slot.ends.length - 1 && <span> / </span>}
+                      </span>
+                    ))}
                   </span>
                 </th>
               ))}
