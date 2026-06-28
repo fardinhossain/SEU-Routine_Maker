@@ -105,13 +105,14 @@ export default function App() {
     window.setTimeout(() => setMessage((current) => current?.text === text ? null : current), 6000);
   }
 
-  function handleParse() {
+  function handleParse(htmlOverride) {
+    const htmlToParse = typeof htmlOverride === "string" ? htmlOverride : rawHtml;
     setParsing(true);
     window.setTimeout(() => {
       try {
-        const parsed = parseUmsHtml(rawHtml);
+        const parsed = parseUmsHtml(htmlToParse);
         setCourses(parsed);
-        writeStoredValue(STORAGE_KEYS.rawHtml, rawHtml);
+        writeStoredValue(STORAGE_KEYS.rawHtml, htmlToParse);
         writeStoredValue(STORAGE_KEYS.courses, parsed);
         showMessage("success", `${parsed.length} course sections parsed and saved in this browser.`);
       } catch (error) {
@@ -306,7 +307,7 @@ export default function App() {
                   </li>
                   <li className="flex gap-2">
                     <span className="font-mono font-bold text-mint-400">2.</span>
-                    <span>Save that page as an <strong className="text-slate-200">HTML file</strong>, then upload it under <strong className="text-slate-200">Add your UMS export</strong> and parse it first.</span>
+                    <span>Save that page as an <strong className="text-slate-200">HTML file</strong>, then upload it under <strong className="text-slate-200">Add your UMS export</strong>. It will parse automatically.</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="font-mono font-bold text-mint-400">3.</span>

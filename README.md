@@ -77,7 +77,7 @@ Use this method with the UMS **Offered Sections** page.
    - **Mobile:** open the browser menu `⋮`, choose **Download**, and save the page if your browser supports page downloads.
 6. Open SEU Routine Maker.
 7. Under **Add your UMS export**, upload the saved `.html` file.
-8. Select **Parse & save data**.
+8. Wait for the success message confirming that the course sections were parsed and saved automatically.
 9. Add section codes using either option:
    - Type or paste codes such as `CSE361.3`, one per line or separated by commas.
    - Use **Search saved sections** and select a result.
@@ -91,13 +91,13 @@ Use this method to rebuild a routine from the courses visible on the Student Das
 2. Select the **Registered Courses** tab.
 3. Save the Registered Courses page as an HTML file.
 4. Upload that HTML file under **Add your UMS export**.
-5. Select **Parse & save data** before using image recognition.
+5. Wait for the success message confirming that the HTML was parsed automatically before using image recognition.
 6. Take a clear screenshot of the Registered Courses table. Make sure the course codes and section numbers are readable.
 7. Under **Pick codes from an image**, select **Upload image**.
 8. Wait for OCR to finish. Detected codes are added automatically, and the routine updates immediately.
 
 > [!IMPORTANT]
-> Image recognition selects codes from the course data already parsed from HTML. Always upload and parse the relevant UMS HTML file before uploading a screenshot.
+> Image recognition selects codes from the course data already parsed from HTML. Always upload the relevant UMS HTML file and wait for the parsing success message before uploading a screenshot.
 
 ### Supported code formats
 

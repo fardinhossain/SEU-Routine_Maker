@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { CheckCircle2, FileCode2, LoaderCircle, UploadCloud } from "lucide-react";
+import { CheckCircle2, FileCode2, LoaderCircle, UploadCloud, Zap } from "lucide-react";
 
 export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount, parsing }) {
   const inputRef = useRef(null);
@@ -14,8 +14,10 @@ export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount,
     }
     const reader = new FileReader();
     reader.onload = () => {
-      setRawHtml(String(reader.result || ""));
+      const html = String(reader.result || "");
+      setRawHtml(html);
       setFileName(file.name);
+      onParse(html);
     };
     reader.readAsText(file);
   }
@@ -41,6 +43,7 @@ export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount,
       <div className="grid gap-4 lg:grid-cols-[.8fr_1.2fr]">
         <button
           type="button"
+          disabled={parsing}
           onClick={() => inputRef.current?.click()}
           onDragOver={(event) => { event.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
@@ -74,6 +77,9 @@ export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount,
           <textarea
             value={rawHtml}
             onChange={(event) => setRawHtml(event.target.value)}
+            onBlur={() => {
+              if (rawHtml.trim()) onParse(rawHtml);
+            }}
             className="field min-h-36 resize-y font-mono text-xs leading-5 lg:min-h-44"
             placeholder={'<div class="ums-grid-offered-section">…</div>'}
             spellCheck="false"
@@ -81,10 +87,10 @@ export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount,
         </label>
       </div>
 
-      <button type="button" className="primary-button mt-4 w-full sm:w-auto" onClick={onParse} disabled={parsing}>
-        {parsing ? <LoaderCircle className="animate-spin" size={17} /> : <FileCode2 size={17} />}
-        {parsing ? "Parsing sections…" : "Parse & save data"}
-      </button>
+      <div className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-mint-400/15 bg-mint-400/[.06] px-3.5 py-2.5 text-xs font-medium text-mint-300 sm:w-auto">
+        {parsing ? <LoaderCircle className="animate-spin" size={15} /> : <Zap size={15} />}
+        {parsing ? "Parsing and saving sections…" : "HTML files parse automatically after upload"}
+      </div>
     </section>
   );
 }
