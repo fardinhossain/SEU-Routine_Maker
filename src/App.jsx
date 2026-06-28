@@ -16,6 +16,7 @@ import {
 import AppHeader from "./components/AppHeader";
 import ConflictAlert from "./components/ConflictAlert";
 import CoursePicker from "./components/CoursePicker";
+import DataPolicyModal from "./components/DataPolicyModal";
 import ImportPanel from "./components/ImportPanel";
 import LoadingScreen from "./components/LoadingScreen";
 import RoutineTable from "./components/RoutineTable";
@@ -50,6 +51,7 @@ export default function App() {
   const [showPostAdvisingInstructions, setShowPostAdvisingInstructions] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
+  const [showDataPolicy, setShowDataPolicy] = useState(false);
   const routineRef = useRef(null);
 
   const selectedCourses = useMemo(() => {
@@ -409,7 +411,16 @@ export default function App() {
             @Fardin_Hossain
           </a>
         </p>
+        <button
+          type="button"
+          onClick={() => setShowDataPolicy(true)}
+          className="mt-4 text-xs font-medium text-slate-500 underline decoration-white/20 underline-offset-4 transition hover:text-mint-300 hover:decoration-mint-400/50"
+        >
+          Data Policy
+        </button>
       </footer>
+
+      {showDataPolicy && <DataPolicyModal onClose={() => setShowDataPolicy(false)} />}
     </div>
   );
 }
