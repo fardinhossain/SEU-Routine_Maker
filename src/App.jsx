@@ -131,6 +131,12 @@ export default function App() {
     showMessage("success", "Routine cleared. Your parsed course data is still saved.");
   }
 
+  function handleClearHtml() {
+    setRawHtml("");
+    writeStoredValue(STORAGE_KEYS.rawHtml, "");
+    showMessage("success", "Imported HTML cleared. Your parsed course sections are still saved.");
+  }
+
   function handleReset() {
     if (!window.confirm("Reset the imported HTML, parsed courses, routine, and custom short names?")) return;
     clearRoutineStorage();
@@ -340,6 +346,7 @@ export default function App() {
             rawHtml={rawHtml}
             setRawHtml={setRawHtml}
             onParse={handleParse}
+            onClearHtml={handleClearHtml}
             courseCount={courses.length}
             parsing={parsing}
           />

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
-import { CheckCircle2, FileCode2, LoaderCircle, UploadCloud } from "lucide-react";
+import { CheckCircle2, FileCode2, LoaderCircle, Trash2, UploadCloud } from "lucide-react";
 
-export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount, parsing }) {
+export default function ImportPanel({ rawHtml, setRawHtml, onParse, onClearHtml, courseCount, parsing }) {
   const inputRef = useRef(null);
   const [fileName, setFileName] = useState("");
   const [dragging, setDragging] = useState(false);
@@ -22,9 +22,15 @@ export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount,
     reader.readAsText(file);
   }
 
+  function clearHtmlInput() {
+    setFileName("");
+    if (inputRef.current) inputRef.current.value = "";
+    onClearHtml();
+  }
+
   return (
     <section className="panel h-full p-5 sm:p-6" aria-labelledby="import-heading">
-      <div className="mb-5 flex items-start justify-between gap-4">
+      <div className="mb-5 flex flex-col items-start justify-between gap-4 sm:flex-row">
         <div>
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-mint-400">
             <span className="step-number">1</span>
@@ -33,11 +39,24 @@ export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount,
           <h2 id="import-heading" className="text-xl font-semibold text-white">Add your UMS export</h2>
           <p className="mt-1 text-sm text-slate-400">Upload the saved page or paste its raw HTML.</p>
         </div>
-        {courseCount > 0 && (
-          <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-mint-400/10 px-2.5 py-1 text-xs font-medium text-mint-300">
-            <CheckCircle2 size={13} /> {courseCount} parsed
-          </span>
-        )}
+        <div className="flex w-full shrink-0 flex-wrap justify-start gap-2 sm:w-auto sm:justify-end">
+          {courseCount > 0 && (
+            <span className="flex items-center gap-1.5 rounded-full bg-mint-400/10 px-2.5 py-1 text-xs font-medium text-mint-300">
+              <CheckCircle2 size={13} /> {courseCount} parsed
+            </span>
+          )}
+          {rawHtml && (
+            <button
+              type="button"
+              onClick={clearHtmlInput}
+              disabled={parsing}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[.035] px-2.5 py-1 text-xs font-medium text-slate-400 transition hover:border-rose-400/20 hover:bg-rose-400/[.06] hover:text-rose-300 disabled:cursor-not-allowed disabled:opacity-50"
+              title="Clear uploaded or pasted HTML while keeping parsed sections"
+            >
+              <Trash2 size={12} /> Clear HTML
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[.8fr_1.2fr]">
