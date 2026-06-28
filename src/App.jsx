@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   BookOpen,
+  CalendarDays,
   CheckCircle2,
   ChevronDown,
   Download,
@@ -13,6 +14,7 @@ import {
   Sparkles,
   TableProperties,
   UploadCloud,
+  WandSparkles,
 } from "lucide-react";
 import AppHeader from "./components/AppHeader";
 import ConflictAlert from "./components/ConflictAlert";
@@ -55,7 +57,7 @@ export default function App() {
   const [imageResetKey, setImageResetKey] = useState(0);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showPostAdvisingInstructions, setShowPostAdvisingInstructions] = useState(false);
-  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(() => window.location.hash !== "#routine");
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
   const [showDataPolicy, setShowDataPolicy] = useState(false);
   const routineRef = useRef(null);
@@ -84,6 +86,8 @@ export default function App() {
   }, [shortNames]);
 
   useEffect(() => {
+    if (!showLoadingScreen) return undefined;
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const fadeTimer = window.setTimeout(() => setLoadingScreenLeaving(true), 2500);
@@ -105,6 +109,19 @@ export default function App() {
     setSelectedCodes(validCodes);
     writeStoredValue(STORAGE_KEYS.selectedCodes, validCodes);
   }, [codeInput, courses]);
+
+  useEffect(() => {
+    if (showLoadingScreen || window.location.hash !== "#routine") return undefined;
+
+    const scrollTimer = window.setTimeout(() => {
+      routineRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
+
+    return () => window.clearTimeout(scrollTimer);
+  }, [showLoadingScreen]);
 
   function showMessage(type, text) {
     setMessage({ type, text });
@@ -247,7 +264,7 @@ export default function App() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-ink-950 text-slate-200">
       {showLoadingScreen && <LoadingScreen leaving={loadingScreenLeaving} />}
-      <AppHeader courseCount={courses.length} />
+      <AppHeader />
 
       <main className="mx-auto w-full min-w-0 max-w-[1500px] px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-10 lg:px-8 lg:pt-14">
         <section className="relative mb-8 w-full min-w-0 overflow-hidden rounded-2xl border border-white/[.06] bg-[radial-gradient(circle_at_85%_20%,rgba(88,221,184,.11),transparent_34%),linear-gradient(135deg,rgba(255,255,255,.035),rgba(255,255,255,.01))] px-5 py-8 sm:mb-10 sm:rounded-3xl sm:px-10 sm:py-10 lg:px-14 lg:py-14">
@@ -278,7 +295,7 @@ export default function App() {
 
             {showInstructions && (
               <div id="ums-instructions" className="mt-8">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               <div className="rounded-2xl border border-white/[.08] bg-ink-950/45 p-4">
                 <div className="mb-3 flex items-center justify-between">
                   <span className="grid h-8 w-8 place-items-center rounded-lg bg-mint-400/10 text-mint-300">
@@ -326,8 +343,30 @@ export default function App() {
                   </span>
                   <span className="font-mono text-[10px] font-bold text-slate-600">04</span>
                 </div>
-                <p className="text-sm font-semibold text-slate-100">Import and choose codes</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">Upload the saved <strong className="text-slate-300">.html</strong> file, then type section codes or upload a screenshot of them.</p>
+                <p className="text-sm font-semibold text-slate-100">Import your UMS file</p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">Upload the saved <strong className="text-slate-300">HTML or MHTML</strong> file. Course sections are parsed and saved automatically.</p>
+              </div>
+
+              <div className="rounded-2xl border border-white/[.08] bg-ink-950/45 p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-mint-400/10 text-mint-300">
+                    <WandSparkles size={16} />
+                  </span>
+                  <span className="font-mono text-[10px] font-bold text-slate-600">05</span>
+                </div>
+                <p className="text-sm font-semibold text-slate-100">Open Magic Organizer</p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">Filter by <strong className="text-slate-300">course, teacher, or day</strong>, then select one section for each course. Duplicate and conflicting choices show a warning.</p>
+              </div>
+
+              <div className="rounded-2xl border border-white/[.08] bg-ink-950/45 p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-mint-400/10 text-mint-300">
+                    <CalendarDays size={16} />
+                  </span>
+                  <span className="font-mono text-[10px] font-bold text-slate-600">06</span>
+                </div>
+                <p className="text-sm font-semibold text-slate-100">Check your routine</p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">Click <strong className="text-slate-300">Check Routine</strong>. A new tab opens and scrolls directly to your completed weekly routine.</p>
               </div>
             </div>
 
@@ -460,7 +499,7 @@ export default function App() {
           SEU <span className="text-mint-400">Routine Maker</span>
         </p>
         <p className="mt-2 text-sm text-slate-400 sm:text-base">
-          Made By SEU Student
+          Made with <span role="img" aria-label="love">❤️</span> for SEU students.
         </p>
         <p className="mt-5 text-sm text-slate-500">
           Developed by{" "}

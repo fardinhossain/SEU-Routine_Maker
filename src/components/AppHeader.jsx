@@ -1,6 +1,6 @@
-import { CalendarDays, Database } from "lucide-react";
+import { CalendarCheck2, CalendarDays } from "lucide-react";
 
-export default function AppHeader({ courseCount }) {
+export default function AppHeader() {
   return (
     <header className="border-b border-white/5 bg-ink-950/80 backdrop-blur-xl">
       <div className="mx-auto flex min-w-0 max-w-[1500px] items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
@@ -14,13 +14,13 @@ export default function AppHeader({ courseCount }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {courseCount > 0 && (
-            <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[.035] px-3 py-1.5 text-xs text-slate-300 sm:flex">
-              <Database size={13} className="text-mint-400" />
-              {courseCount} sections saved
-            </div>
-          )}
+        <div className="inline-flex shrink-0 items-center gap-2 rounded-full border border-mint-400/20 bg-mint-400/[.06] py-1.5 pl-1.5 pr-3 shadow-[0_0_30px_rgba(32,222,214,.06)]">
+          <span className="grid h-7 w-7 place-items-center rounded-full bg-mint-400 text-ink-950">
+            <CalendarCheck2 size={15} strokeWidth={2.5} />
+          </span>
+          <span className="text-xs font-bold tracking-tight sm:text-sm">
+            <span className="text-white">Routine</span> <span className="text-mint-400">Maker</span>
+          </span>
         </div>
       </div>
     </header>

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
 import { extractHtmlPayload, makeShortTitle, parseUmsHtml } from "../src/lib/parser.js";
 import { extractCourseCodesFromOcr } from "../src/lib/ocr.js";
+import { groupSectionsBySchedule } from "../src/lib/sectionGroups.js";
 import {
   buildRoutine,
   findDuplicateCourseSelections,
@@ -29,6 +30,7 @@ assert.equal(courses[0].courseCode, "CSE361.3");
 assert.equal(courses[0].courseTitle, "Operating Systems");
 assert.equal(courses[0].shortTitle, "OS");
 assert.equal(courses[0].faculty, "MMIS");
+assert.equal(courses[0].facultyName, "Md. Ismail");
 assert.deepEqual(courses[0].meetings, [
   { day: "SUN", start: "16:30", end: "17:50", room: "SEU319" },
   { day: "TUE", start: "16:30", end: "17:50", room: "SEU319" },
@@ -57,6 +59,7 @@ assert.deepEqual(parseUmsHtml(mhtml), courses);
 const conflictRoutine = buildRoutine([
   {
     courseCode: "CSE361.3",
+    courseTitle: "Operating Systems",
     meetings: [{ day: "SUN", start: "13:30", end: "14:50", room: "SEU319" }],
   },
   {
@@ -156,5 +159,62 @@ assert.deepEqual(
   ),
   ["CSE444.1", "CSE361.6", "CSE381.1"],
 );
+
+const groupedSections = groupSectionsBySchedule([
+  {
+    courseCode: "CSE361.3",
+    meetings: [
+      { day: "SUN", start: "16:30", end: "17:50", room: "SEU319" },
+      { day: "TUE", start: "16:30", end: "17:50", room: "SEU319" },
+    ],
+  },
+  {
+    courseCode: "CSE443.7",
+    courseTitle: "Computer Graphics & Animation",
+    meetings: [
+      { day: "SUN", start: "16:30", end: "17:50", room: "SEU509" },
+      { day: "TUE", start: "16:30", end: "17:50", room: "SEU509" },
+    ],
+  },
+  {
+    courseCode: "CSE362.2",
+    courseTitle: "Operating Systems Lab",
+    meetings: [{ day: "TUE", start: "11:30", end: "13:30", room: "SEU213A" }],
+  },
+]);
+assert.equal(groupedSections.length, 2);
+assert.equal(groupedSections[0].key, "TUE:11:30-13:30");
+assert.deepEqual(groupedSections[1].courses.map((course) => course.courseCode), ["CSE361.3", "CSE443.7"]);
+
+const mixedScheduleGroup = groupSectionsBySchedule([
+  {
+    courseCode: "CSE362.2",
+    courseTitle: "Operating Systems Lab",
+    meetings: [{ day: "TUE", start: "11:30", end: "13:30", room: "SEU213A" }],
+  },
+  {
+    courseCode: "CSE381.1",
+    courseTitle: "Introduction to Embedded Systems",
+    meetings: [{ day: "TUE", start: "11:30", end: "13:30", room: "SEU331" }],
+  },
+]);
+assert.deepEqual(mixedScheduleGroup[0].courses.map((course) => course.courseCode), ["CSE381.1", "CSE362.2"]);
+
+const sameStartGroups = groupSectionsBySchedule([
+  {
+    courseCode: "CSE382.6",
+    courseTitle: "Introduction to Embedded Systems Lab",
+    meetings: [{ day: "SUN", start: "08:30", end: "10:30", room: "SEU610" }],
+  },
+  {
+    courseCode: "CSE361.12",
+    courseTitle: "Operating Systems",
+    meetings: [
+      { day: "MON", start: "08:30", end: "09:50", room: "SEU509" },
+      { day: "WED", start: "08:30", end: "09:50", room: "SEU509" },
+    ],
+  },
+]);
+assert.deepEqual(sameStartGroups.map((group) => group.courses[0].courseCode), ["CSE361.12", "CSE382.6"]);
 
 console.log("Parser and conflict checks passed.");
