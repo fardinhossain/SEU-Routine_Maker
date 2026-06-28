@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { CheckCircle2, FileCode2, LoaderCircle, UploadCloud, Zap } from "lucide-react";
+import { CheckCircle2, FileCode2, LoaderCircle, UploadCloud } from "lucide-react";
 
 export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount, parsing }) {
   const inputRef = useRef(null);
@@ -87,10 +87,12 @@ export default function ImportPanel({ rawHtml, setRawHtml, onParse, courseCount,
         </label>
       </div>
 
-      <div className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-mint-400/15 bg-mint-400/[.06] px-3.5 py-2.5 text-xs font-medium text-mint-300 sm:w-auto">
-        {parsing ? <LoaderCircle className="animate-spin" size={15} /> : <Zap size={15} />}
-        {parsing ? "Parsing and saving sections…" : "HTML files parse automatically after upload"}
-      </div>
+      {parsing && (
+        <div className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-mint-400/15 bg-mint-400/[.06] px-3.5 py-2.5 text-xs font-medium text-mint-300 sm:w-auto">
+          <LoaderCircle className="animate-spin" size={15} />
+          Parsing and saving sections…
+        </div>
+      )}
     </section>
   );
 }
