@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(32, 222, 214, .065), transparent 25rem),
+    #091326;
+}
+
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(88, 221, 184, .75);
+  outline-offset: 2px;
+}
+
+::selection {
+  color: #091326;
+  background: #6ff7f0;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, .025);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid #0d182b;
+  border-radius: 999px;
+  background: #33445d;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #455b78;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-3xl border border-[#34445c]/70 bg-ink-800 shadow-glow;
+  }
+
+  .field {
+    @apply block w-full rounded-xl border border-white/10 bg-black/15 px-3.5 py-3 text-slate-100 placeholder:text-slate-600 transition hover:border-white/15 focus:border-mint-400/50 focus:outline-none focus:ring-2 focus:ring-mint-400/10 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .danger-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-45;
+  }
+
+  .primary-button {
+    @apply bg-mint-400 text-ink-950 shadow-[0_8px_30px_rgba(32,222,214,.14)] hover:-translate-y-0.5 hover:bg-mint-300;
+  }
+
+  .secondary-button {
+    @apply border border-white/10 bg-white/[.035] text-slate-300 hover:border-white/20 hover:bg-white/[.065] hover:text-white;
+  }
+
+  .danger-button {
+    @apply border border-rose-400/10 bg-rose-400/[.04] text-rose-300/75 hover:border-rose-400/25 hover:bg-rose-400/[.08] hover:text-rose-200;
+  }
+
+  .step-number {
+    @apply grid h-5 w-5 place-items-center rounded-md bg-mint-400/10 text-[10px] text-mint-300;
+  }
+}
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+
+  body {
+    background: #0d182b !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+
+  .print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 0 !important;
+  }
+
+  .routine-scroll {
+    overflow: visible !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
