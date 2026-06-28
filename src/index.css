@@ -69,6 +69,67 @@ textarea:focus-visible {
   background: #455b78;
 }
 
+@keyframes loader-icon-enter {
+  0% { opacity: 0; transform: translateY(16px) scale(.7) rotate(-8deg); }
+  45% { transform: translateY(-3px) scale(1.06) rotate(2deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes loader-copy-enter {
+  0%, 15% { opacity: 0; transform: translateY(18px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes loader-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes loader-orbit {
+  from { transform: rotate(0deg) scale(.94); opacity: .35; }
+  50% { transform: rotate(180deg) scale(1.04); opacity: .8; }
+  to { transform: rotate(360deg) scale(.94); opacity: .35; }
+}
+
+@keyframes loader-glow {
+  0%, 100% { background: rgba(32, 222, 214, .025); transform: scale(.9); }
+  50% { background: rgba(32, 222, 214, .075); transform: scale(1.12); }
+}
+
+.loader-icon {
+  animation: loader-icon-enter .8s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.loader-copy {
+  animation: loader-copy-enter 1s .25s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.loader-progress {
+  width: 100%;
+  transform-origin: left;
+  animation: loader-progress 4.5s linear both;
+}
+
+.loader-orbit {
+  animation: loader-orbit 7s linear infinite;
+}
+
+.loader-glow {
+  animation: loader-glow 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-icon,
+  .loader-copy {
+    animation: none;
+  }
+
+  .loader-orbit,
+  .loader-glow {
+    animation: none;
+  }
+}
+
 @layer components {
   .panel {
     @apply rounded-3xl border border-[#34445c]/70 bg-ink-800 shadow-glow;

@@ -17,6 +17,7 @@ import AppHeader from "./components/AppHeader";
 import ConflictAlert from "./components/ConflictAlert";
 import CoursePicker from "./components/CoursePicker";
 import ImportPanel from "./components/ImportPanel";
+import LoadingScreen from "./components/LoadingScreen";
 import RoutineTable from "./components/RoutineTable";
 import ShortNameEditor from "./components/ShortNameEditor";
 import { parseUmsHtml } from "./lib/parser";
@@ -47,6 +48,8 @@ export default function App() {
   const [imageResetKey, setImageResetKey] = useState(0);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showPostAdvisingInstructions, setShowPostAdvisingInstructions] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+  const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
   const routineRef = useRef(null);
 
   const selectedCourses = useMemo(() => {
@@ -71,6 +74,22 @@ export default function App() {
   useEffect(() => {
     writeStoredValue(STORAGE_KEYS.shortNames, shortNames);
   }, [shortNames]);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const fadeTimer = window.setTimeout(() => setLoadingScreenLeaving(true), 4500);
+    const removeTimer = window.setTimeout(() => {
+      setShowLoadingScreen(false);
+      document.body.style.overflow = previousOverflow;
+    }, 5000);
+
+    return () => {
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(removeTimer);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
 
   useEffect(() => {
     const available = new Set(courses.map((course) => course.courseCode.toUpperCase()));
@@ -177,6 +196,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-ink-950 text-slate-200">
+      {showLoadingScreen && <LoadingScreen leaving={loadingScreenLeaving} />}
       <AppHeader courseCount={courses.length} />
 
       <main className="mx-auto w-full min-w-0 max-w-[1500px] px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-10 lg:px-8 lg:pt-14">
