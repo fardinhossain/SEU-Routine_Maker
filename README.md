@@ -90,7 +90,7 @@ Use this method with the UMS **Offered Sections** page.
 The organizer filters can be combined to narrow the section list:
 
 1. Use **Filter by course** and **Filter by teacher** to limit the available sections.
-2. Use **Time Slot** to select an exact class range, such as `08:30 - 09:50`.
+2. Use **Time Slot** to select an exact class range shown in 12-hour format, such as `01:30 PM - 02:50 PM`.
 3. Use **Day of Week** to select an exact single-day or combined-day schedule, such as **Sunday - Tuesday**.
 4. Use the violet arrow button to collapse or expand the filter controls.
 5. Select **Clear** to reset the search field and every active filter at once.

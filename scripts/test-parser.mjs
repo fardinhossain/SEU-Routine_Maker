@@ -250,9 +250,9 @@ assert.deepEqual(getDayPatternOptions(filterCourses), [
   { value: "SUN|TUE", label: "Sunday - Tuesday" },
 ]);
 assert.deepEqual(getTimeSlotOptions(filterCourses), [
-  { value: "08:00|10:00", label: "08:00 - 10:00" },
-  { value: "08:30|09:50", label: "08:30 - 09:50" },
-  { value: "13:30|14:50", label: "13:30 - 14:50" },
+  { value: "08:00|10:00", label: "08:00 AM - 10:00 AM" },
+  { value: "08:30|09:50", label: "08:30 AM - 09:50 AM" },
+  { value: "13:30|14:50", label: "01:30 PM - 02:50 PM" },
 ]);
 assert.equal(matchesScheduleFilters(filterCourses[0], "MON|WED", "08:30|09:50"), true);
 assert.equal(matchesScheduleFilters(filterCourses[0], "MON", "08:30|09:50"), false);

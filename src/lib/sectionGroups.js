@@ -21,6 +21,13 @@ function normalizeTime24(time) {
   return `${String(Number(hours)).padStart(2, "0")}:${minutes.padStart(2, "0")}`;
 }
 
+function formatTime12Padded(time) {
+  const [hoursText, minutes] = normalizeTime24(time).split(":");
+  const hours = Number(hoursText);
+  const displayHours = String(hours % 12 || 12).padStart(2, "0");
+  return `${displayHours}:${minutes} ${hours >= 12 ? "PM" : "AM"}`;
+}
+
 function normalizedMeetings(course) {
   return course.meetings
     .map(({ day, start, end }) => ({ day, start, end }))
@@ -72,7 +79,7 @@ export function getTimeSlotOptions(courses = []) {
         const end = normalizeTime24(meeting.end);
         options.set(value, {
           value,
-          label: `${start} - ${end}`,
+          label: `${formatTime12Padded(start)} - ${formatTime12Padded(end)}`,
           start,
           end,
         });
