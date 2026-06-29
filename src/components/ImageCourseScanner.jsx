@@ -3,6 +3,41 @@ import { CheckCircle2, ClipboardPaste, ImageUp, LoaderCircle, ScanText, X } from
 import { extractCourseCodesFromOcr } from "../lib/ocr";
 
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
+const OCR_MAX_DIMENSION = 1600;
+const OCR_SETUP_TIMEOUT_MS = 45000;
+const OCR_RECOGNIZE_TIMEOUT_MS = 60000;
+const OCR_ASSET_PATH = "/tesseract";
+
+function withTimeout(promise, timeoutMs, message) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = window.setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => window.clearTimeout(timer));
+}
+
+function progressFromOcrMessage(message) {
+  const status = String(message.status || "").toLowerCase();
+  const progress = typeof message.progress === "number" ? message.progress : 0;
+
+  if (status.includes("recognizing")) return 45 + progress * 50;
+  if (status.includes("initializing api")) return 35 + progress * 10;
+  if (status.includes("loading language")) return 20 + progress * 15;
+  if (status.includes("initializing")) return 15 + progress * 20;
+  if (status.includes("loading")) return 5 + progress * 15;
+  return 5 + progress * 90;
+}
+
+function statusFromOcrMessage(message) {
+  const status = String(message.status || "").toLowerCase();
+
+  if (status.includes("recognizing")) return "Reading text";
+  if (status.includes("loading language")) return "Loading OCR language";
+  if (status.includes("initializing")) return "Starting OCR engine";
+  if (status.includes("loading")) return "Loading OCR engine";
+  return "Scanning image";
+}
 
 export default function ImageCourseScanner({ courses, onCodesDetected, resetKey }) {
   const inputRef = useRef(null);
@@ -12,6 +47,7 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
   const [fileName, setFileName] = useState("");
   const [scanning, setScanning] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [scanStatus, setScanStatus] = useState("");
   const [detectedCodes, setDetectedCodes] = useState([]);
   const [error, setError] = useState("");
 
@@ -22,7 +58,20 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
     setDetectedCodes([]);
     setError("");
     setProgress(0);
+    setScanStatus("");
     if (inputRef.current) inputRef.current.value = "";
+  }
+
+  function cancelScan() {
+    scanIdRef.current += 1;
+    if (workerRef.current) {
+      workerRef.current.terminate().catch(() => {});
+      workerRef.current = null;
+    }
+    setScanning(false);
+    setProgress(0);
+    setScanStatus("");
+    setError("Image scan cancelled.");
   }
 
   useEffect(() => {
@@ -60,13 +109,14 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
       const objectUrl = URL.createObjectURL(file);
       img.onload = () => {
         URL.revokeObjectURL(objectUrl);
-        const w = img.naturalWidth;
-        const h = img.naturalHeight;
+        const scale = Math.min(1, OCR_MAX_DIMENSION / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.max(1, Math.round(img.naturalWidth * scale));
+        const h = Math.max(1, Math.round(img.naturalHeight * scale));
         const canvas = document.createElement("canvas");
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(img, 0, 0, w, h);
 
         // Sample edge pixels to detect whether the background is dark
         const edgeCoords = [
@@ -126,32 +176,48 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
     setDetectedCodes([]);
     setError("");
     setProgress(2);
+    setScanStatus("Preparing image");
     setScanning(true);
     const scanId = scanIdRef.current + 1;
     scanIdRef.current = scanId;
 
     let worker;
     try {
+      setScanStatus("Loading OCR engine");
       const { createWorker, PSM } = await import("tesseract.js");
       if (scanId !== scanIdRef.current) return;
-      worker = await createWorker("eng", 1, {
+      worker = await withTimeout(createWorker("eng", 1, {
+        workerPath: `${OCR_ASSET_PATH}/worker.min.js`,
+        corePath: OCR_ASSET_PATH,
+        langPath: `${OCR_ASSET_PATH}/lang`,
         logger: (message) => {
           if (scanId === scanIdRef.current && typeof message.progress === "number") {
-            setProgress(Math.max(2, Math.round(message.progress * 100)));
+            setScanStatus(statusFromOcrMessage(message));
+            setProgress((current) => Math.max(current, Math.round(progressFromOcrMessage(message))));
           }
         },
-      });
+      }), OCR_SETUP_TIMEOUT_MS, "OCR setup timed out.");
       if (scanId !== scanIdRef.current) {
         await worker.terminate();
         return;
       }
       workerRef.current = worker;
+      setScanStatus("Preparing screenshot");
+      setProgress((current) => Math.max(current, 25));
       await worker.setParameters({
-        tessedit_pageseg_mode: PSM.AUTO,
+        tessedit_pageseg_mode: PSM.SPARSE_TEXT,
         preserve_interword_spaces: "1",
+        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;#-_[]|/\\~",
       });
       const processedFile = await preprocessImageForOcr(file);
-      const result = await worker.recognize(processedFile);
+      if (scanId !== scanIdRef.current) return;
+      setScanStatus("Reading text");
+      setProgress((current) => Math.max(current, 45));
+      const result = await withTimeout(
+        worker.recognize(processedFile),
+        OCR_RECOGNIZE_TIMEOUT_MS,
+        "OCR reading timed out.",
+      );
       if (scanId !== scanIdRef.current) return;
       const codes = extractCourseCodesFromOcr(result.data.text, courses);
 
@@ -168,8 +234,15 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
 
       setDetectedCodes(addedCodes);
       setProgress(100);
-    } catch {
-      setError("The image could not be read. Check your connection and try a clear screenshot.");
+      setScanStatus("Done");
+    } catch (err) {
+      if (scanId !== scanIdRef.current) return;
+      const timedOut = /timed out/i.test(err?.message || "");
+      setError(
+        timedOut
+          ? "OCR is taking too long. Try a tighter crop of only the course list, or check your connection and scan again."
+          : "The image could not be read. Try a clearer, tighter screenshot of the course list.",
+      );
     } finally {
       if (worker) {
         try {
@@ -179,7 +252,10 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
         }
       }
       if (workerRef.current === worker) workerRef.current = null;
-      if (scanId === scanIdRef.current) setScanning(false);
+      if (scanId === scanIdRef.current) {
+        setScanning(false);
+        setScanStatus("");
+      }
     }
   }
 
@@ -279,12 +355,24 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
               <div className="h-1.5 overflow-hidden rounded-full bg-white/[.06]">
                 <div className="h-full rounded-full bg-mint-400 transition-all" style={{ width: `${progress}%` }} />
               </div>
-              <p className="mt-1 text-[10px] text-mint-300">Reading image… {progress}%</p>
+              <p className="mt-1 text-[10px] text-mint-300">{scanStatus || "Scanning image"}... {progress}%</p>
             </div>
           )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {scanning && (
+            <button
+              type="button"
+              className="secondary-button shrink-0"
+              onClick={cancelScan}
+              title="Cancel image scan"
+            >
+              <X size={16} />
+              Cancel
+            </button>
+          )}
+
           <button
             type="button"
             className="secondary-button shrink-0"
