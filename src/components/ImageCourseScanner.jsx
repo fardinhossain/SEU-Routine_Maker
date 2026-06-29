@@ -49,6 +49,62 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
     setScanning(false);
   }, [resetKey]);
 
+  /**
+   * If the screenshot has a dark background (dark theme), invert and boost
+   * contrast so Tesseract — which is optimised for dark-on-light — can read
+   * the text reliably.  Falls back to the original file on any error.
+   */
+  async function preprocessImageForOcr(file) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        // Sample edge pixels to detect whether the background is dark
+        const edgeCoords = [
+          [2, 2], [w - 3, 2], [2, h - 3], [w - 3, h - 3],
+          [Math.floor(w / 2), 2], [Math.floor(w / 2), h - 3],
+        ];
+        const avgLum =
+          edgeCoords.reduce((sum, [x, y]) => {
+            const px = ctx.getImageData(Math.max(0, x), Math.max(0, y), 1, 1).data;
+            return sum + 0.299 * px[0] + 0.587 * px[1] + 0.114 * px[2];
+          }, 0) / edgeCoords.length;
+
+        if (avgLum < 110) {
+          // Dark theme detected → grayscale + invert + contrast stretch
+          const imageData = ctx.getImageData(0, 0, w, h);
+          const d = imageData.data;
+          for (let i = 0; i < d.length; i += 4) {
+            const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+            const inv = 255 - g;
+            // Stretch: push light pixels lighter, dark pixels darker
+            const v = inv > 128 ? Math.min(255, inv + 50) : Math.max(0, inv - 50);
+            d[i] = v;
+            d[i + 1] = v;
+            d[i + 2] = v;
+          }
+          ctx.putImageData(imageData, 0, 0);
+        }
+
+        canvas.toBlob(
+          (blob) => resolve(blob ? new File([blob], file.name, { type: "image/png" }) : file),
+          "image/png",
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = objectUrl;
+    });
+  }
+
   async function scanImage(file) {
     if (!file) return;
     if (!courses.length) {
@@ -94,7 +150,8 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
         tessedit_pageseg_mode: PSM.AUTO,
         preserve_interword_spaces: "1",
       });
-      const result = await worker.recognize(file);
+      const processedFile = await preprocessImageForOcr(file);
+      const result = await worker.recognize(processedFile);
       if (scanId !== scanIdRef.current) return;
       const codes = extractCourseCodesFromOcr(result.data.text, courses);
 
