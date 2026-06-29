@@ -61,6 +61,7 @@ export default function App() {
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
   const [showDataPolicy, setShowDataPolicy] = useState(false);
   const routineRef = useRef(null);
+  const pendingRoutineScrollRef = useRef(false);
 
   const selectedCourses = useMemo(() => {
     const lookup = new Map(courses.map((course) => [course.courseCode.toUpperCase(), course]));
@@ -141,6 +142,20 @@ export default function App() {
     return () => window.clearTimeout(scrollTimer);
   }, [showLoadingScreen]);
 
+  useEffect(() => {
+    if (!pendingRoutineScrollRef.current || !selectedCourses.length) return undefined;
+
+    pendingRoutineScrollRef.current = false;
+    const scrollTimer = window.setTimeout(() => {
+      routineRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 120);
+
+    return () => window.clearTimeout(scrollTimer);
+  }, [selectedCourses.length]);
+
   function showMessage(type, text) {
     setMessage({ type, text });
     window.setTimeout(() => setMessage((current) => current?.text === text ? null : current), 6000);
@@ -154,12 +169,22 @@ export default function App() {
       try {
         const parsed = parseUmsHtml(htmlToParse);
         const sourceType = parsed.parseDebug?.sourceType || parsed[0]?.sourceType || "offered-sections";
+        const dashboardCodes = sourceType === "dashboard-registered-courses"
+          ? uniqueCourseSelections(parsed.map((course) => course.courseCode.toUpperCase()))
+          : [];
         setCourses(parsed);
         writeStoredValue(STORAGE_KEYS.rawHtml, htmlToParse);
         writeStoredValue(STORAGE_KEYS.courses, parsed);
-        setImportSuccessMessage(`${parsed.length} course sections parsed and saved in this browser.`);
         if (sourceType === "dashboard-registered-courses") {
+          setCodeInput(dashboardCodes.join("\n"));
+          setSelectedCodes(dashboardCodes);
+          writeStoredValue(STORAGE_KEYS.selectedCodes, dashboardCodes);
+          setImageResetKey((current) => current + 1);
+          pendingRoutineScrollRef.current = true;
+          setImportSuccessMessage(`${parsed.length} registered courses parsed. Routine generated automatically.`);
           showMessage("warning", "Dashboard Registered Courses page detected. Routine generated from registered courses.");
+        } else {
+          setImportSuccessMessage(`${parsed.length} course sections parsed and saved in this browser.`);
         }
       } catch (error) {
         showMessage("error", error.message || "The HTML could not be parsed.");
