@@ -440,11 +440,11 @@ export default function App() {
                   </li>
                   <li className="flex gap-2">
                     <span className="font-mono font-bold text-mint-400">2.</span>
-                    <span>Save that page as an <strong className="text-slate-200">HTML file</strong>, then upload it under <strong className="text-slate-200">Add your UMS export</strong>. It will parse automatically.</span>
+                    <span>Save that page as an <strong className="text-slate-200">HTML or MHTML file</strong>, then upload it under <strong className="text-slate-200">Add your UMS export</strong>.</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="font-mono font-bold text-mint-400">3.</span>
-                    <span>Take a clear screenshot of the <strong className="text-slate-200">Registered Courses</strong> table and upload it under <strong className="text-slate-200">Pick codes from an image</strong>.</span>
+                    <span>The app detects the <strong className="text-slate-200">Registered Courses</strong> page, selects your courses, and generates your routine automatically.</span>
                   </li>
                 </ol>
                 )}
