@@ -46,7 +46,7 @@ function CourseCard({ entry, selectedCourses, conflict, shortNames, showFullCour
       </div>
       {entry.gap && (
         <p className="routine-course-gap mt-2 text-[10px] font-semibold leading-snug opacity-75">
-          Gap: {formatTime12(entry.gap.start)} – {formatTime12(entry.gap.end)} ({formatGapDuration(entry.gap.minutes)})
+          Gap: {formatGapDuration(entry.gap.minutes)}
         </p>
       )}
       <p className="routine-course-title mt-2 text-sm font-bold leading-tight">{courseTitle}</p>
