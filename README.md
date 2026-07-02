@@ -57,6 +57,7 @@ No account, backend, or external database is required for routine data. The app 
 - Update the routine live as section codes are added or removed.
 - Display all seven days: SAT, SUN, MON, TUE, WED, THU, and FRI.
 - Group classes with the same start time into one routine column, and merge the 8:00/8:30 AM columns when an 8:00 AM lab is selected.
+- Show the start, end, and duration of free gaps between consecutive classes each day.
 - Detect exact and partial timetable conflicts as codes are entered.
 - Prevent selecting more than one section of the same course.
 - Edit automatically generated short course names.

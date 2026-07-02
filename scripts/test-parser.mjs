@@ -226,6 +226,25 @@ assert.deepEqual(separateMorningRoutine.slots, [
   { key: "08:30", start: "08:30", ends: ["09:50"] },
 ]);
 
+const routineWithGap = buildRoutine([
+  {
+    courseCode: "CSE361.6",
+    courseTitle: "Operating Systems",
+    meetings: [{ day: "SUN", start: "13:30", end: "14:50", room: "SEU516" }],
+  },
+  {
+    courseCode: "CSE381.6",
+    courseTitle: "Introduction to Embedded Systems",
+    meetings: [{ day: "SUN", start: "08:30", end: "09:50", room: "SEU406" }],
+  },
+]);
+assert.equal(routineWithGap.entries[1].gap, undefined);
+assert.deepEqual(routineWithGap.entries[0].gap, {
+  start: "09:50",
+  end: "13:30",
+  minutes: 220,
+});
+
 const repeatedCourseCodes = parseCodeList("CSE361.6\nCSE443.4\nCSE362.4\nCSE362.3");
 assert.deepEqual(uniqueCourseSelections(repeatedCourseCodes), ["CSE361.6", "CSE443.4", "CSE362.4"]);
 assert.deepEqual(findDuplicateCourseSelections(repeatedCourseCodes), [

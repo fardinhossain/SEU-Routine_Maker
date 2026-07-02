@@ -12,6 +12,15 @@ const CARD_STYLES = [
   "border-fuchsia-300/20 bg-fuchsia-300/[.09] text-fuchsia-100",
 ];
 
+function formatGapDuration(totalMinutes) {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return [
+    hours ? `${hours} hr` : "",
+    minutes ? `${minutes} min` : "",
+  ].filter(Boolean).join(" ");
+}
+
 function CourseCard({ entry, selectedCourses, conflict, shortNames, showFullCourse, showFullTeacher }) {
   const colorIndex = selectedCourses.findIndex((course) => course.courseCode === entry.course.courseCode);
   const style = conflict
@@ -35,6 +44,11 @@ function CourseCard({ entry, selectedCourses, conflict, shortNames, showFullCour
         <p className="font-mono text-xs font-bold tracking-wide">{entry.course.courseCode}</p>
         {conflict && <span className="rounded bg-rose-400/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">Conflict</span>}
       </div>
+      {entry.gap && (
+        <p className="routine-course-gap mt-2 text-[10px] font-semibold leading-snug opacity-75">
+          Gap: {formatTime12(entry.gap.start)} – {formatTime12(entry.gap.end)} ({formatGapDuration(entry.gap.minutes)})
+        </p>
+      )}
       <p className="routine-course-title mt-2 text-sm font-bold leading-tight">{courseTitle}</p>
       <div className="routine-course-details mt-2 flex items-center justify-between gap-2 text-[11px] opacity-70">
         <span>{entry.room}</span>

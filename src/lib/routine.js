@@ -96,6 +96,35 @@ export function buildRoutine(courses) {
     }),
   );
 
+  WEEK_DAYS.forEach((day) => {
+    const dayEntries = entries
+      .filter((entry) => entry.day === day)
+      .sort((left, right) =>
+        timeToMinutes(left.start) - timeToMinutes(right.start)
+          || timeToMinutes(left.end) - timeToMinutes(right.end),
+      );
+    let occupiedUntil = null;
+    let occupiedUntilTime = null;
+
+    dayEntries.forEach((entry) => {
+      const startMinutes = timeToMinutes(entry.start);
+      const endMinutes = timeToMinutes(entry.end);
+
+      if (occupiedUntil !== null && startMinutes > occupiedUntil) {
+        entry.gap = {
+          start: occupiedUntilTime,
+          end: entry.start,
+          minutes: startMinutes - occupiedUntil,
+        };
+      }
+
+      if (occupiedUntil === null || endMinutes > occupiedUntil) {
+        occupiedUntil = endMinutes;
+        occupiedUntilTime = entry.end;
+      }
+    });
+  });
+
   const slotMap = new Map();
   entries.forEach((entry) => {
     const slot = slotMap.get(entry.slotKey) || {

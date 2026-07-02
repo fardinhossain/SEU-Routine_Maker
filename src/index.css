@@ -455,6 +455,12 @@ textarea:focus-visible {
     line-height: 1.1 !important;
   }
 
+  .routine-course-gap {
+    margin-top: .8mm !important;
+    font-size: 6pt !important;
+    line-height: 1.1 !important;
+  }
+
   .routine-course-details {
     margin-top: 1mm !important;
     color: inherit !important;
