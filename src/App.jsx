@@ -958,7 +958,7 @@ export default function App() {
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-slate-300 transition hover:bg-white/[.06] hover:text-white"
                         onClick={exportModernPng}
                       >
-                        <Download size={15} /> Download Modern PNG
+                        <WandSparkles size={15} /> Download Modern PNG
                       </button>
                       <button
                         type="button"
