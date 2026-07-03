@@ -812,7 +812,7 @@ textarea:focus-visible {
 
 .mobile-table-routine-card {
   display: grid;
-  gap: 9px;
+  gap: 7px;
   min-height: 94px;
   padding: 13px 14px;
   border: 1px solid rgba(103, 232, 249, .22);
@@ -851,8 +851,7 @@ textarea:focus-visible {
   color: #fce7f3;
 }
 
-.mobile-table-routine-card-top,
-.mobile-table-routine-card-meta {
+.mobile-table-routine-card-top {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -860,34 +859,39 @@ textarea:focus-visible {
   min-width: 0;
 }
 
-.mobile-table-routine-card-top p,
-.mobile-table-routine-card-top span {
+.mobile-table-routine-card-top p {
   margin: 0;
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 800;
+  letter-spacing: .02em;
   line-height: 1.2;
-}
-
-.mobile-table-routine-card-top p {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
-.mobile-table-routine-card-top span {
-  flex-shrink: 0;
-  color: #ccfbf1;
-  text-align: right;
+.mobile-table-routine-gap {
+  margin: 0;
+  color: currentColor;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.15;
+  opacity: .75;
 }
 
-.mobile-table-routine-card h3 {
+.mobile-table-routine-title {
   margin: 0;
-  color: #f8fafc;
+  color: inherit;
   font-size: 16px;
-  font-weight: 850;
-  line-height: 1.2;
-  overflow-wrap: anywhere;
+  font-weight: 700;
+  line-height: 1.15;
+  overflow-wrap: normal;
 }
 
 .mobile-table-routine-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
   color: rgba(203, 213, 225, .78);
   font-size: 13px;
   font-weight: 700;

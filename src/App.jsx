@@ -303,9 +303,11 @@ const MobileTableRoutineExport = forwardRef(function MobileTableRoutineExport(
                         >
                           <div className="mobile-table-routine-card-top">
                             {courseCode && <p>{courseCode}</p>}
-                            {entry.gap && <span>Gap: {formatGapDuration(entry.gap.minutes)}</span>}
                           </div>
-                          {courseTitle && <h3>{courseTitle}</h3>}
+                          {entry.gap && (
+                            <p className="mobile-table-routine-gap">Gap: {formatGapDuration(entry.gap.minutes)}</p>
+                          )}
+                          {courseTitle && <p className="mobile-table-routine-title">{courseTitle}</p>}
                           <div className="mobile-table-routine-card-meta">
                             {entry.room && <span>{entry.room}</span>}
                             {teacher && <span>{teacher}</span>}
