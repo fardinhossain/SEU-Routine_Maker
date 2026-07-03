@@ -48,7 +48,7 @@ function formatGapDuration(totalMinutes) {
   ].filter(Boolean).join(" ");
 }
 
-const MobileRoutineExport = forwardRef(function MobileRoutineExport(
+const FuturisticRoutineExport = forwardRef(function FuturisticRoutineExport(
   { routine, shortNames },
   ref,
 ) {
@@ -65,67 +65,58 @@ const MobileRoutineExport = forwardRef(function MobileRoutineExport(
     (total, entry) => total + timeToMinutes(entry.end) - timeToMinutes(entry.start),
     0,
   );
-  const showSummary = uniqueCourseCodes.size > 0 || sessions > 0 || weeklyMinutes > 0;
 
   return (
-    <section ref={ref} className="mobile-routine-export" aria-hidden="true">
-      <header className="mobile-routine-header">
+    <section ref={ref} className="futuristic-routine-export" aria-hidden="true">
+      <header className="futuristic-routine-header">
         <div>
           <h2>SEU Weekly Routine</h2>
+          <p>Seven days, one clear view.</p>
         </div>
-        {showSummary && (
-          <div className="mobile-routine-summary">
-            {uniqueCourseCodes.size > 0 && (
-              <div>
-                <strong>{uniqueCourseCodes.size}</strong>
-                <span>Total Courses</span>
-              </div>
-            )}
-            {sessions > 0 && (
-              <div>
-                <strong>{sessions}</strong>
-                <span>Total Sessions</span>
-              </div>
-            )}
-            {weeklyMinutes > 0 && (
-              <div>
-                <strong>{(weeklyMinutes / 60).toFixed(1)}h</strong>
-                <span>Weekly Hours</span>
-              </div>
-            )}
+        <div className="futuristic-routine-summary">
+          <div>
+            <strong>{uniqueCourseCodes.size}</strong>
+            <span>Courses</span>
           </div>
-        )}
+          <div>
+            <strong>{sessions}</strong>
+            <span>Sessions</span>
+          </div>
+          <div>
+            <strong>{(weeklyMinutes / 60).toFixed(1)}h</strong>
+            <span>Weekly</span>
+          </div>
+        </div>
       </header>
 
-      <div className="mobile-routine-days">
+      <div className="futuristic-routine-days">
         {daySections.map(({ day, entries }, dayIndex) => (
-          <section className="mobile-routine-day-section" key={day} data-day-index={dayIndex}>
-            <aside className="mobile-routine-day-label">
-              <span>{day.slice(0, 3).toUpperCase()}</span>
-            </aside>
-            <div className="mobile-routine-card-list">
+          <section className="futuristic-routine-day-row" key={day} data-day-index={dayIndex}>
+            <aside className="futuristic-routine-day-cell">{day.slice(0, 3).toUpperCase()}</aside>
+            <div className="futuristic-routine-entry-grid">
               {entries.map((entry) => {
                 const courseCode = entry.course.courseCode;
-                const courseName = shortNames[courseCode] || entry.course.shortTitle || entry.course.courseTitle;
-                const teacher = entry.course.faculty || entry.course.teacherInitial || entry.course.facultyName || entry.course.teacherName;
+                const courseTitle = entry.course.courseTitle || shortNames[courseCode] || entry.course.shortTitle;
+                const teacher = entry.course.facultyName || entry.course.teacherName || entry.course.faculty || entry.course.teacherInitial;
+
                 return (
-                  <article className="mobile-routine-card" data-day-index={dayIndex % 6} key={entry.id}>
-                    {(entry.start || entry.end) && (
-                      <p className="mobile-routine-time">
-                        {[entry.start && formatTime12(entry.start), entry.end && formatTime12(entry.end)].filter(Boolean).join(" to ")}
-                      </p>
-                    )}
-                    {courseCode && <p className="mobile-routine-code">{courseCode}</p>}
-                    {courseName && <h3>{courseName}</h3>}
-                    {(entry.room || teacher) && (
-                      <div className="mobile-routine-details">
-                        {entry.room && <span>Room: {entry.room}</span>}
-                        {teacher && <span>Teacher: {teacher}</span>}
+                  <article className="futuristic-routine-entry" data-day-index={dayIndex % 6} key={entry.id}>
+                    <div className="futuristic-routine-time">
+                      <strong>{entry.start ? formatTime12(entry.start) : ""}</strong>
+                      <span>to</span>
+                      <strong>{entry.end ? formatTime12(entry.end) : ""}</strong>
+                    </div>
+                    <div className="futuristic-routine-course-card">
+                      <div className="futuristic-routine-card-top">
+                        {courseCode && <p className="futuristic-routine-code">{courseCode}</p>}
+                        {entry.gap && <p className="futuristic-routine-gap">Gap: {formatGapDuration(entry.gap.minutes)}</p>}
                       </div>
-                    )}
-                    {entry.gap && (
-                      <p className="mobile-routine-gap">Gap: {formatGapDuration(entry.gap.minutes)}</p>
-                    )}
+                      {courseTitle && <h3>{courseTitle}</h3>}
+                      <div className="futuristic-routine-meta">
+                        {entry.room && <span>{entry.room}</span>}
+                        {teacher && <span>{teacher}</span>}
+                      </div>
+                    </div>
                   </article>
                 );
               })}
@@ -133,6 +124,110 @@ const MobileRoutineExport = forwardRef(function MobileRoutineExport(
           </section>
         ))}
       </div>
+    </section>
+  );
+});
+
+const MobileTableRoutineExport = forwardRef(function MobileTableRoutineExport(
+  { routine, shortNames },
+  ref,
+) {
+  const daySections = WEEK_DAYS.map((day) => ({
+    day,
+    entries: routine.entries.filter((entry) => entry.day === day),
+  })).filter((section) => section.entries.length > 0);
+
+  const uniqueCourseCodes = Array.from(new Set(routine.entries.map((entry) => entry.course.courseCode).filter(Boolean)));
+  const courseColorLookup = new Map(uniqueCourseCodes.map((code, index) => [code, index % 6]));
+  const weeklyMinutes = routine.entries.reduce(
+    (total, entry) => total + timeToMinutes(entry.end) - timeToMinutes(entry.start),
+    0,
+  );
+
+  return (
+    <section ref={ref} className="mobile-table-routine-export" aria-hidden="true">
+      <header className="mobile-table-routine-header">
+        <div>
+          <h2>SEU Weekly Routine</h2>
+          <p>Seven days, one clear view.</p>
+        </div>
+        <div className="mobile-table-routine-summary">
+          <div>
+            <strong>{uniqueCourseCodes.length}</strong>
+            <span>Courses</span>
+          </div>
+          <div>
+            <strong>{routine.entries.length}</strong>
+            <span>Sessions</span>
+          </div>
+          <div>
+            <strong>{(weeklyMinutes / 60).toFixed(1)}h</strong>
+            <span>Weekly</span>
+          </div>
+        </div>
+      </header>
+
+      <table className="mobile-table-routine-grid">
+        <thead>
+          <tr>
+            <th>Day</th>
+            {routine.slots.map((slot) => (
+              <th key={slot.key}>
+                <span>{(slot.starts || [slot.start]).map(formatTime12).join(" / ")}</span>
+                <small>
+                  to{" "}
+                  {slot.ends.map((end, index) => (
+                    <em key={end}>
+                      {formatTime12(end)}
+                      {index < slot.ends.length - 1 ? " / " : ""}
+                    </em>
+                  ))}
+                </small>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {daySections.map(({ day }) => (
+            <tr key={day}>
+              <th>{day.slice(0, 3).toUpperCase()}</th>
+              {routine.slots.map((slot) => {
+                const cellEntries = routine.entries
+                  .filter((entry) => entry.day === day && entry.slotKey === slot.key)
+                  .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+
+                return (
+                  <td key={`${day}-${slot.key}`}>
+                    {cellEntries.map((entry) => {
+                      const courseCode = entry.course.courseCode;
+                      const courseTitle = entry.course.courseTitle || shortNames[courseCode] || entry.course.shortTitle;
+                      const teacher = entry.course.facultyName || entry.course.teacherName || entry.course.faculty || entry.course.teacherInitial;
+
+                      return (
+                        <article
+                          className="mobile-table-routine-card"
+                          data-color-index={courseColorLookup.get(courseCode) ?? 0}
+                          key={entry.id}
+                        >
+                          <div className="mobile-table-routine-card-top">
+                            {courseCode && <p>{courseCode}</p>}
+                            {entry.gap && <span>Gap: {formatGapDuration(entry.gap.minutes)}</span>}
+                          </div>
+                          {courseTitle && <h3>{courseTitle}</h3>}
+                          <div className="mobile-table-routine-card-meta">
+                            {entry.room && <span>{entry.room}</span>}
+                            {teacher && <span>{teacher}</span>}
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
   );
 });
@@ -160,7 +255,8 @@ export default function App() {
   const [showDataPolicy, setShowDataPolicy] = useState(false);
   const [pngMenuOpen, setPngMenuOpen] = useState(false);
   const routineRef = useRef(null);
-  const mobileRoutineRef = useRef(null);
+  const futuristicRoutineRef = useRef(null);
+  const mobileTableRoutineRef = useRef(null);
   const pendingRoutineScrollRef = useRef(false);
 
   const selectedCourses = useMemo(() => {
@@ -372,21 +468,44 @@ export default function App() {
     });
   }
 
-  async function captureMobileRoutine() {
-    if (!mobileRoutineRef.current) return null;
+  async function captureFuturisticRoutine() {
+    if (!futuristicRoutineRef.current) return null;
     const { default: html2canvas } = await import("html2canvas");
     await document.fonts?.ready;
-    const target = mobileRoutineRef.current;
+    const target = futuristicRoutineRef.current;
     const exportHeight = Math.ceil(target.scrollHeight);
+    const exportWidth = Math.ceil(target.scrollWidth);
 
     return html2canvas(target, {
       backgroundColor: "#06111f",
       scale: 2,
       useCORS: true,
       logging: false,
-      width: 1080,
+      width: exportWidth,
       height: exportHeight,
-      windowWidth: 1080,
+      windowWidth: exportWidth,
+      windowHeight: exportHeight,
+      scrollX: 0,
+      scrollY: 0,
+    });
+  }
+
+  async function captureMobileTableRoutine() {
+    if (!mobileTableRoutineRef.current) return null;
+    const { default: html2canvas } = await import("html2canvas");
+    await document.fonts?.ready;
+    const target = mobileTableRoutineRef.current;
+    const exportHeight = Math.ceil(target.scrollHeight);
+    const exportWidth = Math.ceil(target.scrollWidth);
+
+    return html2canvas(target, {
+      backgroundColor: "#06111f",
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      width: exportWidth,
+      height: exportHeight,
+      windowWidth: exportWidth,
       windowHeight: exportHeight,
       scrollX: 0,
       scrollY: 0,
@@ -426,15 +545,28 @@ export default function App() {
     }
   }
 
-  async function exportModernPng() {
-    setPngMenuOpen(false);
-    await exportMobilePng();
+  async function exportFuturisticPng() {
+    try {
+      setPngMenuOpen(false);
+      setExporting("futuristic-png");
+      const canvas = await captureFuturisticRoutine();
+      if (!canvas) return;
+      const link = document.createElement("a");
+      link.download = "seu-weekly-routine-futuristic.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch {
+      showMessage("error", "The futuristic PNG could not be created. Try the regular PNG instead.");
+    } finally {
+      setExporting("");
+    }
   }
 
   async function exportMobilePng() {
     try {
+      setPngMenuOpen(false);
       setExporting("mobile-png");
-      const canvas = await captureMobileRoutine();
+      const canvas = await captureMobileTableRoutine();
       if (!canvas) return;
       const link = document.createElement("a");
       link.download = "seu-routine-mobile.png";
@@ -675,27 +807,35 @@ export default function App() {
                     aria-haspopup="menu"
                     aria-expanded={pngMenuOpen}
                   >
-                    <Download size={16} /> {exporting === "png" || exporting === "pc-png" || exporting === "mobile-png" ? "Creating..." : "PNG"}
+                    <Download size={16} /> {exporting === "png" || exporting === "pc-png" || exporting === "futuristic-png" || exporting === "mobile-png" ? "Creating..." : "PNG"}
                     <ChevronDown size={15} className={`transition-transform ${pngMenuOpen ? "rotate-180" : ""}`} />
                   </button>
 
                   {pngMenuOpen && (
-                    <div className="absolute left-0 z-40 mt-2 w-52 overflow-hidden rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50 sm:left-auto sm:right-0" role="menu">
+                    <div className="absolute left-0 z-40 mt-2 w-60 overflow-hidden rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50 sm:left-auto sm:right-0" role="menu">
                       <button
                         type="button"
                         role="menuitem"
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-slate-300 transition hover:bg-white/[.06] hover:text-white"
                         onClick={exportPcPng}
                       >
-                        <Download size={15} /> PC Version
+                        <Download size={15} /> Download PC PNG
                       </button>
                       <button
                         type="button"
                         role="menuitem"
                         className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-slate-300 transition hover:bg-white/[.06] hover:text-white"
-                        onClick={exportModernPng}
+                        onClick={exportFuturisticPng}
                       >
-                        <Download size={15} /> Modern Version
+                        <Sparkles size={15} /> Download Futuristic PNG
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-slate-300 transition hover:bg-white/[.06] hover:text-white"
+                        onClick={exportMobilePng}
+                      >
+                        <MonitorSmartphone size={15} /> Download Mobile PNG
                       </button>
                     </div>
                   )}
@@ -713,7 +853,8 @@ export default function App() {
 
             <RoutineTable ref={routineRef} selectedCourses={selectedCourses} routine={routine} shortNames={shortNames} />
             <div className="mobile-routine-export-host" aria-hidden="true">
-              <MobileRoutineExport ref={mobileRoutineRef} routine={routine} shortNames={shortNames} />
+              <FuturisticRoutineExport ref={futuristicRoutineRef} routine={routine} shortNames={shortNames} />
+              <MobileTableRoutineExport ref={mobileTableRoutineRef} routine={routine} shortNames={shortNames} />
             </div>
           </div>
         )}
