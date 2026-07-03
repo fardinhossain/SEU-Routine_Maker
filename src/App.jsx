@@ -25,7 +25,7 @@ import LoadingScreen from "./components/LoadingScreen";
 import RoutineTable from "./components/RoutineTable";
 import ShortNameEditor from "./components/ShortNameEditor";
 import { parseUmsHtml } from "./lib/parser";
-import { buildRoutine, courseIdentity, findDuplicateCourseSelections, formatTime12, parseCodeList, uniqueCourseSelections } from "./lib/routine";
+import { buildRoutine, courseIdentity, findDuplicateCourseSelections, parseCodeList, uniqueCourseSelections } from "./lib/routine";
 import { clearRoutineStorage, readStoredValue, STORAGE_KEYS, writeStoredValue } from "./lib/storage";
 
 function loadInitialState() {
@@ -231,69 +231,43 @@ export default function App() {
     setShortNames((current) => ({ ...current, [code]: value }));
   }
 
-  function prepareRoutineClone(clonedRoutine, exportWidth) {
-    clonedRoutine.style.width = `${exportWidth}px`;
-    clonedRoutine.style.maxWidth = "none";
-    clonedRoutine.style.overflow = "visible";
-
-    const clonedScrollArea = clonedRoutine.querySelector(".routine-scroll");
-    if (clonedScrollArea) {
-      clonedScrollArea.style.width = "100%";
-      clonedScrollArea.style.overflow = "visible";
-    }
-
-    clonedRoutine.querySelectorAll(".sticky").forEach((element) => {
-      element.style.position = "static";
-    });
-  }
-
-  function prepareMobileRoutineClone(clonedRoutine, exportWidth) {
-    prepareRoutineClone(clonedRoutine, exportWidth);
-    clonedRoutine.classList.add("routine-mobile-export");
-    clonedRoutine.querySelectorAll(".routine-table tbody tr").forEach((row) => {
-      row.querySelectorAll(".routine-cell").forEach((cell, index) => {
-        const slot = routine.slots[index];
-        const hasClass = Boolean(cell.querySelector(".routine-course-card"));
-        cell.classList.toggle("routine-cell-empty", !hasClass);
-
-        if (slot) {
-          const starts = (slot.starts || [slot.start]).map(formatTime12).join(" / ");
-          const ends = slot.ends.map(formatTime12).join(" / ");
-          cell.dataset.mobileSlot = `${starts} - ${ends}`;
-        }
-      });
-    });
-  }
-
-  async function captureRoutine({ mobile = false } = {}) {
+  async function captureRoutine() {
     if (!routineRef.current) return null;
     const { default: html2canvas } = await import("html2canvas");
     const target = routineRef.current;
     const table = target.querySelector("table");
     const desktopTableWidth = 96 + routine.slots.length * 176;
-    const exportWidth = mobile ? 430 : Math.max(table?.scrollWidth || 0, desktopTableWidth, 960);
-    const mobileHeight = 260 + (routine.entries.length * 190) + (7 * 96);
-    const exportHeight = mobile ? Math.max(mobileHeight, 1200) : Math.max(target.scrollHeight, 1024);
+    const exportWidth = Math.max(table?.scrollWidth || 0, desktopTableWidth, 960);
+    const exportHeight = Math.max(target.scrollHeight, 1024);
 
     return html2canvas(target, {
-      backgroundColor: mobile ? "#f8fafc" : "#0d182b",
+      backgroundColor: "#0d182b",
       scale: 2,
       useCORS: true,
       logging: false,
       width: exportWidth,
       height: exportHeight,
-      windowWidth: mobile ? exportWidth : Math.max(exportWidth, 1280),
+      windowWidth: Math.max(exportWidth, 1280),
       windowHeight: exportHeight,
       scrollX: 0,
       scrollY: 0,
       onclone: (clonedDocument) => {
         const clonedRoutine = clonedDocument.querySelector('[data-routine-capture="true"]');
         if (!clonedRoutine) return;
-        if (mobile) {
-          prepareMobileRoutineClone(clonedRoutine, exportWidth);
-        } else {
-          prepareRoutineClone(clonedRoutine, exportWidth);
+
+        clonedRoutine.style.width = `${exportWidth}px`;
+        clonedRoutine.style.maxWidth = "none";
+        clonedRoutine.style.overflow = "visible";
+
+        const clonedScrollArea = clonedRoutine.querySelector(".routine-scroll");
+        if (clonedScrollArea) {
+          clonedScrollArea.style.width = "100%";
+          clonedScrollArea.style.overflow = "visible";
         }
+
+        clonedRoutine.querySelectorAll(".sticky").forEach((element) => {
+          element.style.position = "static";
+        });
       },
     });
   }
@@ -309,22 +283,6 @@ export default function App() {
       link.click();
     } catch {
       showMessage("error", "The PNG could not be created. Try the print option instead.");
-    } finally {
-      setExporting("");
-    }
-  }
-
-  async function exportMobilePng() {
-    try {
-      setExporting("mobile-png");
-      const canvas = await captureRoutine({ mobile: true });
-      if (!canvas) return;
-      const link = document.createElement("a");
-      link.download = "seu-weekly-routine-mobile.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } catch {
-      showMessage("error", "The mobile PNG could not be created. Try the regular PNG instead.");
     } finally {
       setExporting("");
     }
@@ -544,15 +502,12 @@ export default function App() {
                 <p className="text-xs font-semibold uppercase tracking-[.18em] text-mint-400">Your result</p>
                 <h2 className="mt-1 text-2xl font-semibold tracking-tight text-white">Weekly class routine</h2>
               </div>
-              <div className="no-print grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
+              <div className="no-print grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:flex-wrap">
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={() => window.print()} disabled={routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Print routine"}>
                   <Printer size={16} /> Print
                 </button>
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportPng} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download routine as PNG"}>
                   <Download size={16} /> {exporting === "png" ? "Creating…" : "PNG"}
-                </button>
-                <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportMobilePng} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download a phone-friendly PNG"}>
-                  <MonitorSmartphone size={16} /> {exporting === "mobile-png" ? "Creating..." : "Mobile PNG"}
                 </button>
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportPdf} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download routine as PDF"}>
                   <FileDown size={16} /> {exporting === "pdf" ? "Creating…" : "PDF"}
