@@ -51,6 +51,11 @@ export function timeSlotKey(meeting) {
 export function getDayPatternOptions(courses = []) {
   const options = new Map();
 
+  [...filterDayOrder.keys()].forEach((day) => {
+    options.set(day, dayNames[day] || day);
+  });
+  options.set("SAT|THU", "Saturday - Thursday");
+
   courses.forEach((course) => {
     const value = dayPatternKey(course.meetings);
     if (!value || options.has(value)) return;
@@ -96,7 +101,10 @@ export function getTimeSlotOptions(courses = []) {
 }
 
 export function matchesScheduleFilters(course, dayFilter = "ALL", timeFilter = "ALL") {
-  const matchesDay = dayFilter === "ALL" || dayPatternKey(course.meetings) === dayFilter;
+  const meetingDays = new Set(course.meetings.map((meeting) => meeting.day));
+  const matchesDay = dayFilter === "ALL"
+    || (!dayFilter.includes("|") && meetingDays.has(dayFilter))
+    || dayPatternKey(course.meetings) === dayFilter;
   const matchesTime = timeFilter === "ALL"
     || course.meetings.some((meeting) => timeSlotKey(meeting) === timeFilter);
   return matchesDay && matchesTime;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   BookOpen,
@@ -25,7 +25,7 @@ import LoadingScreen from "./components/LoadingScreen";
 import RoutineTable from "./components/RoutineTable";
 import ShortNameEditor from "./components/ShortNameEditor";
 import { parseUmsHtml } from "./lib/parser";
-import { buildRoutine, courseIdentity, findDuplicateCourseSelections, parseCodeList, uniqueCourseSelections } from "./lib/routine";
+import { buildRoutine, courseIdentity, findDuplicateCourseSelections, formatTime12, parseCodeList, timeToMinutes, uniqueCourseSelections, WEEK_DAYS } from "./lib/routine";
 import { clearRoutineStorage, readStoredValue, STORAGE_KEYS, writeStoredValue } from "./lib/storage";
 
 function loadInitialState() {
@@ -38,6 +38,104 @@ function loadInitialState() {
     shortNames: readStoredValue(STORAGE_KEYS.shortNames, {}),
   };
 }
+
+function formatGapDuration(totalMinutes) {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return [
+    hours ? `${hours} hr` : "",
+    minutes ? `${minutes} min` : "",
+  ].filter(Boolean).join(" ");
+}
+
+const MobileRoutineExport = forwardRef(function MobileRoutineExport(
+  { routine, shortNames },
+  ref,
+) {
+  const daySections = WEEK_DAYS.map((day) => ({
+    day,
+    entries: routine.entries
+      .filter((entry) => entry.day === day)
+      .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start)),
+  })).filter((section) => section.entries.length > 0);
+
+  const uniqueCourseCodes = new Set(routine.entries.map((entry) => entry.course.courseCode).filter(Boolean));
+  const sessions = routine.entries.length;
+  const weeklyMinutes = routine.entries.reduce(
+    (total, entry) => total + timeToMinutes(entry.end) - timeToMinutes(entry.start),
+    0,
+  );
+  const showSummary = uniqueCourseCodes.size > 0 || sessions > 0 || weeklyMinutes > 0;
+
+  return (
+    <section ref={ref} className="mobile-routine-export" aria-hidden="true">
+      <header className="mobile-routine-header">
+        <div>
+          <h2>SEU Weekly Routine</h2>
+        </div>
+        {showSummary && (
+          <div className="mobile-routine-summary">
+            {uniqueCourseCodes.size > 0 && (
+              <div>
+                <strong>{uniqueCourseCodes.size}</strong>
+                <span>Total Courses</span>
+              </div>
+            )}
+            {sessions > 0 && (
+              <div>
+                <strong>{sessions}</strong>
+                <span>Total Sessions</span>
+              </div>
+            )}
+            {weeklyMinutes > 0 && (
+              <div>
+                <strong>{(weeklyMinutes / 60).toFixed(1)}h</strong>
+                <span>Weekly Hours</span>
+              </div>
+            )}
+          </div>
+        )}
+      </header>
+
+      <div className="mobile-routine-days">
+        {daySections.map(({ day, entries }, dayIndex) => (
+          <section className="mobile-routine-day-section" key={day} data-day-index={dayIndex}>
+            <aside className="mobile-routine-day-label">
+              <span>{day.slice(0, 3).toUpperCase()}</span>
+            </aside>
+            <div className="mobile-routine-card-list">
+              {entries.map((entry) => {
+                const courseCode = entry.course.courseCode;
+                const courseName = shortNames[courseCode] || entry.course.shortTitle || entry.course.courseTitle;
+                const teacher = entry.course.faculty || entry.course.teacherInitial || entry.course.facultyName || entry.course.teacherName;
+                return (
+                  <article className="mobile-routine-card" data-day-index={dayIndex % 6} key={entry.id}>
+                    {(entry.start || entry.end) && (
+                      <p className="mobile-routine-time">
+                        {[entry.start && formatTime12(entry.start), entry.end && formatTime12(entry.end)].filter(Boolean).join(" to ")}
+                      </p>
+                    )}
+                    {courseCode && <p className="mobile-routine-code">{courseCode}</p>}
+                    {courseName && <h3>{courseName}</h3>}
+                    {(entry.room || teacher) && (
+                      <div className="mobile-routine-details">
+                        {entry.room && <span>Room: {entry.room}</span>}
+                        {teacher && <span>Teacher: {teacher}</span>}
+                      </div>
+                    )}
+                    {entry.gap && (
+                      <p className="mobile-routine-gap">Gap: {formatGapDuration(entry.gap.minutes)}</p>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
+    </section>
+  );
+});
 
 export default function App() {
   const initial = useMemo(loadInitialState, []);
@@ -61,6 +159,7 @@ export default function App() {
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
   const [showDataPolicy, setShowDataPolicy] = useState(false);
   const routineRef = useRef(null);
+  const mobileRoutineRef = useRef(null);
   const pendingRoutineScrollRef = useRef(false);
 
   const selectedCourses = useMemo(() => {
@@ -272,8 +371,32 @@ export default function App() {
     });
   }
 
+  async function captureMobileRoutine() {
+    if (!mobileRoutineRef.current) return null;
+    const { default: html2canvas } = await import("html2canvas");
+    const target = mobileRoutineRef.current;
+    const exportHeight = Math.ceil(target.scrollHeight);
+
+    return html2canvas(target, {
+      backgroundColor: "#06111f",
+      scale: 1,
+      useCORS: true,
+      logging: false,
+      width: 1080,
+      height: exportHeight,
+      windowWidth: 1080,
+      windowHeight: exportHeight,
+      scrollX: 0,
+      scrollY: 0,
+    });
+  }
+
   async function exportPng() {
     try {
+      if (window.matchMedia("(max-width: 640px)").matches) {
+        await exportMobilePng();
+        return;
+      }
       setExporting("png");
       const canvas = await captureRoutine();
       if (!canvas) return;
@@ -283,6 +406,22 @@ export default function App() {
       link.click();
     } catch {
       showMessage("error", "The PNG could not be created. Try the print option instead.");
+    } finally {
+      setExporting("");
+    }
+  }
+
+  async function exportMobilePng() {
+    try {
+      setExporting("mobile-png");
+      const canvas = await captureMobileRoutine();
+      if (!canvas) return;
+      const link = document.createElement("a");
+      link.download = "seu-weekly-routine-mobile.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch {
+      showMessage("error", "The mobile PNG could not be created. Try the regular PNG instead.");
     } finally {
       setExporting("");
     }
@@ -502,12 +641,15 @@ export default function App() {
                 <p className="text-xs font-semibold uppercase tracking-[.18em] text-mint-400">Your result</p>
                 <h2 className="mt-1 text-2xl font-semibold tracking-tight text-white">Weekly class routine</h2>
               </div>
-              <div className="no-print grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:flex-wrap">
+              <div className="no-print grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={() => window.print()} disabled={routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Print routine"}>
                   <Printer size={16} /> Print
                 </button>
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportPng} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download routine as PNG"}>
                   <Download size={16} /> {exporting === "png" ? "Creating…" : "PNG"}
+                </button>
+                <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportMobilePng} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download a mobile-friendly PNG"}>
+                  {exporting === "mobile-png" ? "Creating..." : "Download Mobile PNG"}
                 </button>
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportPdf} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download routine as PDF"}>
                   <FileDown size={16} /> {exporting === "pdf" ? "Creating…" : "PDF"}
@@ -521,6 +663,9 @@ export default function App() {
             </div>
 
             <RoutineTable ref={routineRef} selectedCourses={selectedCourses} routine={routine} shortNames={shortNames} />
+            <div className="mobile-routine-export-host" aria-hidden="true">
+              <MobileRoutineExport ref={mobileRoutineRef} routine={routine} shortNames={shortNames} />
+            </div>
           </div>
         )}
 

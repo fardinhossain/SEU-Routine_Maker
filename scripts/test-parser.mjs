@@ -427,8 +427,15 @@ const filterCourses = [
 ];
 assert.equal(dayPatternKey(filterCourses[0].meetings), "MON|WED");
 assert.deepEqual(getDayPatternOptions(filterCourses), [
+  { value: "MON", label: "Monday" },
+  { value: "TUE", label: "Tuesday" },
+  { value: "WED", label: "Wednesday" },
+  { value: "THU", label: "Thursday" },
+  { value: "FRI", label: "Friday" },
   { value: "SAT", label: "Saturday" },
+  { value: "SUN", label: "Sunday" },
   { value: "MON|WED", label: "Monday - Wednesday" },
+  { value: "SAT|THU", label: "Saturday - Thursday" },
   { value: "SUN|TUE", label: "Sunday - Tuesday" },
 ]);
 assert.deepEqual(getTimeSlotOptions(filterCourses), [
@@ -437,7 +444,8 @@ assert.deepEqual(getTimeSlotOptions(filterCourses), [
   { value: "13:30|14:50", label: "01:30 PM - 02:50 PM" },
 ]);
 assert.equal(matchesScheduleFilters(filterCourses[0], "MON|WED", "08:30|09:50"), true);
-assert.equal(matchesScheduleFilters(filterCourses[0], "MON", "08:30|09:50"), false);
+assert.equal(matchesScheduleFilters(filterCourses[0], "MON", "08:30|09:50"), true);
+assert.equal(matchesScheduleFilters(filterCourses[0], "THU", "08:30|09:50"), false);
 assert.equal(matchesScheduleFilters(filterCourses[2], "SUN|TUE", "08:30|09:50"), false);
 
 assert.deepEqual(

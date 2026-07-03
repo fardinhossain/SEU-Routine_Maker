@@ -97,7 +97,7 @@ const RoutineTable = forwardRef(function RoutineTable(
               <CalendarRange size={21} />
             </span>
             <div>
-              <h2 className="text-lg font-semibold text-white">My weekly routine</h2>
+              <h2 className="text-lg font-semibold text-white">SEU Weekly Routine</h2>
               <p className="text-sm text-slate-500">Seven days, one clear view.</p>
             </div>
           </div>
