@@ -48,6 +48,98 @@ function formatGapDuration(totalMinutes) {
   ].filter(Boolean).join(" ");
 }
 
+const ModernRoutineExport = forwardRef(function ModernRoutineExport(
+  { routine, shortNames },
+  ref,
+) {
+  const daySections = WEEK_DAYS.map((day) => ({
+    day,
+    entries: routine.entries
+      .filter((entry) => entry.day === day)
+      .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start)),
+  })).filter((section) => section.entries.length > 0);
+
+  const uniqueCourseCodes = new Set(routine.entries.map((entry) => entry.course.courseCode).filter(Boolean));
+  const sessions = routine.entries.length;
+  const weeklyMinutes = routine.entries.reduce(
+    (total, entry) => total + timeToMinutes(entry.end) - timeToMinutes(entry.start),
+    0,
+  );
+  const showSummary = uniqueCourseCodes.size > 0 || sessions > 0 || weeklyMinutes > 0;
+
+  return (
+    <section ref={ref} className="mobile-routine-export" aria-hidden="true">
+      <header className="mobile-routine-header">
+        <div>
+          <h2>SEU Weekly Routine</h2>
+        </div>
+        {showSummary && (
+          <div className="mobile-routine-summary">
+            {uniqueCourseCodes.size > 0 && (
+              <div>
+                <strong>{uniqueCourseCodes.size}</strong>
+                <span>Total Courses</span>
+              </div>
+            )}
+            {sessions > 0 && (
+              <div>
+                <strong>{sessions}</strong>
+                <span>Total Sessions</span>
+              </div>
+            )}
+            {weeklyMinutes > 0 && (
+              <div>
+                <strong>{(weeklyMinutes / 60).toFixed(1)}h</strong>
+                <span>Weekly Hours</span>
+              </div>
+            )}
+          </div>
+        )}
+      </header>
+
+      <div className="mobile-routine-days">
+        {daySections.map(({ day, entries }, dayIndex) => (
+          <section className="mobile-routine-day-section" key={day} data-day-index={dayIndex}>
+            <aside className="mobile-routine-day-label">
+              <span>{day.slice(0, 3).toUpperCase()}</span>
+            </aside>
+            <div className="mobile-routine-card-list">
+              {entries.map((entry) => {
+                const courseCode = entry.course.courseCode;
+                const courseName = shortNames[courseCode] || entry.course.shortTitle || entry.course.courseTitle;
+                const teacher = entry.course.faculty || entry.course.teacherInitial || entry.course.facultyName || entry.course.teacherName;
+
+                return (
+                  <article className="mobile-routine-card" data-day-index={dayIndex % 6} key={entry.id}>
+                    {(entry.start || entry.end) && (
+                      <p className="mobile-routine-time">
+                        {[entry.start && formatTime12(entry.start), entry.end && formatTime12(entry.end)].filter(Boolean).join(" to ")}
+                      </p>
+                    )}
+                    {courseCode && <p className="mobile-routine-code">{courseCode}</p>}
+                    {courseName && <h3>{courseName}</h3>}
+                    {(entry.room || teacher || entry.gap) && (
+                      <div className="mobile-routine-meta-row">
+                        <div className="mobile-routine-details">
+                          {entry.room && <span>Room: {entry.room}</span>}
+                          {teacher && <span>Teacher: {teacher}</span>}
+                        </div>
+                        {entry.gap && (
+                          <p className="mobile-routine-gap">Gap: {formatGapDuration(entry.gap.minutes)}</p>
+                        )}
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+      </div>
+    </section>
+  );
+});
+
 const FuturisticRoutineExport = forwardRef(function FuturisticRoutineExport(
   { routine, shortNames },
   ref,
@@ -135,7 +227,7 @@ const MobileTableRoutineExport = forwardRef(function MobileTableRoutineExport(
   const daySections = WEEK_DAYS.map((day) => ({
     day,
     entries: routine.entries.filter((entry) => entry.day === day),
-  })).filter((section) => section.entries.length > 0);
+  }));
 
   const uniqueCourseCodes = Array.from(new Set(routine.entries.map((entry) => entry.course.courseCode).filter(Boolean)));
   const courseColorLookup = new Map(uniqueCourseCodes.map((code, index) => [code, index % 6]));
@@ -255,6 +347,7 @@ export default function App() {
   const [showDataPolicy, setShowDataPolicy] = useState(false);
   const [pngMenuOpen, setPngMenuOpen] = useState(false);
   const routineRef = useRef(null);
+  const modernRoutineRef = useRef(null);
   const futuristicRoutineRef = useRef(null);
   const mobileTableRoutineRef = useRef(null);
   const pendingRoutineScrollRef = useRef(false);
@@ -468,6 +561,27 @@ export default function App() {
     });
   }
 
+  async function captureModernRoutine() {
+    if (!modernRoutineRef.current) return null;
+    const { default: html2canvas } = await import("html2canvas");
+    await document.fonts?.ready;
+    const target = modernRoutineRef.current;
+    const exportHeight = Math.ceil(target.scrollHeight);
+
+    return html2canvas(target, {
+      backgroundColor: "#06111f",
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      width: 1080,
+      height: exportHeight,
+      windowWidth: 1080,
+      windowHeight: exportHeight,
+      scrollX: 0,
+      scrollY: 0,
+    });
+  }
+
   async function captureFuturisticRoutine() {
     if (!futuristicRoutineRef.current) return null;
     const { default: html2canvas } = await import("html2canvas");
@@ -540,6 +654,23 @@ export default function App() {
       link.click();
     } catch {
       showMessage("error", "The PC PNG could not be created. Try the print option instead.");
+    } finally {
+      setExporting("");
+    }
+  }
+
+  async function exportModernPng() {
+    try {
+      setPngMenuOpen(false);
+      setExporting("modern-png");
+      const canvas = await captureModernRoutine();
+      if (!canvas) return;
+      const link = document.createElement("a");
+      link.download = "seu-weekly-routine-modern.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch {
+      showMessage("error", "The modern PNG could not be created. Try the regular PNG instead.");
     } finally {
       setExporting("");
     }
@@ -807,7 +938,7 @@ export default function App() {
                     aria-haspopup="menu"
                     aria-expanded={pngMenuOpen}
                   >
-                    <Download size={16} /> {exporting === "png" || exporting === "pc-png" || exporting === "futuristic-png" || exporting === "mobile-png" ? "Creating..." : "PNG"}
+                    <Download size={16} /> {exporting === "png" || exporting === "pc-png" || exporting === "modern-png" || exporting === "futuristic-png" || exporting === "mobile-png" ? "Creating..." : "PNG"}
                     <ChevronDown size={15} className={`transition-transform ${pngMenuOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -820,6 +951,14 @@ export default function App() {
                         onClick={exportPcPng}
                       >
                         <Download size={15} /> Download PC PNG
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-slate-300 transition hover:bg-white/[.06] hover:text-white"
+                        onClick={exportModernPng}
+                      >
+                        <Download size={15} /> Download Modern PNG
                       </button>
                       <button
                         type="button"
@@ -853,6 +992,7 @@ export default function App() {
 
             <RoutineTable ref={routineRef} selectedCourses={selectedCourses} routine={routine} shortNames={shortNames} />
             <div className="mobile-routine-export-host" aria-hidden="true">
+              <ModernRoutineExport ref={modernRoutineRef} routine={routine} shortNames={shortNames} />
               <FuturisticRoutineExport ref={futuristicRoutineRef} routine={routine} shortNames={shortNames} />
               <MobileTableRoutineExport ref={mobileTableRoutineRef} routine={routine} shortNames={shortNames} />
             </div>
