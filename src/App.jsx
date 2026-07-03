@@ -158,6 +158,7 @@ export default function App() {
   const [showLoadingScreen, setShowLoadingScreen] = useState(() => window.location.hash !== "#routine");
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
   const [showDataPolicy, setShowDataPolicy] = useState(false);
+  const [pngMenuOpen, setPngMenuOpen] = useState(false);
   const routineRef = useRef(null);
   const mobileRoutineRef = useRef(null);
   const pendingRoutineScrollRef = useRef(false);
@@ -374,12 +375,13 @@ export default function App() {
   async function captureMobileRoutine() {
     if (!mobileRoutineRef.current) return null;
     const { default: html2canvas } = await import("html2canvas");
+    await document.fonts?.ready;
     const target = mobileRoutineRef.current;
     const exportHeight = Math.ceil(target.scrollHeight);
 
     return html2canvas(target, {
       backgroundColor: "#06111f",
-      scale: 1,
+      scale: 2,
       useCORS: true,
       logging: false,
       width: 1080,
@@ -393,10 +395,6 @@ export default function App() {
 
   async function exportPng() {
     try {
-      if (window.matchMedia("(max-width: 640px)").matches) {
-        await exportMobilePng();
-        return;
-      }
       setExporting("png");
       const canvas = await captureRoutine();
       if (!canvas) return;
@@ -411,13 +409,35 @@ export default function App() {
     }
   }
 
+  async function exportPcPng() {
+    try {
+      setPngMenuOpen(false);
+      setExporting("pc-png");
+      const canvas = await captureRoutine();
+      if (!canvas) return;
+      const link = document.createElement("a");
+      link.download = "seu-weekly-routine-pc.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch {
+      showMessage("error", "The PC PNG could not be created. Try the print option instead.");
+    } finally {
+      setExporting("");
+    }
+  }
+
+  async function exportModernPng() {
+    setPngMenuOpen(false);
+    await exportMobilePng();
+  }
+
   async function exportMobilePng() {
     try {
       setExporting("mobile-png");
       const canvas = await captureMobileRoutine();
       if (!canvas) return;
       const link = document.createElement("a");
-      link.download = "seu-weekly-routine-mobile.png";
+      link.download = "seu-routine-mobile.png";
       link.href = canvas.toDataURL("image/png");
       link.click();
     } catch {
@@ -645,12 +665,41 @@ export default function App() {
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={() => window.print()} disabled={routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Print routine"}>
                   <Printer size={16} /> Print
                 </button>
-                <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportPng} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download routine as PNG"}>
-                  <Download size={16} /> {exporting === "png" ? "Creating…" : "PNG"}
-                </button>
-                <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportMobilePng} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download a mobile-friendly PNG"}>
-                  <MonitorSmartphone size={16} /> {exporting === "mobile-png" ? "Creating..." : "Download Mobile PNG"}
-                </button>
+                <div className="relative">
+                  <button
+                    type="button"
+                    className="secondary-button w-full px-2 sm:w-auto sm:px-4"
+                    onClick={() => setPngMenuOpen((current) => !current)}
+                    disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0}
+                    title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download routine as PNG"}
+                    aria-haspopup="menu"
+                    aria-expanded={pngMenuOpen}
+                  >
+                    <Download size={16} /> {exporting === "png" || exporting === "pc-png" || exporting === "mobile-png" ? "Creating..." : "PNG"}
+                    <ChevronDown size={15} className={`transition-transform ${pngMenuOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  {pngMenuOpen && (
+                    <div className="absolute left-0 z-40 mt-2 w-52 overflow-hidden rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50 sm:left-auto sm:right-0" role="menu">
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-slate-300 transition hover:bg-white/[.06] hover:text-white"
+                        onClick={exportPcPng}
+                      >
+                        <Download size={15} /> PC Version
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-slate-300 transition hover:bg-white/[.06] hover:text-white"
+                        onClick={exportModernPng}
+                      >
+                        <Download size={15} /> Modern Version
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportPdf} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download routine as PDF"}>
                   <FileDown size={16} /> {exporting === "pdf" ? "Creating…" : "PDF"}
                 </button>
