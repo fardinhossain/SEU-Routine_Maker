@@ -649,7 +649,7 @@ export default function App() {
                   <Download size={16} /> {exporting === "png" ? "Creating…" : "PNG"}
                 </button>
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportMobilePng} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download a mobile-friendly PNG"}>
-                  {exporting === "mobile-png" ? "Creating..." : "Download Mobile PNG"}
+                  <MonitorSmartphone size={16} /> {exporting === "mobile-png" ? "Creating..." : "Download Mobile PNG"}
                 </button>
                 <button type="button" className="secondary-button px-2 sm:px-4" onClick={exportPdf} disabled={Boolean(exporting) || routine.conflicts.length > 0 || duplicateSelections.length > 0} title={routine.conflicts.length || duplicateSelections.length ? "Resolve section conflicts first" : "Download routine as PDF"}>
                   <FileDown size={16} /> {exporting === "pdf" ? "Creating…" : "PDF"}
