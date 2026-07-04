@@ -6,18 +6,15 @@ import SectionOrganizerPage from "./components/SectionOrganizerPage";
 import "./index.css";
 
 function Root() {
-  const [searchParams, setSearchParams] = useState(new URLSearchParams(window.location.search));
+  const [hash, setHash] = useState(window.location.hash);
 
   useEffect(() => {
-    const handlePopState = () => {
-      setSearchParams(new URLSearchParams(window.location.search));
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
+    const handleHashChange = () => setHash(window.location.hash);
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
-  const isOrganizer = searchParams.get("view") === "organizer" || window.location.hash === "#section-organizer";
-  return isOrganizer ? <SectionOrganizerPage /> : <App />;
+  return hash === "#section-organizer" ? <SectionOrganizerPage /> : <App />;
 }
 
 // Register service worker for PWA + notification support

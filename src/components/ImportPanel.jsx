@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, FileCode2, LoaderCircle, Trash2, UploadCloud, WandSparkles } from "lucide-react";
 
 export default function ImportPanel({
@@ -15,6 +15,15 @@ export default function ImportPanel({
   const inputRef = useRef(null);
   const [fileName, setFileName] = useState("");
   const [dragging, setDragging] = useState(false);
+
+  // Clear displayed filename (and file input) whenever the rawHtml is cleared by parent
+  // (e.g. Reset saved data, Clear HTML, or after parsing error)
+  useEffect(() => {
+    if (!rawHtml) {
+      setFileName("");
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }, [rawHtml]);
 
   function loadFile(file) {
     if (!file) return;
