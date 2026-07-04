@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from "react";
 import { Bell, BellOff, Calendar, Download } from "lucide-react";
 import {

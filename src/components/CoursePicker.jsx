@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo, useState } from "react";
 import { AlertCircle, AlertTriangle, RotateCcw, Search, Trash2, X, Zap } from "lucide-react";
 import { courseIdentity, formatTime12, parseCodeList } from "../lib/routine";

@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useId, useRef, useState } from "react";
 import { CheckCircle2, ClipboardPaste, ImageUp, LoaderCircle, ScanText, X } from "lucide-react";
 import { extractCourseCodesFromOcr } from "../lib/ocr";

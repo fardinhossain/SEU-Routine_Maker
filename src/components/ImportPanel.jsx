@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef, useState } from "react";
 import { CheckCircle2, FileCode2, LoaderCircle, Trash2, UploadCloud, WandSparkles } from "lucide-react";
 
@@ -125,7 +127,7 @@ export default function ImportPanel({
           )}
           {successMessage && (
             <a
-              href="#section-organizer"
+              href="/organizer"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-400/25 bg-violet-400/[.09] px-4 py-3 text-sm font-semibold text-violet-200 transition hover:border-violet-300/45 hover:bg-violet-400/[.14]"

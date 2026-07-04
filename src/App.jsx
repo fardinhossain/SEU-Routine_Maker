@@ -1,3 +1,5 @@
+'use client';
+
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
@@ -339,7 +341,7 @@ export default function App() {
       : "",
   );
   const [imageResetKey, setImageResetKey] = useState(0);
-  const [showLoadingScreen, setShowLoadingScreen] = useState(() => window.location.hash !== "#routine");
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
   const [showDataPolicy, setShowDataPolicy] = useState(false);
   const [pngMenuOpen, setPngMenuOpen] = useState(false);
@@ -416,7 +418,8 @@ export default function App() {
   }, [codeInput, courses]);
 
   useEffect(() => {
-    if (showLoadingScreen || window.location.hash !== "#routine") return undefined;
+    const hash = typeof window !== 'undefined' ? window.location.hash : '';
+    if (showLoadingScreen || hash !== "#routine") return undefined;
 
     const scrollTimer = window.setTimeout(() => {
       routineRef.current?.scrollIntoView({
