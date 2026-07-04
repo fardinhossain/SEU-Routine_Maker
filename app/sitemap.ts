@@ -1,15 +1,17 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://seuroutine.vercel.app';
+
   return [
     {
-      url: 'https://seuroutine.vercel.app',
+      url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
     },
     {
-      url: 'https://seuroutine.vercel.app/organizer',
+      url: `${baseUrl}/organizer`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
