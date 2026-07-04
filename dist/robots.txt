@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://seuroutine.vercel.app/sitemap.xml

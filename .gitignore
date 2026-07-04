@@ -4,7 +4,6 @@ node_modules/
 # Production build
 .next/
 out/
-dist/  # kept for legacy, but Next.js uses .next
 
 # Local environment files
 .env

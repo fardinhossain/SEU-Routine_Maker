@@ -8,7 +8,7 @@
   Plan sections from the UMS Offered Sections page, rebuild a registered routine from the Student Dashboard, or pick course codes from a screenshot.
 
   ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
-  ![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
+  ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
   ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
   ![Storage](https://img.shields.io/badge/Storage-localStorage-20DED6)
 </div>
@@ -271,31 +271,31 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite, usually:
+Open the local URL printed by Next.js, usually:
 
 ```text
-http://localhost:5173
+http://localhost:3000
 ```
 
 > [!NOTE]
-> Do not open `index.html` directly. React JSX must be compiled and served through Vite.
+> The app now runs with Next.js App Router.
 
 ### Production build
 
 ```bash
 npm run build
-npm run preview
+npm run start
 ```
 
-The optimized production files are created in `dist/`.
+The optimized production build is created in `.next/`. (Run `npm run start` to preview the production build locally.)
 
 ## Available commands
 
 | Command | Purpose |
 |---|---|
-| `npm run dev` | Start the Vite development server. |
+| `npm run dev` | Start the Next.js development server. |
 | `npm run build` | Create an optimized production build. |
-| `npm run preview` | Preview the production build locally. |
+| `npm run start` | Preview the production build locally. |
 | `npm test` | Run Offered Sections/dashboard parser, OCR-code matching, conflict, and duplicate-section checks. |
 
 ## Project structure
@@ -330,10 +330,14 @@ Seu-Routine_Maker/
 │   ├── App.jsx
 │   ├── index.css
 │   └── main.jsx
-├── index.html
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── ...
 ├── package.json
+├── next.config.mjs
 ├── tailwind.config.cjs
-└── vite.config.js
+└── tsconfig.json
 ```
 
 ## Troubleshooting
@@ -372,8 +376,8 @@ Hard-refresh the browser using `Ctrl + F5`.
 
 ## Technology
 
-- **React** for the user interface
-- **Vite** for development and production builds
+- **Next.js** (App Router) for the user interface and SSR/SSG
+- **React** for components
 - **Tailwind CSS** for responsive styling
 - **Tesseract.js** for client-side OCR
 - **html2canvas** for PNG capture
