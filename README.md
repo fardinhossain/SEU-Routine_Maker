@@ -21,10 +21,7 @@
 - [How to use the web app](#how-to-use-the-web-app)
 - [Course selection rules](#course-selection-rules)
 - [Data storage, privacy, and security](#data-storage-privacy-and-security)
-- [Run locally](#run-locally)
-- [Available commands](#available-commands)
 - [Project structure](#project-structure)
-- [Troubleshooting](#troubleshooting)
 - [Technology](#technology)
 - [Developer](#developer)
 
@@ -254,50 +251,6 @@ The app uses browser `localStorage`, so routine data remains available in the sa
 
 Routine content stays client-side by design. Local-device security still depends on the user's browser profile and device access, while anonymous site-usage metadata is handled by Vercel Web Analytics as described above.
 
-## Run locally
-
-### Requirements
-
-- [Node.js](https://nodejs.org/) 18 or newer
-- npm
-- A modern browser such as Chrome, Edge, Firefox, or Brave
-
-### Installation
-
-```bash
-git clone https://github.com/fardinhossain/Seu-Routine_Maker.git
-cd Seu-Routine_Maker
-npm install
-npm run dev
-```
-
-Open the local URL printed by Next.js, usually:
-
-```text
-http://localhost:3000
-```
-
-> [!NOTE]
-> The app now runs with Next.js App Router.
-
-### Production build
-
-```bash
-npm run build
-npm run start
-```
-
-The optimized production build is created in `.next/`. (Run `npm run start` to preview the production build locally.)
-
-## Available commands
-
-| Command | Purpose |
-|---|---|
-| `npm run dev` | Start the Next.js development server. |
-| `npm run build` | Create an optimized production build. |
-| `npm run start` | Preview the production build locally. |
-| `npm test` | Run Offered Sections/dashboard parser, OCR-code matching, conflict, and duplicate-section checks. |
-
 ## Project structure
 
 ```text
@@ -339,40 +292,6 @@ Seu-Routine_Maker/
 ├── tailwind.config.cjs
 └── tsconfig.json
 ```
-
-## Troubleshooting
-
-### The page is completely white
-
-Run `npm run dev` and open the URL shown in the terminal. Do not double-click `index.html`.
-
-### No course sections were found
-
-- Confirm that the saved file is a UMS page containing course schedules.
-- Make sure the page finished loading before saving it.
-- Select **Preregistered** before saving the Offered Sections page.
-- Try saving as **Webpage, Complete** on desktop.
-- On mobile, upload the downloaded `.mhtml` or `.mht` file directly; renaming it to `.html` is not required.
-
-### The image scanner is disabled
-
-Upload and parse a UMS HTML file first. OCR only selects codes that exist in the saved course data.
-
-### OCR did not find a code
-
-- Use a clear, high-resolution screenshot.
-- Crop unnecessary areas from the image.
-- Keep course codes and section numbers visible.
-- Avoid covering text with a cursor, selection handle, or popup.
-- Supported uploads are PNG, JPG, and WebP up to 12 MB.
-
-### A course is missing from the routine
-
-Check the warning under the section-code input. The code may not exist in the parsed HTML, or another section of the same course may already be active.
-
-### The favicon or latest design is not visible
-
-Hard-refresh the browser using `Ctrl + F5`.
 
 ## Technology
 

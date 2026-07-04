@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   CalendarDays,
@@ -26,6 +26,9 @@ import ShortNameEditor from "./components/ShortNameEditor";
 import { parseUmsHtml } from "./lib/parser";
 import { buildRoutine, courseIdentity, findDuplicateCourseSelections, formatTime12, parseCodeList, timeToMinutes, uniqueCourseSelections, WEEK_DAYS } from "./lib/routine";
 import { clearRoutineStorage, readStoredValue, STORAGE_KEYS, writeStoredValue } from "./lib/storage";
+
+const LOADING_SCREEN_SESSION_KEY = "seu-routine-loading-screen-shown";
+let loadingScreenShown = false;
 
 function loadInitialState() {
   const selectedCodes = readStoredValue(STORAGE_KEYS.selectedCodes, []);
@@ -341,7 +344,7 @@ export default function App() {
       : "",
   );
   const [imageResetKey, setImageResetKey] = useState(0);
-  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
   const [showDataPolicy, setShowDataPolicy] = useState(false);
   const [pngMenuOpen, setPngMenuOpen] = useState(false);
@@ -392,6 +395,26 @@ export default function App() {
     writeStoredValue(STORAGE_KEYS.shortNames, shortNames);
   }, [shortNames]);
 
+  useLayoutEffect(() => {
+    let alreadyShown = loadingScreenShown;
+
+    try {
+      alreadyShown ||= window.sessionStorage.getItem(LOADING_SCREEN_SESSION_KEY) === "true";
+    } catch {
+      // The in-memory guard still prevents duplicate mounts when storage is unavailable.
+    }
+
+    if (alreadyShown) return;
+
+    loadingScreenShown = true;
+    try {
+      window.sessionStorage.setItem(LOADING_SCREEN_SESSION_KEY, "true");
+    } catch {
+      // Storage can be disabled without affecting the rest of the app.
+    }
+    setShowLoadingScreen(true);
+  }, []);
+
   useEffect(() => {
     if (!showLoadingScreen) return undefined;
 
@@ -408,7 +431,7 @@ export default function App() {
       window.clearTimeout(removeTimer);
       document.body.style.overflow = previousOverflow;
     };
-  }, []);
+  }, [showLoadingScreen]);
 
   useEffect(() => {
     const available = new Set(courses.map((course) => course.courseCode.toUpperCase()));
