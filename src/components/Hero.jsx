@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   ArrowRight,
   CalendarDays,
-  CheckCircle2,
   Download,
   Lock,
   Sparkles,
@@ -305,53 +304,64 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
           <span className="text-slate-500">Upload a screenshot for OCR course detection</span>
         </div>
 
-        {/* Compact how-to strip — always visible for new users */}
-        <div 
-          className="mt-8 grid animate-fade-up gap-3 rounded-2xl border border-white/10 bg-white/[0.015] p-4 text-xs sm:grid-cols-3 lg:mt-10"
-          style={{ animationDelay: '780ms' }}
-        >
-          <div className="flex gap-3">
-            <span className="mt-px font-mono text-[10px] font-bold text-mint-400/80">01</span>
-            <div>
-              <div className="font-semibold text-slate-200">Save UMS page</div>
-              <div className="text-slate-500">Advising Table → Preregistered → Save as HTML/MHTML</div>
-            </div>
+        {/* Organized Instructions - Two clear paths */}
+        <div className="mt-8">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="text-sm font-semibold text-white">Two ways to build your routine</div>
+            <div className="text-[10px] text-slate-500 hidden sm:block">Both work great • Post-advising is fastest</div>
           </div>
-          <div className="flex gap-3">
-            <span className="mt-px font-mono text-[10px] font-bold text-mint-400/80">02</span>
-            <div>
-              <div className="font-semibold text-slate-200">Import or scan</div>
-              <div className="text-slate-500">Drop file, paste HTML, or use screenshot OCR</div>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <span className="mt-px font-mono text-[10px] font-bold text-mint-400/80">03</span>
-            <div>
-              <div className="font-semibold text-slate-200">Pick sections + export</div>
-              <div className="text-slate-500">Use search, Magic Organizer or type codes. Download stunning PNGs.</div>
-            </div>
-          </div>
-        </div>
 
-        {/* Restored: After successfully completing course advising (Registered Courses path) */}
-        <div 
-          className="mt-6 animate-fade-up rounded-2xl border border-mint-400/20 bg-mint-400/[.045] p-4 sm:p-5"
-          style={{ animationDelay: '880ms' }}
-        >
-          <div className="mb-2 flex items-center gap-2 text-mint-300">
-            <CheckCircle2 size={16} />
-            <span className="text-xs font-semibold tracking-wide">AFTER SUCCESSFULLY COMPLETING COURSE ADVISING</span>
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Pre-Advising Path */}
+            <div className="rounded-2xl border border-white/10 bg-white/[0.015] p-5">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[10px] font-medium text-slate-300 mb-3">
+                BEFORE / DURING ADVISING
+              </div>
+              <div className="font-semibold mb-3">Full control with Offered Sections</div>
+              <div className="space-y-2.5 text-sm text-slate-300">
+                <div className="flex gap-3">
+                  <span className="font-mono text-mint-400 shrink-0">1</span>
+                  <span>Save Advising Table as HTML (set to <strong>Preregistered</strong>)</span>
+                </div>
+                <div className="flex gap-3">
+                  <span className="font-mono text-mint-400 shrink-0">2</span>
+                  <span>Upload the file here or scan a screenshot (OCR)</span>
+                </div>
+                <div className="flex gap-3">
+                  <span className="font-mono text-mint-400 shrink-0">3</span>
+                  <span>Use <strong>Magic Organizer</strong> or type codes to build your routine</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Post-Advising Path - Recommended */}
+            <div className="rounded-2xl border border-mint-400/30 bg-mint-400/[0.03] p-5 relative">
+              <div className="absolute -top-2 right-4 rounded-full bg-mint-400 px-3 py-0.5 text-[10px] font-semibold text-ink-950">
+                RECOMMENDED
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-mint-400/10 px-3 py-1 text-[10px] font-medium text-mint-300 mb-3">
+                AFTER ADVISING
+              </div>
+              <div className="font-semibold mb-3">Fastest — auto-build from Registered Courses</div>
+              <div className="space-y-2.5 text-sm text-slate-300">
+                <div className="flex gap-3">
+                  <span className="font-mono text-mint-400 shrink-0">1</span>
+                  <span>Go to Student Dashboard → <strong>Registered Courses</strong></span>
+                </div>
+                <div className="flex gap-3">
+                  <span className="font-mono text-mint-400 shrink-0">2</span>
+                  <span>Save the page as HTML/MHTML and upload here</span>
+                </div>
+                <div className="flex gap-3">
+                  <span className="font-mono text-mint-400 shrink-0">3</span>
+                  <span>We detect your courses and generate the full routine instantly</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="grid gap-x-4 gap-y-1.5 text-[11px] text-slate-400 sm:grid-cols-3">
-            <div>
-              <span className="font-mono text-mint-400/80">1.</span> Go to <strong className="text-slate-200">Student Dashboard</strong> → open <strong className="text-slate-200">Registered Courses</strong>
-            </div>
-            <div>
-              <span className="font-mono text-mint-400/80">2.</span> Save the page as HTML or MHTML, then upload under <strong className="text-slate-200">Add your UMS export</strong>
-            </div>
-            <div>
-              <span className="font-mono text-mint-400/80">3.</span> App auto-detects it, selects your courses, and generates the routine automatically
-            </div>
+
+          <div className="mt-3 text-center text-[11px] text-slate-500">
+            Both methods support OCR screenshots and beautiful exports.
           </div>
         </div>
       </div>
@@ -360,80 +370,84 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
       {/* Modal: Full Export Examples with nice animations */}
       {showExportModal && (
         <div
-          className="fixed inset-0 z-[200] flex animate-fade-in items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[200] flex animate-fade-in items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-sm"
           onClick={() => setShowExportModal(false)}
         >
           <div
-            className="w-full max-w-6xl animate-scale-in overflow-hidden rounded-3xl border border-white/10 bg-[#0a1629] shadow-2xl"
+            className="w-full max-w-6xl max-h-[92dvh] flex flex-col animate-scale-in overflow-hidden rounded-3xl border border-white/10 bg-[#0a1629] shadow-2xl"
             style={{ animationDelay: '60ms' }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
+            {/* Modal Header - sticky on mobile */}
             <div 
-              className="flex animate-fade-up items-center justify-between border-b border-white/10 px-6 py-4"
+              className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6 sm:py-4 sticky top-0 bg-[#0a1629] z-10"
               style={{ animationDelay: '120ms' }}
             >
               <div>
-                <div className="flex items-center gap-2 text-lg font-semibold text-white">
-                  <Sparkles size={20} className="text-mint-400" /> Export Examples
+                <div className="flex items-center gap-2 text-base sm:text-lg font-semibold text-white">
+                  <Sparkles size={18} className="text-mint-400 sm:size-5" /> Export Examples
                 </div>
-                <p className="text-xs text-slate-400">Real polished outputs from SEU Routine Maker</p>
+                <p className="text-[10px] sm:text-xs text-slate-400 hidden sm:block">Real polished outputs from SEU Routine Maker</p>
               </div>
               <button
                 onClick={() => setShowExportModal(false)}
-                className="rounded-full p-2 text-slate-400 transition hover:bg-white/5 hover:text-white"
+                className="rounded-full p-2.5 sm:p-2 text-slate-400 transition hover:bg-white/5 hover:text-white active:bg-white/10"
                 aria-label="Close"
               >
-                <X size={20} />
+                <X size={22} />
               </button>
             </div>
 
-            {/* Examples Grid */}
-            <div className="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  src: "/images/seu-weekly-routine-pc.png",
-                  title: "PC Version",
-                  desc: "Wide desktop table. Ideal for printing, full-screen viewing & sharing.",
-                },
-                {
-                  src: "/images/seu-weekly-routine-modern.png",
-                  title: "Modern Version",
-                  desc: "Clean dark card layout. Premium and very readable on any device.",
-                },
-                {
-                  src: "/images/seu-weekly-routine-futuristic.png",
-                  title: "Futuristic Version",
-                  desc: "Neon glassy dashboard. Bold day rows with beautiful color accents.",
-                },
-                {
-                  src: "/images/seu-routine-mobile.png",
-                  title: "Mobile Version",
-                  desc: "Compact table that keeps the classic PC grid identity on phones.",
-                },
-              ].map((ex, i) => (
-                <div
-                  key={i}
-                  className="group animate-fade-up overflow-hidden rounded-2xl border border-white/10 bg-[#081422] transition-all duration-200 hover:-translate-y-0.5 hover:border-mint-400/40 hover:shadow-xl"
-                  style={{ animationDelay: `${220 + i * 70}ms` }}
-                >
-                  <div className="relative overflow-hidden bg-black/40">
-                    <img
-                      src={ex.src}
-                      alt={ex.title}
-                      className="h-44 w-full object-contain p-2 transition-transform duration-300 group-hover:scale-[1.015]"
-                      loading="lazy"
-                    />
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Examples Grid */}
+              <div className="grid gap-3 p-4 sm:gap-4 sm:p-6 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  {
+                    src: "/images/seu-weekly-routine-pc.png",
+                    title: "PC Version",
+                    desc: "Wide desktop table. Ideal for printing, full-screen viewing & sharing.",
+                  },
+                  {
+                    src: "/images/seu-weekly-routine-modern.png",
+                    title: "Modern Version",
+                    desc: "Clean dark card layout. Premium and very readable on any device.",
+                  },
+                  {
+                    src: "/images/seu-weekly-routine-futuristic.png",
+                    title: "Futuristic Version",
+                    desc: "Neon glassy dashboard. Bold day rows with beautiful color accents.",
+                  },
+                  {
+                    src: "/images/seu-routine-mobile.png",
+                    title: "Mobile Version",
+                    desc: "Compact table that keeps the classic PC grid identity on phones.",
+                  },
+                ].map((ex, i) => (
+                  <div
+                    key={i}
+                    className="group animate-fade-up overflow-hidden rounded-2xl border border-white/10 bg-[#081422] transition-all duration-200 hover:-translate-y-0.5 hover:border-mint-400/40 hover:shadow-xl"
+                    style={{ animationDelay: `${220 + i * 70}ms` }}
+                  >
+                    <div className="relative overflow-hidden bg-black/40">
+                      <img
+                        src={ex.src}
+                        alt={ex.title}
+                        className="h-28 w-full object-contain p-2 sm:h-36 md:h-44 transition-transform duration-300 group-hover:scale-[1.015]"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-3 sm:p-4">
+                      <div className="font-semibold text-white text-sm sm:text-base">{ex.title}</div>
+                      <p className="mt-1 text-[10px] sm:text-xs leading-snug text-slate-400">{ex.desc}</p>
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <div className="font-semibold text-white">{ex.title}</div>
-                    <p className="mt-1 text-xs leading-snug text-slate-400">{ex.desc}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            <div className="border-t border-white/10 bg-[#081422] px-6 py-3 text-center text-[11px] text-slate-500">
+            {/* Footer */}
+            <div className="border-t border-white/10 bg-[#081422] px-4 py-3 text-center text-[10px] sm:text-[11px] text-slate-500 flex-shrink-0">
               All styles are generated 100% in your browser using html2canvas. No server involved.
             </div>
           </div>
