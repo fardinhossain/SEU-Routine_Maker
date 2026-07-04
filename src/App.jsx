@@ -1,22 +1,19 @@
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
-  BookOpen,
   CalendarDays,
   CheckCircle2,
   ChevronDown,
   Download,
-  FileCode2,
   FileDown,
   MonitorSmartphone,
-  MoreVertical,
   Printer,
   Sparkles,
-  TableProperties,
-  UploadCloud,
   WandSparkles,
 } from "lucide-react";
+import Hero from "./components/Hero";
 import AppHeader from "./components/AppHeader";
+import ClassReminders from "./components/ClassReminders";
 import ConflictAlert from "./components/ConflictAlert";
 import CoursePicker from "./components/CoursePicker";
 import DataPolicyModal from "./components/DataPolicyModal";
@@ -342,8 +339,6 @@ export default function App() {
       : "",
   );
   const [imageResetKey, setImageResetKey] = useState(0);
-  const [showInstructions, setShowInstructions] = useState(false);
-  const [showPostAdvisingInstructions, setShowPostAdvisingInstructions] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(() => window.location.hash !== "#routine");
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
   const [showDataPolicy, setShowDataPolicy] = useState(false);
@@ -738,146 +733,19 @@ export default function App() {
       <AppHeader />
 
       <main className="mx-auto w-full min-w-0 max-w-[1500px] px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-10 lg:px-8 lg:pt-14">
-        <section className="relative mb-8 w-full min-w-0 overflow-hidden rounded-2xl border border-white/[.06] bg-[radial-gradient(circle_at_85%_20%,rgba(88,221,184,.11),transparent_34%),linear-gradient(135deg,rgba(255,255,255,.035),rgba(255,255,255,.01))] px-5 py-8 sm:mb-10 sm:rounded-3xl sm:px-10 sm:py-10 lg:px-14 lg:py-14">
-          <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-mint-400/10" />
-          <div className="pointer-events-none absolute -right-4 -top-8 h-40 w-40 rounded-full border border-mint-400/10" />
-          <div className="relative">
-            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-mint-400/15 bg-mint-400/[.06] px-3 py-1.5 text-xs font-medium text-mint-300">
-              <Sparkles size={13} /> Built for SEU Students
-            </span>
-            <h1 className="max-w-2xl break-words text-[2rem] font-semibold leading-[1.12] tracking-[-.04em] text-white sm:text-5xl sm:leading-[1.08] lg:text-6xl">
-              Your classes, finally in <span className="text-mint-400">one clear view.</span>
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg">
-              Import your UMS data, choose section codes, and build a clean routine automatically.
-            </p>
-
-            <button
-              type="button"
-              onClick={() => setShowInstructions((current) => !current)}
-              className="secondary-button mt-6 border-mint-400/20 bg-mint-400/[.06] text-mint-300 hover:border-mint-400/40 hover:bg-mint-400/[.1]"
-              aria-expanded={showInstructions}
-              aria-controls="ums-instructions"
-            >
-              <BookOpen size={17} />
-              {showInstructions ? "Hide instructions" : "How to use"}
-              <ChevronDown size={16} className={`transition-transform ${showInstructions ? "rotate-180" : ""}`} />
-            </button>
-
-            {showInstructions && (
-              <div id="ums-instructions" className="mt-8">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              <div className="rounded-2xl border border-white/[.08] bg-ink-950/45 p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-mint-400/10 text-mint-300">
-                    <TableProperties size={16} />
-                  </span>
-                  <span className="font-mono text-[10px] font-bold text-slate-600">01</span>
-                </div>
-                <p className="text-sm font-semibold text-slate-100">Open Advising Table</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">Sign in to UMS and go to <strong className="text-slate-300">Advising Table</strong>.</p>
-              </div>
-
-              <div className="rounded-2xl border border-white/[.08] bg-ink-950/45 p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-mint-400/10 text-mint-300">
-                    <CheckCircle2 size={16} />
-                  </span>
-                  <span className="font-mono text-[10px] font-bold text-slate-600">02</span>
-                </div>
-                <p className="text-sm font-semibold text-slate-100">Select Preregistered</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">Set <strong className="text-slate-300">View Sections By</strong> to <strong className="text-slate-300">Preregistered</strong>.</p>
-              </div>
-
-              <div className="rounded-2xl border border-white/[.08] bg-ink-950/45 p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-mint-400/10 text-mint-300">
-                    <FileCode2 size={16} />
-                  </span>
-                  <span className="font-mono text-[10px] font-bold text-slate-600">03</span>
-                </div>
-                <p className="text-sm font-semibold text-slate-100">Save the page file</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">
-                  <span className="block">
-                    Desktop: press <kbd className="rounded bg-white/[.07] px-1.5 py-0.5 font-mono text-slate-300">Ctrl+S</kbd>.
-                  </span>
-                  <span className="mt-1 block">
-                    Mobile: tap <MoreVertical size={12} className="inline" /> then <strong className="text-slate-300">Download</strong>. MHTML files are supported.
-                  </span>
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-white/[.08] bg-ink-950/45 p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-mint-400/10 text-mint-300">
-                    <UploadCloud size={16} />
-                  </span>
-                  <span className="font-mono text-[10px] font-bold text-slate-600">04</span>
-                </div>
-                <p className="text-sm font-semibold text-slate-100">Import your UMS file</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">Upload the saved <strong className="text-slate-300">HTML or MHTML</strong> file. Course sections are parsed and saved automatically.</p>
-              </div>
-
-              <div className="rounded-2xl border border-white/[.08] bg-ink-950/45 p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-mint-400/10 text-mint-300">
-                    <WandSparkles size={16} />
-                  </span>
-                  <span className="font-mono text-[10px] font-bold text-slate-600">05</span>
-                </div>
-                <p className="text-sm font-semibold text-slate-100">Open Magic Organizer</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">Filter by <strong className="text-slate-300">course, teacher, exact time slot, or meeting days</strong>. Combined-day schedules are supported, and the violet Clear button resets every filter.</p>
-              </div>
-
-              <div className="rounded-2xl border border-white/[.08] bg-ink-950/45 p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-mint-400/10 text-mint-300">
-                    <CalendarDays size={16} />
-                  </span>
-                  <span className="font-mono text-[10px] font-bold text-slate-600">06</span>
-                </div>
-                <p className="text-sm font-semibold text-slate-100">Create your routine</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">Click <strong className="text-slate-300">Create Routine</strong>. A new tab opens and scrolls directly to your completed weekly routine.</p>
-              </div>
-            </div>
-
-            <div className="mt-3 flex flex-col gap-4 rounded-2xl border border-mint-400/20 bg-mint-400/[.055] p-4 sm:flex-row sm:items-center sm:p-5">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-mint-400/12 text-mint-300">
-                <CheckCircle2 size={20} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <button
-                  type="button"
-                  onClick={() => setShowPostAdvisingInstructions((current) => !current)}
-                  className="flex w-full items-center justify-between gap-3 text-left text-sm font-semibold text-mint-300 transition hover:text-mint-200"
-                  aria-expanded={showPostAdvisingInstructions}
-                  aria-controls="post-advising-instructions"
-                >
-                  <span>After successfully completing course advising</span>
-                  <ChevronDown size={17} className={`shrink-0 transition-transform ${showPostAdvisingInstructions ? "rotate-180" : ""}`} />
-                </button>
-                {showPostAdvisingInstructions && (
-                <ol id="post-advising-instructions" className="mt-3 grid gap-2 text-xs leading-5 text-slate-400 sm:text-sm sm:leading-6 lg:grid-cols-3">
-                  <li className="flex gap-2">
-                    <span className="font-mono font-bold text-mint-400">1.</span>
-                    <span>Go to <strong className="text-slate-200">Student Dashboard</strong> and open <strong className="text-slate-200">Registered Courses</strong>.</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="font-mono font-bold text-mint-400">2.</span>
-                    <span>Save that page as an <strong className="text-slate-200">HTML or MHTML file</strong>, then upload it under <strong className="text-slate-200">Add your UMS export</strong>.</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="font-mono font-bold text-mint-400">3.</span>
-                    <span>The app detects the <strong className="text-slate-200">Registered Courses</strong> page, selects your courses, and generates your routine automatically.</span>
-                  </li>
-                </ol>
-                )}
-              </div>
-            </div>
-              </div>
-            )}
-          </div>
-        </section>
+        <Hero
+          onGetStarted={() => {
+            const tools = document.getElementById("tools");
+            if (tools) {
+              tools.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+          onOpenOrganizer={() => {
+            // Magic Organizer is typically opened from ImportPanel after parsing,
+            // or as a standalone experience. Fallback opens in new tab.
+            window.open("#section-organizer", "_blank");
+          }}
+        />
 
         {message && (
           <div className={`mb-5 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm ${
@@ -892,7 +760,7 @@ export default function App() {
           </div>
         )}
 
-        <div className="grid min-w-0 gap-4 sm:gap-5 xl:grid-cols-2">
+        <div id="tools" className="grid min-w-0 gap-4 sm:gap-5 xl:grid-cols-2">
           <ImportPanel
             rawHtml={rawHtml}
             setRawHtml={setRawHtml}
@@ -919,6 +787,13 @@ export default function App() {
         {selectedCourses.length > 0 && (
           <div id="routine" className="mt-8 space-y-5 scroll-mt-5">
             <ShortNameEditor courses={selectedCourses} shortNames={shortNames} onChange={changeShortName} />
+
+            <ClassReminders
+              selectedCourses={selectedCourses}
+              routine={routine}
+              shortNames={shortNames}
+            />
+
             <ConflictAlert conflicts={routine.conflicts} />
 
             <div className="flex flex-wrap items-end justify-between gap-4 pt-2">
