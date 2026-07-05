@@ -65,6 +65,7 @@ const structuredData = {
       url: 'https://seuroutine.vercel.app/',
       name: 'SEU Routine Maker',
       alternateName: ['SEU Routine', 'Southeast University Routine Maker', 'seuroutine.vercel.app'],
+      creator: { '@id': 'https://seuroutine.vercel.app/#creator' },
       inLanguage: 'en',
     },
     {
@@ -89,7 +90,14 @@ const structuredData = {
         'Organize available course sections',
         'Create and export a weekly SEU class routine',
       ],
+      creator: { '@id': 'https://seuroutine.vercel.app/#creator' },
       inLanguage: 'en',
+    },
+    {
+      '@type': 'Person',
+      '@id': 'https://seuroutine.vercel.app/#creator',
+      name: 'Fardin Hossain',
+      url: 'https://mdfardin.vercel.app/',
     },
   ],
 };
