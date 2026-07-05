@@ -771,7 +771,7 @@ export default function App() {
               window.alert("Please upload your UMS HTML file first.");
               return;
             }
-            window.open("/organizer", "_blank", "noopener,noreferrer");
+            window.location.assign("/organizer");
           }}
         />
 
