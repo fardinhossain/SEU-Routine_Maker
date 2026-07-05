@@ -4,21 +4,23 @@ import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://seuroutine.vercel.app'),
-  title: 'SEU Routine Maker - Create Your Class Schedule Easily | SEU Students',
-  description: 'Free SEU Routine Maker. Build clash-free class schedules, save and share your SEU semester routine in seconds. Perfect for Southeast University students. Import UMS HTML or use OCR from screenshots.',
+  title: {
+    default: 'SEU Routine Maker',
+    template: '%s | SEU Routine Maker',
+  },
+  description: 'Create a clear, clash-free SEU class routine from UMS HTML or screenshots with this free routine maker for Southeast University students.',
+  applicationName: 'SEU Routine Maker',
   icons: {
-    icon: '/favicon.svg',
-  },
-  openGraph: {
-    title: 'SEU Routine Maker - Create Your Class Schedule Easily',
-    description: 'Free SEU Routine Maker. Build clash-free class schedules from UMS HTML or screenshots. Made for Southeast University students.',
-    images: [{ url: '/og-image.jpg' }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'SEU Routine Maker - Create Your Class Schedule Easily',
-    description: 'Free SEU Routine Maker. Build clash-free class schedules from UMS HTML or screenshots.',
-    images: ['/og-image.jpg'],
+    icon: [
+      { url: '/favicon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/favicon.svg', type: 'image/svg+xml', sizes: 'any' },
+    ],
+    shortcut: '/favicon-192.png',
+    apple: {
+      url: '/apple-touch-icon.png',
+      type: 'image/png',
+      sizes: '180x180',
+    },
   },
 };
 

@@ -913,6 +913,36 @@ export default function App() {
             <p className="mx-auto mt-1 max-w-md text-sm text-slate-500">Import course data and add section codes—the routine will update automatically.</p>
           </section>
         )}
+
+        <section
+          className="mt-8 rounded-3xl border border-white/[.07] bg-white/[.02] px-5 py-7 sm:px-8 sm:py-9"
+          aria-labelledby="about-seu-routine"
+        >
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[.18em] text-mint-400">Made for SEU students</p>
+            <h2 id="about-seu-routine" className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              Free SEU routine and class schedule maker
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-400 sm:text-base sm:leading-7">
+              SEU Routine Maker is a free Southeast University routine builder for creating an SEU class routine, weekly timetable, or course schedule from UMS data. Import your sections, find time conflicts, and export a clean routine for mobile, desktop, or printing.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-2">
+            <article className="rounded-2xl border border-white/[.07] bg-black/10 p-4 sm:p-5">
+              <h3 className="font-semibold text-slate-200">Search and build your SEU timetable</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Use it as an SEU schedule maker, class routine generator, advising companion, or weekly course timetable builder.
+              </p>
+            </article>
+            <article className="rounded-2xl border border-white/[.07] bg-black/10 p-4 sm:p-5">
+              <h3 className="font-semibold text-slate-200">Common spelling variations</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                If you searched for “SEU rotine,” “SU routine,” or “SU rotine,” you are in the right place. The tool’s name is SEU Routine Maker.
+              </p>
+            </article>
+          </div>
+        </section>
       </main>
 
       <footer className="border-t border-white/[.06] bg-[#060d18] px-4 py-12 text-center sm:py-14">

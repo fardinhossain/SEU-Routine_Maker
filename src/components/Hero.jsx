@@ -13,47 +13,6 @@ import {
 export default function Hero({ onGetStarted, onOpenOrganizer }) {
   const [showExportModal, setShowExportModal] = useState(false);
 
-  // Typing animation for the headline
-  const FULL_TEXT = "Your classes, finally in one clear view.";
-  const LINE1_END = "Your classes,".length;
-  const HIGHLIGHT_START_INDEX = FULL_TEXT.indexOf("one clear view.");
-
-  const [typedText, setTypedText] = useState("");
-  const [isTypingComplete, setIsTypingComplete] = useState(false);
-
-  useEffect(() => {
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
-    if (prefersReducedMotion) {
-      setTypedText(FULL_TEXT);
-      setIsTypingComplete(true);
-      return;
-    }
-
-    let index = 0;
-    let intervalId = null;
-
-    const startDelay = setTimeout(() => {
-      intervalId = setInterval(() => {
-        index += 1;
-        const next = FULL_TEXT.slice(0, index);
-        setTypedText(next);
-
-        if (index >= FULL_TEXT.length) {
-          clearInterval(intervalId);
-          setIsTypingComplete(true);
-        }
-      }, 42); // natural typing speed ~40-45ms per character
-    }, 120);
-
-    return () => {
-      clearTimeout(startDelay);
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, []);
-
   // Close export modal on Escape key
   useEffect(() => {
     if (!showExportModal) return;
@@ -99,24 +58,14 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
               className="mt-6 max-w-3xl animate-fade-up text-balance text-5xl font-semibold leading-[1.05] tracking-[-0.045em] text-white sm:text-6xl lg:text-[64px]"
               style={{ animationDelay: '180ms' }}
             >
-              {typedText.slice(0, LINE1_END)}
-              {typedText.length > LINE1_END && <br className="hidden sm:block" />}
-              {typedText.length > LINE1_END && (
-                <>
-                  {typedText.slice(LINE1_END, HIGHLIGHT_START_INDEX)}
-                  <span className="bg-gradient-to-r from-mint-300 to-mint-400 bg-clip-text text-transparent">
-                    {typedText.slice(HIGHLIGHT_START_INDEX)}
-                  </span>
-                </>
-              )}
-              {!isTypingComplete && <span className="typing-cursor">|</span>}
+              Build your <span className="bg-gradient-to-r from-mint-300 to-mint-400 bg-clip-text text-transparent">SEU routine</span>, without the clashes.
             </h1>
 
             <p 
               className="mt-5 max-w-xl animate-fade-up text-lg leading-relaxed text-slate-400 sm:text-xl"
               style={{ animationDelay: '320ms' }}
             >
-              The fastest, most private way to turn your UMS HTML or screenshot into a beautiful, printable weekly routine.
+              Create a Southeast University class routine from your UMS HTML or screenshot. Organize sections, detect conflicts, and export a beautiful weekly schedule for free.
             </p>
 
             {/* Trust row */}
@@ -307,7 +256,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
         {/* Organized Instructions - Two clear paths */}
         <div className="mt-8">
           <div className="mb-4 flex items-center justify-between">
-            <div className="text-sm font-semibold text-white">Two ways to build your routine</div>
+            <div className="text-sm font-semibold text-white">Two ways to build your SEU routine</div>
             <div className="text-[10px] text-slate-500 hidden sm:block">Both work great • Post-advising is fastest</div>
           </div>
 

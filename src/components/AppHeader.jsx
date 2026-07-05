@@ -9,7 +9,7 @@ export default function AppHeader() {
             <CalendarDays size={20} strokeWidth={2.4} />
           </div>
           <div className="min-w-0">
-            <p className="truncate font-semibold tracking-tight text-white">SEU Routine</p>
+            <p className="truncate font-semibold tracking-tight text-white">SEU Routine Maker</p>
             <p className="text-xs text-slate-500">Advising companion</p>
           </div>
         </div>
