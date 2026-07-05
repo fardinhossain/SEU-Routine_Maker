@@ -767,9 +767,11 @@ export default function App() {
             }
           }}
           onOpenOrganizer={() => {
-            // Magic Organizer is typically opened from ImportPanel after parsing,
-            // or as a standalone experience. Fallback opens in new tab.
-            window.open("#section-organizer", "_blank");
+            if (!courses.length) {
+              window.alert("Please upload your UMS HTML file first.");
+              return;
+            }
+            window.open("/organizer", "_blank", "noopener,noreferrer");
           }}
         />
 
