@@ -63,6 +63,7 @@ export default function AboutPage() {
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <a href="/" className="primary-button">Open SEU Routine Maker</a>
+            <a href="/faq" className="secondary-button">Read FAQs</a>
             <a
               href="https://mdfardin.vercel.app/"
               target="_blank"

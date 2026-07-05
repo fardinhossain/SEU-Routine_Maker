@@ -914,74 +914,21 @@ export default function App() {
           </section>
         )}
 
-        <section
-          className="mt-8 rounded-3xl border border-white/[.07] bg-white/[.02] px-5 py-7 sm:px-8 sm:py-9"
-          aria-labelledby="about-seu-routine"
-        >
-          <div className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[.18em] text-mint-400">Made for SEU students</p>
-            <h2 id="about-seu-routine" className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-              Free SEU routine and class schedule maker
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-slate-400 sm:text-base sm:leading-7">
-              SEU Routine Maker is a free Southeast University routine builder for creating an SEU class routine, weekly timetable, or course schedule from UMS data. Import your sections, find time conflicts, and export a clean routine for mobile, desktop, or printing.
-            </p>
-          </div>
-
-          <div className="mt-6 grid gap-3 md:grid-cols-2">
-            <article className="rounded-2xl border border-white/[.07] bg-black/10 p-4 sm:p-5">
-              <h3 className="font-semibold text-slate-200">Search and build your SEU timetable</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Use it as an SEU schedule maker, class routine generator, advising companion, or weekly course timetable builder.
-              </p>
-            </article>
-            <article className="rounded-2xl border border-white/[.07] bg-black/10 p-4 sm:p-5">
-              <h3 className="font-semibold text-slate-200">Built from your own UMS data</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Unlike a fixed routine list, this tool reads your saved Offered Sections or Registered Courses page and builds a schedule from the sections available to you.
-              </p>
-            </article>
-          </div>
-
-          <div className="mt-7 border-t border-white/[.07] pt-7">
-            <h2 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">SEU Routine Maker questions</h2>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              <article className="rounded-2xl bg-white/[.025] p-4 sm:p-5">
-                <h3 className="font-semibold text-slate-200">What is SEU Routine Maker?</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  It is a free browser-based class routine builder for Southeast University students. It converts saved UMS course data into a clear weekly schedule.
-                </p>
-              </article>
-              <article className="rounded-2xl bg-white/[.025] p-4 sm:p-5">
-                <h3 className="font-semibold text-slate-200">How do I create my SEU class routine?</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Save the UMS Offered Sections or Registered Courses page as HTML or MHTML, upload it here, then choose sections manually or with Magic Organizer.
-                </p>
-              </article>
-              <article className="rounded-2xl bg-white/[.025] p-4 sm:p-5">
-                <h3 className="font-semibold text-slate-200">Does it detect class conflicts?</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Yes. The routine builder checks overlapping class times and duplicate course selections before you print or export your schedule.
-                </p>
-              </article>
-              <article className="rounded-2xl bg-white/[.025] p-4 sm:p-5">
-                <h3 className="font-semibold text-slate-200">Is my UMS data uploaded to a server?</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  No. UMS parsing, routine generation, conflict checking, and exports run locally inside your browser. The tool never asks for your UMS password.
-                </p>
-              </article>
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="border-t border-white/[.06] bg-[#060d18] px-4 py-12 text-center sm:py-14">
-        <div className="mb-5 flex items-center justify-center gap-2">
+        <div className="mb-5 flex flex-wrap items-center justify-center gap-2">
           <a
             href="/about"
             className="inline-flex items-center rounded-full border border-white/10 bg-white/[.035] px-3.5 py-1.5 text-xs font-medium text-slate-400 transition hover:border-mint-400/25 hover:bg-mint-400/[.06] hover:text-mint-300"
           >
             About
+          </a>
+          <a
+            href="/faq"
+            className="inline-flex items-center rounded-full border border-white/10 bg-white/[.035] px-3.5 py-1.5 text-xs font-medium text-slate-400 transition hover:border-mint-400/25 hover:bg-mint-400/[.06] hover:text-mint-300"
+          >
+            FAQ
           </a>
           <button
             type="button"
