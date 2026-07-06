@@ -36,7 +36,7 @@ const questions = [
   },
   {
     question: 'Is my UMS data uploaded to a server?',
-    answer: 'No. UMS parsing, routine generation, conflict checking, and exports run locally inside your browser. The tool never asks for your UMS password.',
+    answer: 'HTML/PDF parsing, routine generation, conflict checking, and exports run locally. If you use screenshot OCR, the image is sent through the app server to PaddleOCR AI Studio for text extraction. The tool never asks for your UMS password.',
   },
   {
     question: 'Which UMS pages can I use?',

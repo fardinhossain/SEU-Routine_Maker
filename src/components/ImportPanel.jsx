@@ -124,7 +124,10 @@ export default function ImportPanel({
           <span className="text-sm font-semibold text-slate-200">Drop your UMS page, PDF, or screenshot here</span>
           <span className="mt-1 max-w-60 truncate text-xs text-slate-500">{fileStatus || fileName || "HTML, MHTML, PDF, PNG, JPG, WebP, or an extensionless Android download"}</span>
           {!fileName && !readingFile && (
-            <span className="mt-1.5 text-[10px] text-slate-600">iPhone: Share → Markup → Done → Save to Files</span>
+            <>
+              <span className="mt-1.5 text-[10px] text-slate-600">iPhone: Share → Markup → Done → Save to Files</span>
+              <span className="mt-1 text-[10px] text-amber-200/60">Screenshot OCR is processed by PaddleOCR AI Studio.</span>
+            </>
           )}
           {readingFile && (
             <span className="mt-3 h-1.5 w-40 overflow-hidden rounded-full bg-white/10" aria-hidden="true">

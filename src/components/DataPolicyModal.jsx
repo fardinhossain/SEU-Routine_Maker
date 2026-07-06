@@ -14,8 +14,8 @@ const POLICY_ITEMS = [
   },
   {
     icon: Image,
-    title: "Files stay private",
-    text: "Uploaded PDFs and screenshots are processed in browser memory. The original files are not saved by the app or uploaded to an application server.",
+    title: "Image OCR service",
+    text: "HTML and PDF parsing stays in your browser. When you scan a screenshot, that image is sent through this app's server to PaddleOCR AI Studio for text extraction; the app does not permanently save it.",
   },
   {
     icon: Trash2,
@@ -74,7 +74,7 @@ export default function DataPolicyModal({ onClose }) {
 
         <div className="p-5 sm:p-7">
           <p className="text-sm leading-6 text-slate-300">
-            SEU Routine Maker processes routine information on your device. It does not request UMS credentials, create user accounts, or permanently store your data on a remote server.
+            SEU Routine Maker does not request UMS credentials, create user accounts, or keep a routine database. Screenshot OCR uses PaddleOCR AI Studio; other routine processing remains in your browser.
           </p>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
