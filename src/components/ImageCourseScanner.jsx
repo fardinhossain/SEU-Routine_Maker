@@ -3,12 +3,9 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CheckCircle2, ClipboardPaste, ImageUp, LoaderCircle, ScanText, X } from "lucide-react";
 import { extractCourseCodesFromOcr } from "../lib/ocr";
+import { prepareCanvasForOcr } from "../lib/ocrPreprocess.js";
 
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
-const OCR_MAX_DIMENSION = 1800;
-const OCR_MOBILE_MAX_DIMENSION = 1600;
-const OCR_MIN_DIMENSION = 1200;
-const OCR_MOBILE_MIN_DIMENSION = 1100;
 const OCR_SETUP_TIMEOUT_MS = 60000;
 const OCR_RECOGNIZE_TIMEOUT_MS = 120000;
 const OCR_ASSET_PATH = "/tesseract";
@@ -44,21 +41,7 @@ function statusFromOcrMessage(message) {
   return "Scanning image";
 }
 
-function getOcrScale(width, height) {
-  const longest = Math.max(width, height);
-  if (!longest) return 1;
 
-  const isMobileLike =
-    window.matchMedia?.("(pointer: coarse)").matches ||
-    window.innerWidth < 768 ||
-    navigator.maxTouchPoints > 1;
-  const maxDimension = isMobileLike ? OCR_MOBILE_MAX_DIMENSION : OCR_MAX_DIMENSION;
-  const minDimension = isMobileLike ? OCR_MOBILE_MIN_DIMENSION : OCR_MIN_DIMENSION;
-
-  if (longest > maxDimension) return maxDimension / longest;
-  if (longest < minDimension) return Math.min(2.5, minDimension / longest);
-  return 1;
-}
 
 export default function ImageCourseScanner({ courses, onCodesDetected, resetKey }) {
   const imageInputId = useId();
@@ -121,62 +104,16 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
   }, [resetKey]);
 
   /**
-   * If the screenshot has a dark background (dark theme), invert and boost
-   * contrast so Tesseract — which is optimised for dark-on-light — can read
-   * the text reliably.  Falls back to the original file on any error.
+   * Use the shared high-quality preprocessor (binarize + sharpen + contrast + scale).
+   * We pass the canvas result directly to recognize (Tesseract accepts canvases).
    */
-  async function preprocessImageForOcr(file) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
-      img.onload = () => {
-        URL.revokeObjectURL(objectUrl);
-        const scale = getOcrScale(img.naturalWidth, img.naturalHeight);
-        const w = Math.max(1, Math.round(img.naturalWidth * scale));
-        const h = Math.max(1, Math.round(img.naturalHeight * scale));
-        const canvas = document.createElement("canvas");
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext("2d");
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(img, 0, 0, w, h);
-
-        // Sample edge pixels to detect whether the background is dark
-        const edgeCoords = [
-          [2, 2], [w - 3, 2], [2, h - 3], [w - 3, h - 3],
-          [Math.floor(w / 2), 2], [Math.floor(w / 2), h - 3],
-        ];
-        const avgLum =
-          edgeCoords.reduce((sum, [x, y]) => {
-            const px = ctx.getImageData(Math.max(0, x), Math.max(0, y), 1, 1).data;
-            return sum + 0.299 * px[0] + 0.587 * px[1] + 0.114 * px[2];
-          }, 0) / edgeCoords.length;
-
-        if (avgLum < 110) {
-          // Dark theme detected → grayscale + invert + contrast stretch
-          const imageData = ctx.getImageData(0, 0, w, h);
-          const d = imageData.data;
-          for (let i = 0; i < d.length; i += 4) {
-            const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-            const inv = 255 - g;
-            // Stretch: push light pixels lighter, dark pixels darker
-            const v = inv > 128 ? Math.min(255, inv + 50) : Math.max(0, inv - 50);
-            d[i] = v;
-            d[i + 1] = v;
-            d[i + 2] = v;
-          }
-          ctx.putImageData(imageData, 0, 0);
-        }
-
-        canvas.toBlob(
-          (blob) => resolve(blob ? new File([blob], file.name, { type: "image/png" }) : file),
-          "image/png",
-        );
-      };
-      img.onerror = () => resolve(file);
-      img.src = objectUrl;
-    });
+  async function preprocessForScanner(file) {
+    try {
+      return await prepareCanvasForOcr(file);
+    } catch {
+      // Fallback: return original file if preprocessing somehow fails
+      return file;
+    }
   }
 
   async function scanImage(file) {
@@ -230,15 +167,17 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
       setProgress((current) => Math.max(current, 25));
       await worker.setParameters({
         tessedit_pageseg_mode: PSM.SPARSE_TEXT,
+        tessedit_ocr_engine_mode: "3",
         preserve_interword_spaces: "1",
-        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;#-_[]|/\\~",
+        user_defined_dpi: "300",
+        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;#-_[]()|/\\~@&",
       });
-      const processedFile = await preprocessImageForOcr(file);
+      const processedCanvas = await preprocessForScanner(file);
       if (scanId !== scanIdRef.current) return;
       setScanStatus("Reading text");
       setProgress((current) => Math.max(current, 45));
       const result = await withTimeout(
-        worker.recognize(processedFile),
+        worker.recognize(processedCanvas),
         OCR_RECOGNIZE_TIMEOUT_MS,
         "OCR reading timed out.",
       );

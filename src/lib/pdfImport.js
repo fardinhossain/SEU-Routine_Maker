@@ -1,3 +1,5 @@
+import { prepareCanvasForOcr } from "./ocrPreprocess.js";
+
 const PDF_SIGNATURE = [0x25, 0x50, 0x44, 0x46, 0x2d]; // %PDF-
 const MAX_PDF_SIZE = 20 * 1024 * 1024;
 const MAX_PDF_PAGES = 30;
@@ -54,14 +56,19 @@ export async function isPdfFile(file) {
 }
 
 export function normalizePdfText(value = "") {
-  return String(value)
+  let text = String(value)
     .replace(/[\uE000-\uF8FF]/g, (character) => PDF_PRIVATE_GLYPH_MAP[character] || character)
     .replace(/[\u00a0\u200B-\u200D\uFEFF]/g, " ")
     .replace(/[–—−]/g, "~")
     .replace(/©/g, "@")
+    // Common OCR header misreads
     .replace(/\bR[ \t]*E[ \t]*G[ \t]*I[ \t]*S[ \t]*T[ \t]*E[ \t]*R[ \t]*E[ \t]*D[ \t]+C[ \t]*O[ \t]*U[ \t]*R[ \t]*S[ \t]*E[ \t]*S\b/gi, "Registered Courses")
     .replace(/\bO[ \t]*F[ \t]*F[ \t]*E[ \t]*R[ \t]*E[ \t]*D[ \t]+S[ \t]*E[ \t]*C[ \t]*T[ \t]*I[ \t]*O[ \t]*N[ \t]*S?\b/gi, "Offered Sections")
-    .replace(/\b([A-Z]{2,6})([0-9][0-9ADILOQZSGTB]{2,3})(?:[ \t]*[.,:][ \t]*|[ \t]+)([0-9ADILOQZSGTB]{1,2})\b/gi, (_, prefix, courseNumber, section) =>
+    // Robust spaced course code fixer: collapses internal spaces in "CSE 361 . 06" or "C S E 3 6 1 . 0 6"
+    .replace(/\b([A-Z]{2,6})[ \t]*((?:\d[ \t]*){2,4})[ \t]*[.,: ]+[ \t]*((?:\d[ \t]*){1,2})\b/gi, (_, pfx, numPart, secPart) =>
+      (pfx + numPart.replace(/\s/g, "") + "." + secPart.replace(/\s/g, "") + " ")
+    )
+    .replace(/\b([A-Z]{2,6})[ \t]*([0-9][0-9ADILOQZSGTB]{2,3})(?:[ \t]*[.,:;][ \t]*|[ \t]+)([0-9ADILOQZSGTB]{1,2})\b/gi, (_, prefix, courseNumber, section) =>
       `${prefix.toUpperCase()}${repairOcrDigits(courseNumber)}.${repairOcrDigits(section)}`,
     )
     .replace(/[–—−]/g, "~")
@@ -70,6 +77,8 @@ export function normalizePdfText(value = "") {
       (_, prefix, courseNumber, section) =>
         `${prefix.replace(/\s/g, "")}${courseNumber.replace(/\s/g, "")}.${section.replace(/\s/g, "")}`,
     )
+    // Additional digit fixes for times ( ; . , as separator )
+    .replace(/\b(\d{1,2})[ \t]*[;.,][ \t]*(\d{2})\b/g, "$1:$2")
     .replace(/\b(S[ \t]*A[ \t]*T|S[ \t]*U[ \t]*N|M[ \t]*O[ \t]*N|T[ \t]*U[ \t]*E|W[ \t]*E[ \t]*D|T[ \t]*H[ \t]*U|F[ \t]*R[ \t]*I)\b/gi, (day) =>
       day.replace(/\s/g, "").toUpperCase(),
     )
@@ -90,6 +99,10 @@ export function normalizePdfText(value = "") {
     .replace(/\b([A-Z]{2,6})[ \t]*(\d{3})(\d{1,2})\b/g, "$1$2.$3")
     .replace(/\b(\d{1,2})[ \t]*[:.;][ \t]*(\d{2})\b/g, "$1:$2")
     .replace(/(\b\d{1,2}:\d{2})[ \t]*-[ \t]*(\d{1,2}:\d{2}\b)/g, "$1 ~ $2")
+    // Final cleanup for OCR debris
+    .replace(/\b([A-Z]{2,6})(\d{2,4})\.(\d{1,3})\b/g, "$1$2.$3");
+
+  return text
     .split(/\r?\n/)
     .map((line) => line.replace(/[ \t]+/g, " ").trim())
     .filter(Boolean)
@@ -293,23 +306,37 @@ async function extractWithOcr(pdf, onProgress) {
   try {
     await worker.setParameters({
       tessedit_pageseg_mode: PSM.SPARSE_TEXT,
+      tessedit_ocr_engine_mode: "3",
       preserve_interword_spaces: "1",
-      tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;#-_[]|/\\~@&",
+      user_defined_dpi: "300",
+      tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;#-_[]()|/\\~@&",
     });
     const pages = [];
 
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
       const page = await pdf.getPage(pageNumber);
       const baseViewport = page.getViewport({ scale: 1 });
-      const scale = Math.min(2, 1800 / Math.max(baseViewport.width, baseViewport.height));
-      const viewport = page.getViewport({ scale });
+      // Higher internal render scale before preprocessing helps (Tesseract loves crisp pixels)
+      const renderScale = Math.min(2.6, 2400 / Math.max(baseViewport.width, baseViewport.height));
+      const viewport = page.getViewport({ scale: renderScale });
       const canvas = document.createElement("canvas");
       canvas.width = Math.max(1, Math.ceil(viewport.width));
       canvas.height = Math.max(1, Math.ceil(viewport.height));
       const context = canvas.getContext("2d", { alpha: false });
+      if (context) {
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+      }
       await page.render({ canvasContext: context, viewport }).promise;
-      const result = await worker.recognize(canvas);
+
+      // Apply the same high-quality preprocessing (binarize + sharpen) to PDF page renders
+      const cleanCanvas = await prepareCanvasForOcr(canvas);
+      const result = await worker.recognize(cleanCanvas);
       pages.push(result.data.text);
+
+      // Cleanup
+      cleanCanvas.width = 1;
+      cleanCanvas.height = 1;
       canvas.width = 1;
       canvas.height = 1;
       page.cleanup();

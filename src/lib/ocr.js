@@ -218,6 +218,32 @@ export function extractCourseCodesFromOcr(text = "", courses = []) {
     }
   }
 
+  // Strategy 6: ultra-tolerant code match after common OCR mangling (for scanner & raw OCR).
+  // Looks for things like "CSE361 3", "C5E361.03", "CSE36l.3", "CSE 361 . 03" etc.
+  const OCR_TO_DIGIT = { O: "0", o: "0", I: "1", l: "1", L: "1", S: "5", s: "5", Z: "2", z: "2", B: "8", G: "6", g: "6", Q: "0", q: "0" };
+  function tolerantCode(text) {
+    return text.replace(/[OolISsZzBgGqQ]/g, (ch) => OCR_TO_DIGIT[ch] || ch);
+  }
+  for (const { line, offset } of lines) {
+    // Match patterns like PREFIX NUMBER . SECTION with tolerant chars
+    const tolerantLine = tolerantCode(line);
+    for (const { code, prefix, number, section } of parsedCourses) {
+      if (detectedSoFar.has(code)) continue;
+      // Try tolerant version of expected
+      const tPrefix = tolerantCode(prefix);
+      const tNum = tolerantCode(number);
+      const tSec = tolerantCode(section);
+      const loose = new RegExp(
+        `(?:^|[^A-Z0-9])${escapeRegExp(tPrefix)}\\s*${escapeRegExp(tNum)}(?:[\\s.,;:_\\-~|]{0,3})${escapeRegExp(tSec)}(?:$|[^0-9A-Z])`,
+        "i"
+      );
+      if (loose.test(tolerantLine) || loose.test(line)) {
+        found.push({ code, index: offset });
+        detectedSoFar.add(code);
+      }
+    }
+  }
+
   const earliestMatches = new Map();
   found.forEach((item) => {
     const current = earliestMatches.get(item.code);
