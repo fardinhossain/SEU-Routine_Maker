@@ -4,14 +4,22 @@ import {
   CalendarDays,
   Download,
   Lock,
+  Monitor,
   Sparkles,
+  Smartphone,
   WandSparkles,
   X,
   Zap,
 } from "lucide-react";
 
+const HEADLINE_BEFORE = "Build your ";
+const HEADLINE_FOCUS = "SEU routine";
+const HEADLINE_AFTER = " within seconds.";
+const HEADLINE_TEXT = `${HEADLINE_BEFORE}${HEADLINE_FOCUS}${HEADLINE_AFTER}`;
+
 export default function Hero({ onGetStarted, onOpenOrganizer }) {
   const [showExportModal, setShowExportModal] = useState(false);
+  const [typedCharacters, setTypedCharacters] = useState(0);
 
   // Close export modal on Escape key
   useEffect(() => {
@@ -22,6 +30,38 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [showExportModal]);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      setTypedCharacters(HEADLINE_TEXT.length);
+      return undefined;
+    }
+
+    setTypedCharacters(0);
+    const timer = window.setInterval(() => {
+      setTypedCharacters((current) => {
+        if (current >= HEADLINE_TEXT.length) {
+          window.clearInterval(timer);
+          return current;
+        }
+        return current + 1;
+      });
+    }, 34);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const beforeText = HEADLINE_BEFORE.slice(0, Math.min(typedCharacters, HEADLINE_BEFORE.length));
+  const focusStart = HEADLINE_BEFORE.length;
+  const focusEnd = focusStart + HEADLINE_FOCUS.length;
+  const focusText = typedCharacters > focusStart
+    ? HEADLINE_FOCUS.slice(0, Math.min(typedCharacters - focusStart, HEADLINE_FOCUS.length))
+    : "";
+  const afterText = typedCharacters > focusEnd
+    ? HEADLINE_AFTER.slice(0, typedCharacters - focusEnd)
+    : "";
+  const isTyping = typedCharacters < HEADLINE_TEXT.length;
 
   const scrollToTools = () => {
     if (onGetStarted) {
@@ -55,18 +95,20 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
             </div>
 
             <h1 
-              className="mt-6 max-w-3xl animate-fade-up text-balance text-5xl font-semibold leading-[1.05] tracking-[-0.045em] text-white sm:text-6xl lg:text-[64px]"
+              className="mt-6 max-w-3xl animate-fade-up text-balance text-5xl font-semibold leading-[1.08] tracking-[-0.045em] text-white sm:text-6xl lg:text-[64px]"
               style={{ animationDelay: '180ms' }}
+              aria-label={HEADLINE_TEXT}
             >
-              Build your <span className="inline-block rounded-xl bg-gradient-to-r from-mint-300 to-mint-400 px-3 py-1 text-ink-950 shadow-[0_0_35px_rgba(32,222,214,.18)]">SEU routine</span> within seconds.
+              <span className="sr-only">{HEADLINE_TEXT}</span>
+              <span aria-hidden="true">
+                {beforeText}
+                {focusText && (
+                  <span>{focusText}</span>
+                )}
+                {afterText}
+                <span className="typing-cursor" aria-hidden="true">{isTyping ? "|" : ""}</span>
+              </span>
             </h1>
-
-            <p 
-              className="mt-5 max-w-xl animate-fade-up text-lg leading-relaxed text-slate-400 sm:text-xl"
-              style={{ animationDelay: '320ms' }}
-            >
-              Create a Southeast University class routine from your UMS HTML or screenshot. Organize sections, detect conflicts, and export a beautiful weekly schedule for free.
-            </p>
 
             {/* Trust row */}
             <div 
@@ -74,10 +116,10 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
               style={{ animationDelay: '420ms' }}
             >
               <div className="flex items-center gap-1.5">
-                <Lock size={15} className="text-mint-400" /> 100% private • browser only
+                <Lock size={15} className="text-mint-400" /> Private routine storage
               </div>
               <div className="hidden h-1 w-1 rounded-full bg-white/30 sm:block" />
-              <div>No login • No data leaves your device</div>
+              <div>No login • OCR only when you upload an image</div>
             </div>
 
             {/* Primary CTAs */}
@@ -228,89 +270,86 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
           </div>
         </div>
 
-        {/* Bottom quick actions row */}
-        <div 
-          className="mt-9 flex animate-fade-up flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/10 pt-6 text-sm"
+        {/* Device-specific instructions */}
+        <div
+          className="mt-9 animate-fade-up border-t border-white/10 pt-7"
           style={{ animationDelay: '680ms' }}
         >
-          <button
-            onClick={scrollToTools}
-            className="inline-flex items-center gap-2 text-mint-300 transition hover:text-mint-200"
-          >
-            Start with HTML upload <ArrowRight size={15} />
-          </button>
-          <span className="text-white/20">•</span>
-          <button
-            onClick={() => {
-              const el = document.getElementById("tools");
-              if (el) el.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="inline-flex items-center gap-2 text-mint-300 transition hover:text-mint-200"
-          >
-            Or paste raw HTML
-          </button>
-          <span className="text-white/20">•</span>
-          <span className="text-slate-500">Upload a screenshot for OCR course detection</span>
-        </div>
-
-        {/* Organized Instructions - Two clear paths */}
-        <div className="mt-8">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="text-sm font-semibold text-white">Two ways to build your SEU routine</div>
-            <div className="text-[10px] text-slate-500 hidden sm:block">Both work great • Post-advising is fastest</div>
+          <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[.18em] text-mint-300">Import guide</div>
+              <h2 className="mt-1 text-xl font-semibold tracking-[-.03em] text-white sm:text-2xl">
+                Choose your device and upload the easiest file.
+              </h2>
+            </div>
+            <button
+              onClick={scrollToTools}
+              className="inline-flex w-fit items-center gap-2 rounded-full border border-mint-400/20 bg-mint-400/10 px-4 py-2 text-sm font-semibold text-mint-200 transition hover:border-mint-300/45 hover:bg-mint-400/15"
+            >
+              Go to importer <ArrowRight size={15} />
+            </button>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {/* Pre-Advising Path */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.015] p-5">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[10px] font-medium text-slate-300 mb-3">
-                BEFORE / DURING ADVISING
-              </div>
-              <div className="font-semibold mb-3">Full control with Offered Sections</div>
-              <div className="space-y-2.5 text-sm text-slate-300">
-                <div className="flex gap-3">
-                  <span className="font-mono text-mint-400 shrink-0">1</span>
-                  <span>Save Advising Table as HTML (set to <strong>Preregistered</strong>)</span>
-                </div>
-                <div className="flex gap-3">
-                  <span className="font-mono text-mint-400 shrink-0">2</span>
-                  <span>Upload the file here or scan a screenshot (OCR)</span>
-                </div>
-                <div className="flex gap-3">
-                  <span className="font-mono text-mint-400 shrink-0">3</span>
-                  <span>Use <strong>Magic Organizer</strong> or type codes to build your routine</span>
+          <div className="grid gap-4 lg:grid-cols-3">
+            <article className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[.025] p-5 transition hover:-translate-y-0.5 hover:border-mint-300/35 hover:bg-white/[.04]">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-mint-300/60 to-transparent opacity-0 transition group-hover:opacity-100" />
+              <div className="flex items-center gap-3">
+                <span className="grid h-11 w-11 place-items-center rounded-2xl border border-mint-400/15 bg-mint-400/10 text-mint-300">
+                  <Monitor size={20} />
+                </span>
+                <div>
+                  <div className="text-sm font-semibold text-white">PC / Laptop</div>
+                  <div className="text-xs text-slate-500">Best for Chrome, Edge, Firefox</div>
                 </div>
               </div>
-            </div>
+              <ol className="mt-5 space-y-3 text-sm leading-6 text-slate-300">
+                <li className="flex gap-3"><span className="font-mono text-mint-300">1</span><span>Open UMS <strong>Registered Courses</strong> or <strong>Advising Table</strong>.</span></li>
+                <li className="flex gap-3"><span className="font-mono text-mint-300">2</span><span>Press <strong>Ctrl + S</strong> and save as HTML / complete webpage.</span></li>
+                <li className="flex gap-3"><span className="font-mono text-mint-300">3</span><span>Drop the saved file into the importer. Registered Courses auto-builds the routine.</span></li>
+              </ol>
+            </article>
 
-            {/* Post-Advising Path - Recommended */}
-            <div className="rounded-2xl border border-mint-400/30 bg-mint-400/[0.03] p-5 relative">
-              <div className="absolute -top-2 right-4 rounded-full bg-mint-400 px-3 py-0.5 text-[10px] font-semibold text-ink-950">
-                RECOMMENDED
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-mint-400/10 px-3 py-1 text-[10px] font-medium text-mint-300 mb-3">
-                AFTER ADVISING
-              </div>
-              <div className="font-semibold mb-3">Fastest — auto-build from Registered Courses</div>
-              <div className="space-y-2.5 text-sm text-slate-300">
-                <div className="flex gap-3">
-                  <span className="font-mono text-mint-400 shrink-0">1</span>
-                  <span>Go to Student Dashboard → <strong>Registered Courses</strong></span>
-                </div>
-                <div className="flex gap-3">
-                  <span className="font-mono text-mint-400 shrink-0">2</span>
-                  <span>Save the page as HTML/MHTML and upload here</span>
-                </div>
-                <div className="flex gap-3">
-                  <span className="font-mono text-mint-400 shrink-0">3</span>
-                  <span>We detect your courses and generate the full routine instantly</span>
+            <article className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[.025] p-5 transition hover:-translate-y-0.5 hover:border-mint-300/35 hover:bg-white/[.04]">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent opacity-0 transition group-hover:opacity-100" />
+              <div className="flex items-center gap-3">
+                <span className="grid h-11 w-11 place-items-center rounded-2xl border border-cyan-400/15 bg-cyan-400/10 text-cyan-300">
+                  <Smartphone size={20} />
+                </span>
+                <div>
+                  <div className="text-sm font-semibold text-white">Android</div>
+                  <div className="text-xs text-slate-500">Works even if the file has no extension</div>
                 </div>
               </div>
-            </div>
+              <ol className="mt-5 space-y-3 text-sm leading-6 text-slate-300">
+                <li className="flex gap-3"><span className="font-mono text-mint-300">1</span><span>Open the UMS page in Chrome or your browser.</span></li>
+                <li className="flex gap-3"><span className="font-mono text-mint-300">2</span><span>Tap menu <strong>⋮</strong> → <strong>Download</strong>. It may save as MHTML or without an extension.</span></li>
+                <li className="flex gap-3"><span className="font-mono text-mint-300">3</span><span>Upload that downloaded file. If download fails, upload a clear screenshot.</span></li>
+              </ol>
+            </article>
+
+            <article className="group relative overflow-hidden rounded-3xl border border-mint-400/25 bg-mint-400/[.04] p-5 shadow-[0_0_60px_rgba(32,222,214,.06)] transition hover:-translate-y-0.5 hover:border-mint-300/45 hover:bg-mint-400/[.06]">
+              <div className="absolute right-4 top-4 rounded-full bg-mint-300 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#061325]">
+                iPhone tip
+              </div>
+              <div className="flex items-center gap-3 pr-20">
+                <span className="grid h-11 w-11 place-items-center rounded-2xl border border-mint-400/20 bg-mint-400/12 text-mint-200">
+                  <Smartphone size={20} />
+                </span>
+                <div>
+                  <div className="text-sm font-semibold text-white">iPhone / iPad</div>
+                  <div className="text-xs text-slate-500">Use PDF or full-page screenshot</div>
+                </div>
+              </div>
+              <ol className="mt-5 space-y-3 text-sm leading-6 text-slate-300">
+                <li className="flex gap-3"><span className="font-mono text-mint-300">1</span><span>Open Registered Courses in Safari and wait until schedules load.</span></li>
+                <li className="flex gap-3"><span className="font-mono text-mint-300">2</span><span>Tap <strong>Share</strong> → <strong>Options</strong> → <strong>PDF</strong> → Save to Files.</span></li>
+                <li className="flex gap-3"><span className="font-mono text-mint-300">3</span><span>If PDF is missing, use <strong>Print</strong>, pinch open preview, then Share → Save to Files.</span></li>
+              </ol>
+            </article>
           </div>
 
-          <div className="mt-3 text-center text-[11px] text-slate-500">
-            Both methods support OCR screenshots and beautiful exports.
+          <div className="mt-4 rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-center text-xs text-slate-400">
+            Fastest path: after advising, upload <strong className="text-slate-200">Registered Courses</strong>. Before advising, upload <strong className="text-slate-200">Offered Sections</strong> and use Magic Organizer.
           </div>
         </div>
       </div>

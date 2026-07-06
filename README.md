@@ -21,6 +21,7 @@
 - [How to use the web app](#how-to-use-the-web-app)
 - [Course selection rules](#course-selection-rules)
 - [Data storage, privacy, and security](#data-storage-privacy-and-security)
+- [Deployment and search indexing](#deployment-and-search-indexing)
 - [Project structure](#project-structure)
 - [Technology](#technology)
 - [Developer](#developer)
@@ -83,7 +84,7 @@ No account, backend, or external database is required for routine data. The app 
 - Search saved sections by code or course title.
 - Group organizer sections by schedule and filter them by course, teacher, exact time slot, or single/combined meeting days.
 - Preview an organizer routine before opening the completed result in a new tab.
-- Upload PNG, JPG, or WebP screenshots and detect course codes with locally hosted, browser-based OCR.
+- Upload PNG, JPG, or WebP screenshots and detect course codes with PaddleOCR AI Studio.
 - Update the routine live as section codes are added or removed.
 - Display all seven days: SAT, SUN, MON, TUE, WED, THU, and FRI.
 - Group classes with the same start time into one routine column, and merge the 8:00/8:30 AM columns when an 8:00 AM lab is selected.
@@ -107,9 +108,10 @@ Use this method with the UMS **Offered Sections** page.
 2. Open **Advising Table**.
 3. Set **View Sections By** to **Preregistered**.
 4. Wait until the full Offered Sections list is visible.
-5. Save the page as HTML:
-   - **Desktop:** press `Ctrl + S`, select **Webpage, Complete** or **HTML**, and save the file.
-   - **Mobile:** open the browser menu `⋮` and choose **Download**. Mobile browsers may save the page as `.mhtml`, `.mht`, or without any file extension; all of these are supported.
+5. Save the page using the method for your device:
+   - **PC / Laptop:** press `Ctrl + S`, select **Webpage, Complete** or **HTML**, and save the file.
+   - **Android:** open the browser menu `⋮` and choose **Download**. Android browsers may save the page as `.mhtml`, `.mht`, or without any file extension; all of these are supported.
+   - **iPhone / iPad:** use Safari **Share → Options → PDF → Save to Files**. If PDF is missing, use **Print**, pinch open the preview, then **Share → Save to Files**.
 6. Open SEU Routine Maker.
 7. Under **Add your UMS export**, upload the saved page. The importer supports HTML, MHTML, Android downloads without an extension, PDFs saved from iPhone Safari, and clear screenshots that include the course codes and schedules.
 8. Wait for the success message confirming that the course sections were parsed and saved automatically.
@@ -153,7 +155,7 @@ The image scanner is useful when you have already imported an Offered Sections p
 3. Wait for OCR to finish. Codes that match the parsed course data are added automatically.
 
 > [!NOTE]
-> OCR only selects codes that exist in the imported course data. Screenshots are processed locally in browser memory and are not required for the Registered Courses method above.
+> OCR only selects codes that exist in the imported course data. Screenshots are sent through the app server to PaddleOCR AI Studio for text extraction and are not required for the Registered Courses method above.
 
 To build a routine directly from an image, drop a clear screenshot of the **Registered Courses** page into **Add your UMS export**. The screenshot must show each course's schedule; a code-only image cannot provide missing class times.
 
@@ -223,7 +225,7 @@ When a conflict is found:
 
 ### Is routine data stored permanently?
 
-**UMS exports, screenshots, parsed courses, and routines are not stored in a cloud database or sent to an application server.** SEU Routine Maker has no backend, user account system, or routine database. Parsing, OCR, routine generation, and exports happen inside the user's browser.
+**UMS exports, parsed courses, and routines are not stored in a cloud database.** SEU Routine Maker has no user account system or routine database. HTML/PDF parsing, routine generation, and exports happen inside the user's browser. Screenshot OCR is sent through the app server to PaddleOCR AI Studio for text extraction.
 
 The app uses browser `localStorage`, so routine data remains available in the same browser after closing or reopening the website. It stays there until the user selects **Reset saved data**, clears the browser's site data, or removes the browser profile.
 
@@ -234,15 +236,14 @@ The app uses browser `localStorage`, so routine data remains available in the sa
 | Selected course codes | Browser `localStorage` | Until **Clear routine**, **Clear HTML**, **Reset saved data**, or browser site data is cleared |
 | Custom short names | Browser `localStorage` | Until **Clear HTML**, **Reset saved data**, or browser site data is cleared |
 | Routine display preferences | Browser `localStorage` | Until **Clear HTML**, **Reset saved data**, or browser site data is cleared |
-| Uploaded screenshots | Browser memory only | Cleared after reset, reload, or leaving the page |
-| Locally hosted OCR assets | Browser cache | Managed by the browser and removable through site-data settings |
+| Uploaded screenshots | Sent to PaddleOCR AI Studio for OCR, then kept only in browser memory by the app UI | Cleared from the app after reset, reload, or leaving the page |
 | Anonymous page-view metadata | Vercel Web Analytics | Managed under Vercel's analytics retention policy |
 
 ### Private by design
 
-- No UMS HTML, routine, course selection, or screenshot is uploaded to an application server.
+- No UMS HTML, routine, or course selection is uploaded to an application server.
 - No UMS password or login credential is requested or collected.
-- Uploaded screenshots are processed locally in the browser with Tesseract.js.
+- Uploaded screenshots are sent through the app server to PaddleOCR AI Studio for text extraction.
 - The saved UMS HTML is parsed locally and is never rendered as executable page content.
 - The deployed app uses [Vercel Web Analytics](https://vercel.com/docs/analytics/privacy-policy) for anonymous, cookie-free page-view statistics. It may record the page path, referrer, approximate location, browser, operating system, and device type, but it does not receive imported UMS data, screenshots, selected codes, or generated routines.
 - **Clear HTML** removes imported HTML, parsed sections, selected codes, custom labels, routine data, and image-scanner state.
@@ -253,6 +254,37 @@ The app uses browser `localStorage`, so routine data remains available in the sa
 > Browser `localStorage` is not encrypted. Anyone with access to the same unlocked browser profile may be able to inspect locally saved data. On a shared or public device, use **Reset saved data** when finished and clear the browser's site data for additional privacy.
 
 Routine content stays client-side by design. Local-device security still depends on the user's browser profile and device access, while anonymous site-usage metadata is handled by Vercel Web Analytics as described above.
+
+## Deployment and search indexing
+
+### Required environment variables
+
+For local development, keep secrets in `.env.local`. For Vercel, add the same server-side variable in **Project Settings → Environment Variables** and redeploy.
+
+| Variable | Required for | Notes |
+|---|---|---|
+| `PADDLEOCR_API_TOKEN` | Screenshot/image OCR | Baidu AI Studio PaddleOCR API token. Do not expose it with a `NEXT_PUBLIC_` prefix. |
+| `NEXT_PUBLIC_SITE_URL` | Optional canonical URL override | Defaults to `https://seuroutine.vercel.app` when unset. |
+
+If the PaddleOCR token was shared publicly or pasted into chat, rotate it in AI Studio and update both `.env.local` and Vercel.
+
+### After deploying SEO changes
+
+1. Confirm these live URLs work:
+   - `https://seuroutine.vercel.app/manifest.webmanifest`
+   - `https://seuroutine.vercel.app/favicon.svg`
+   - `https://seuroutine.vercel.app/favicon-192.png`
+   - `https://seuroutine.vercel.app/sitemap.xml`
+   - `https://seuroutine.vercel.app/7e4d2c0a9b8f4e6db1a3c5f0e2d9a718.txt`
+2. In Google Search Console, submit `https://seuroutine.vercel.app/sitemap.xml` and request indexing for the homepage.
+3. In Bing Webmaster Tools, add the site, submit the same sitemap, and verify the site.
+4. After the IndexNow key file is live, run:
+
+```bash
+npm run submit:indexnow
+```
+
+Search engines can take hours to weeks to update site names, favicons, snippets, and rankings after a deploy. Bing/Edge uses Bing's index; iPhone Safari usually uses Google unless the user changes the Safari search engine in settings.
 
 ## Project structure
 
@@ -301,7 +333,7 @@ Seu-Routine_Maker/
 - **Next.js** (App Router) for the user interface and SSR/SSG
 - **React** for components
 - **Tailwind CSS** for responsive styling
-- **Tesseract.js** for client-side OCR
+- **PaddleOCR AI Studio** for screenshot/image OCR
 - **html2canvas** for PNG capture
 - **jsPDF** for PDF export
 - **Lucide React** for icons
