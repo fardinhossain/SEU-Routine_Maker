@@ -288,7 +288,7 @@ export default function SectionOrganizerPage() {
           <p className="mt-2 text-sm leading-6 text-slate-400">
             Upload and parse a UMS HTML or MHTML file before opening the Magic Section Organizer.
           </p>
-          <a href="#" className="primary-button mt-6">
+          <a href="/" className="primary-button mt-6">
             <ArrowLeft size={16} /> Back to Routine Maker
           </a>
         </section>
@@ -300,7 +300,7 @@ export default function SectionOrganizerPage() {
     <div className="min-h-screen w-full min-w-0 overflow-x-hidden bg-ink-950 font-sans text-slate-200">
       <header className="border-b border-white/[.06] bg-ink-950/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-2 px-3 py-3 sm:gap-3 sm:px-6 sm:py-4 lg:px-8">
-          <a href="#" className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-white">
+          <a href="/" className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-white">
             <ArrowLeft size={17} /> <span className="hidden sm:inline">Back to Routine Maker</span><span className="sm:hidden">Back</span>
           </a>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-mint-400/15 bg-mint-400/[.06] px-2.5 py-1.5 text-[11px] font-medium text-mint-300 sm:gap-2 sm:px-3 sm:text-xs">

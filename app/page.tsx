@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 import App from '../src/App';
 
-const title = 'SEU Routine Maker - Free Class Schedule for SEU Students';
+const title = 'Build Your SEU Routine Within Seconds | SEU Routine Maker';
 const description = 'Create your SEU routine free from Southeast University UMS HTML or screenshots. Organize sections, detect class clashes, and export a printable weekly routine.';
 
 export const metadata: Metadata = {

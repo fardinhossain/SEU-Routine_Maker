@@ -58,7 +58,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
               className="mt-6 max-w-3xl animate-fade-up text-balance text-5xl font-semibold leading-[1.05] tracking-[-0.045em] text-white sm:text-6xl lg:text-[64px]"
               style={{ animationDelay: '180ms' }}
             >
-              Build your <span className="bg-gradient-to-r from-mint-300 to-mint-400 bg-clip-text text-transparent">SEU routine</span>, without the clashes.
+              Build your <span className="inline-block rounded-xl bg-gradient-to-r from-mint-300 to-mint-400 px-3 py-1 text-ink-950 shadow-[0_0_35px_rgba(32,222,214,.18)]">SEU routine</span> within seconds.
             </h1>
 
             <p 
