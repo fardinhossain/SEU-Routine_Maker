@@ -771,7 +771,7 @@ export default function App() {
       {showLoadingScreen && <LoadingScreen leaving={loadingScreenLeaving} />}
       <AppHeader />
 
-      <main className="mx-auto w-full min-w-0 max-w-[1500px] px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-10 lg:px-8 lg:pt-14">
+      <main className="mx-auto w-full min-w-0 max-w-[1500px] px-4 pb-12 pt-5 sm:px-6 sm:pb-16 sm:pt-7 lg:px-8 lg:pt-10">
         <Hero
           onGetStarted={() => {
             const tools = document.getElementById("tools");

@@ -76,14 +76,14 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
 
   return (
     <>
-    <section className="relative mb-10 w-full overflow-hidden rounded-3xl border border-white/[0.06] bg-[radial-gradient(circle_at_88%_12%,rgba(32,222,214,0.09),transparent_42%),linear-gradient(145deg,#0b172f_0%,#091326_55%)] px-6 pt-4 pb-8 sm:mb-12 sm:px-10 sm:pt-6 sm:pb-10 lg:px-14 lg:pt-8 lg:pb-12">
+    <section className="relative mb-8 w-full overflow-hidden rounded-3xl border border-white/[0.06] bg-[radial-gradient(circle_at_88%_12%,rgba(32,222,214,0.09),transparent_42%),linear-gradient(145deg,#0b172f_0%,#091326_55%)] px-5 py-6 sm:mb-10 sm:px-8 sm:py-8 lg:px-10 lg:py-9">
       {/* Decorative orbs */}
       <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full border border-mint-400/10" />
       <div className="pointer-events-none absolute -right-8 top-12 h-40 w-40 rounded-full border border-mint-400/10" />
       <div className="pointer-events-none absolute bottom-0 left-1/4 h-px w-2/3 bg-gradient-to-r from-transparent via-mint-400/20 to-transparent" />
 
       <div className="relative mx-auto max-w-[1280px]">
-        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
+        <div className="grid items-center gap-7 lg:grid-cols-12 lg:gap-8">
           {/* Left: Copy + CTAs */}
           <div className="lg:col-span-7 animate-fade-up" style={{ animationDelay: '100ms' }}>
             <div 
@@ -95,7 +95,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
             </div>
 
             <h1 
-              className="mt-6 max-w-3xl animate-fade-up text-balance text-5xl font-semibold leading-[1.08] tracking-[-0.045em] text-white sm:text-6xl lg:text-[64px]"
+              className="mt-5 max-w-3xl animate-fade-up text-balance text-4xl font-semibold leading-[1.08] tracking-[-0.045em] text-white sm:text-6xl lg:text-[60px]"
               style={{ animationDelay: '180ms' }}
               aria-label={HEADLINE_TEXT}
             >
@@ -112,7 +112,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
 
             {/* Trust row */}
             <div 
-              className="mt-5 flex animate-fade-up flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-400"
+              className="mt-4 flex animate-fade-up flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-400"
               style={{ animationDelay: '420ms' }}
             >
               <div className="flex items-center gap-1.5">
@@ -124,7 +124,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
 
             {/* Primary CTAs */}
             <div 
-              className="mt-8 flex animate-fade-up flex-col gap-3 sm:flex-row sm:items-center"
+              className="mt-6 flex animate-fade-up flex-col gap-3 sm:flex-row sm:items-center"
               style={{ animationDelay: '520ms' }}
             >
               <button
@@ -156,43 +156,26 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
             </div>
 
             {/* Feature highlights */}
-            <div className="mt-8 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
-              <div 
-                className="flex animate-fade-up items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.025] px-4 py-3.5"
-                style={{ animationDelay: '620ms' }}
-              >
-                <div className="mt-0.5 rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
-                  <Zap size={17} />
+            <div className="mt-5 flex flex-wrap gap-2.5 text-sm">
+              {[
+                { icon: Zap, title: "Instant import", meta: "HTML • PDF • OCR" },
+                { icon: CalendarDays, title: "Conflict smart", meta: "Overlap warnings" },
+                { icon: Sparkles, title: "Clean exports", meta: "PNG + PDF" },
+              ].map(({ icon: Icon, title, meta }, index) => (
+                <div
+                  key={title}
+                  className="flex min-w-[180px] flex-1 animate-fade-up items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.025] px-3.5 py-2.5"
+                  style={{ animationDelay: `${620 + index * 100}ms` }}
+                >
+                  <div className="rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
+                    <Icon size={17} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-white">{title}</div>
+                    <div className="text-xs text-slate-500">{meta}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-semibold text-white">Instant &amp; live</div>
-                  <div className="text-xs text-slate-500">Parse HTML • OCR screenshots • updates instantly</div>
-                </div>
-              </div>
-              <div 
-                className="flex animate-fade-up items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.025] px-4 py-3.5"
-                style={{ animationDelay: '720ms' }}
-              >
-                <div className="mt-0.5 rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
-                  <CalendarDays size={17} />
-                </div>
-                <div>
-                  <div className="font-semibold text-white">Conflict smart</div>
-                  <div className="text-xs text-slate-500">Auto-detects overlaps + prevents duplicate courses</div>
-                </div>
-              </div>
-              <div 
-                className="flex animate-fade-up items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.025] px-4 py-3.5"
-                style={{ animationDelay: '820ms' }}
-              >
-                <div className="mt-0.5 rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
-                  <Sparkles size={17} />
-                </div>
-                <div>
-                  <div className="font-semibold text-white">4 premium exports</div>
-                  <div className="text-xs text-slate-500">PC, Modern, Futuristic, Mobile PNG + PDF</div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -200,11 +183,11 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
           <div className="lg:col-span-5">
             <div
               onClick={() => setShowExportModal(true)}
-              className="group relative mx-auto w-full max-w-[420px] animate-slide-in cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-[#0a1629] p-2 shadow-[0_30px_120px_-15px_rgb(0,0,0,0.6)] transition-all hover:border-mint-400/30 hover:shadow-[0_40px_140px_-15px_rgb(0,0,0,0.65)] lg:mx-0"
+              className="group relative mx-auto w-full max-w-[390px] animate-slide-in cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-[#0a1629] p-2 shadow-[0_30px_120px_-15px_rgb(0,0,0,0.6)] transition-all hover:border-mint-400/30 hover:shadow-[0_40px_140px_-15px_rgb(0,0,0,0.65)] lg:mx-0"
               style={{ animationDelay: '280ms' }}
             >
-              <div className="rounded-2xl bg-[#081422] p-5">
-                <div className="mb-4 flex items-center justify-between">
+              <div className="rounded-2xl bg-[#081422] p-4">
+                <div className="mb-3 flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white">
                       <CalendarDays size={16} className="text-mint-400" /> SEU Weekly Routine
@@ -215,7 +198,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                 </div>
 
                 {/* Mini routine preview — entrance + hover animations */}
-                <div className="space-y-2.5 text-[13px] group-hover:[&>div]:scale-[1.015]">
+                <div className="space-y-2 text-[13px] group-hover:[&>div]:scale-[1.015]">
                   {/* SAT */}
                   <div className="flex animate-fade-up gap-2.5 transition-all duration-200 group-hover:-translate-y-px" style={{ animationDelay: '420ms' }}>
                     <div className="w-12 shrink-0 rounded-xl bg-cyan-400/10 py-2 text-center text-[10px] font-bold tracking-[1px] text-cyan-400">SAT</div>
@@ -253,7 +236,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-[10px] text-slate-500">
+                <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3 text-[10px] text-slate-500">
                   <div>4 courses • 12 sessions • 18.5h</div>
                   <div className="font-medium text-mint-400">Ready to export →</div>
                 </div>
@@ -272,13 +255,13 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
 
         {/* Device-specific instructions */}
         <div
-          className="mt-9 animate-fade-up border-t border-white/10 pt-7"
+          className="mt-7 animate-fade-up border-t border-white/10 pt-6"
           style={{ animationDelay: '680ms' }}
         >
-          <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="text-xs font-semibold uppercase tracking-[.18em] text-mint-300">Import guide</div>
-              <h2 className="mt-1 text-xl font-semibold tracking-[-.03em] text-white sm:text-2xl">
+              <h2 className="mt-1 text-lg font-semibold tracking-[-.03em] text-white sm:text-xl">
                 Choose your device and upload the easiest file.
               </h2>
             </div>
@@ -291,7 +274,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <article className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[.025] p-5 transition hover:-translate-y-0.5 hover:border-mint-300/35 hover:bg-white/[.04]">
+            <article className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[.025] p-4 transition hover:-translate-y-0.5 hover:border-mint-300/35 hover:bg-white/[.04]">
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-mint-300/60 to-transparent opacity-0 transition group-hover:opacity-100" />
               <div className="flex items-center gap-3">
                 <span className="grid h-11 w-11 place-items-center rounded-2xl border border-mint-400/15 bg-mint-400/10 text-mint-300">
@@ -302,14 +285,14 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                   <div className="text-xs text-slate-500">Best for Chrome, Edge, Firefox</div>
                 </div>
               </div>
-              <ol className="mt-5 space-y-3 text-sm leading-6 text-slate-300">
+              <ol className="mt-4 space-y-2.5 text-sm leading-6 text-slate-300">
                 <li className="flex gap-3"><span className="font-mono text-mint-300">1</span><span>Open UMS <strong>Registered Courses</strong> or <strong>Advising Table</strong>.</span></li>
                 <li className="flex gap-3"><span className="font-mono text-mint-300">2</span><span>Press <strong>Ctrl + S</strong> and save as HTML / complete webpage.</span></li>
                 <li className="flex gap-3"><span className="font-mono text-mint-300">3</span><span>Drop the saved file into the importer. Registered Courses auto-builds the routine.</span></li>
               </ol>
             </article>
 
-            <article className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[.025] p-5 transition hover:-translate-y-0.5 hover:border-mint-300/35 hover:bg-white/[.04]">
+            <article className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[.025] p-4 transition hover:-translate-y-0.5 hover:border-mint-300/35 hover:bg-white/[.04]">
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent opacity-0 transition group-hover:opacity-100" />
               <div className="flex items-center gap-3">
                 <span className="grid h-11 w-11 place-items-center rounded-2xl border border-cyan-400/15 bg-cyan-400/10 text-cyan-300">
@@ -320,14 +303,14 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                   <div className="text-xs text-slate-500">Works even if the file has no extension</div>
                 </div>
               </div>
-              <ol className="mt-5 space-y-3 text-sm leading-6 text-slate-300">
+              <ol className="mt-4 space-y-2.5 text-sm leading-6 text-slate-300">
                 <li className="flex gap-3"><span className="font-mono text-mint-300">1</span><span>Open the UMS page in Chrome or your browser.</span></li>
                 <li className="flex gap-3"><span className="font-mono text-mint-300">2</span><span>Tap menu <strong>⋮</strong> → <strong>Download</strong>. It may save as MHTML or without an extension.</span></li>
                 <li className="flex gap-3"><span className="font-mono text-mint-300">3</span><span>Upload that downloaded file. If download fails, upload a clear screenshot.</span></li>
               </ol>
             </article>
 
-            <article className="group relative overflow-hidden rounded-3xl border border-mint-400/25 bg-mint-400/[.04] p-5 shadow-[0_0_60px_rgba(32,222,214,.06)] transition hover:-translate-y-0.5 hover:border-mint-300/45 hover:bg-mint-400/[.06]">
+            <article className="group relative overflow-hidden rounded-2xl border border-mint-400/25 bg-mint-400/[.04] p-4 shadow-[0_0_60px_rgba(32,222,214,.06)] transition hover:-translate-y-0.5 hover:border-mint-300/45 hover:bg-mint-400/[.06]">
               <div className="absolute right-4 top-4 rounded-full bg-mint-300 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#061325]">
                 iPhone tip
               </div>
@@ -340,7 +323,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                   <div className="text-xs text-slate-500">Use PDF or full-page screenshot</div>
                 </div>
               </div>
-              <ol className="mt-5 space-y-3 text-sm leading-6 text-slate-300">
+              <ol className="mt-4 space-y-2.5 text-sm leading-6 text-slate-300">
                 <li className="flex gap-3"><span className="font-mono text-mint-300">1</span><span>Open Registered Courses in Safari and wait until schedules load.</span></li>
                 <li className="flex gap-3"><span className="font-mono text-mint-300">2</span><span>Tap <strong>Share</strong> → <strong>Options</strong> → <strong>PDF</strong> → Save to Files.</span></li>
                 <li className="flex gap-3"><span className="font-mono text-mint-300">3</span><span>If PDF is missing, use <strong>Print</strong>, pinch open preview, then Share → Save to Files.</span></li>
