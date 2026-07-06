@@ -490,7 +490,7 @@ export default function App() {
     setParsing(true);
     window.setTimeout(() => {
       try {
-        const parsed = importOptions.format === "pdf-text"
+        const parsed = ["pdf-text", "image-text"].includes(importOptions.format)
           ? parseUmsText(htmlToParse)
           : parseUmsHtml(htmlToParse);
         const sourceType = parsed.parseDebug?.sourceType || parsed[0]?.sourceType || "offered-sections";

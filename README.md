@@ -74,6 +74,7 @@ No account, backend, or external database is required for routine data. The app 
 ## Features
 
 - Upload a saved UMS `.html`, `.htm`, `.mhtml`, or `.mht` page.
+- Import PDF exports or clear PNG, JPG, WebP, BMP, and TIFF screenshots of the Registered Courses schedule.
 - Paste raw UMS HTML manually.
 - Parse UMS Offered Sections and Student Dashboard Registered Courses schedules.
 - Detect a Registered Courses export, select its courses, generate the routine, and scroll to the result automatically.
@@ -110,7 +111,7 @@ Use this method with the UMS **Offered Sections** page.
    - **Desktop:** press `Ctrl + S`, select **Webpage, Complete** or **HTML**, and save the file.
    - **Mobile:** open the browser menu `⋮` and choose **Download**. Mobile browsers may save the page as `.mhtml`, `.mht`, or without any file extension; all of these are supported.
 6. Open SEU Routine Maker.
-7. Under **Add your UMS export**, upload the saved page. The importer supports HTML, MHTML, Android downloads without an extension, and PDFs saved from iPhone Safari.
+7. Under **Add your UMS export**, upload the saved page. The importer supports HTML, MHTML, Android downloads without an extension, PDFs saved from iPhone Safari, and clear screenshots that include the course codes and schedules.
 8. Wait for the success message confirming that the course sections were parsed and saved automatically.
 9. Add section codes using any option:
    - Type or paste codes such as `CSE361.3`, one per line or separated by commas.
@@ -153,6 +154,8 @@ The image scanner is useful when you have already imported an Offered Sections p
 
 > [!NOTE]
 > OCR only selects codes that exist in the imported course data. Screenshots are processed locally in browser memory and are not required for the Registered Courses method above.
+
+To build a routine directly from an image, drop a clear screenshot of the **Registered Courses** page into **Add your UMS export**. The screenshot must show each course's schedule; a code-only image cannot provide missing class times.
 
 ### Supported code formats
 

@@ -15,6 +15,7 @@ import {
   pdfTextItemsInContentOrder,
   pdfTextItemsToText,
 } from "../src/lib/pdfImport.js";
+import { hasImageSignature } from "../src/lib/imageImport.js";
 import { extractCourseCodesFromOcr } from "../src/lib/ocr.js";
 import {
   dayPatternKey,
@@ -35,6 +36,10 @@ global.DOMParser = new JSDOM("").window.DOMParser;
 
 assert.equal(hasPdfSignature(new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31])), true);
 assert.equal(hasPdfSignature(new Uint8Array([0x3c, 0x68, 0x74, 0x6d, 0x6c])), false);
+assert.equal(hasImageSignature(new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a])), true);
+assert.equal(hasImageSignature(new Uint8Array([0xff, 0xd8, 0xff, 0xe0])), true);
+assert.equal(hasImageSignature(new TextEncoder().encode("RIFF1234WEBP")), true);
+assert.equal(hasImageSignature(new Uint8Array([0x25, 0x50, 0x44, 0x46])), false);
 assert.equal(
   normalizePdfText("CSE 361 . 6  SUN # 13 : 30 – 14 : 50 @ SEU516"),
   "CSE361.6 SUN # 13:30 ~ 14:50 @ SEU516",

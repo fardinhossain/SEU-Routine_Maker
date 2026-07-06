@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, FileCode2, LoaderCircle, Trash2, UploadCloud, WandSparkles } from "lucide-react";
+import { extractUmsTextFromImage, isImageFile } from "../lib/imageImport";
 import { extractUmsTextFromPdf, isPdfFile } from "../lib/pdfImport";
 
 function readFileAsText(file) {
@@ -49,16 +50,20 @@ export default function ImportPanel({
 
     try {
       const pdf = await isPdfFile(file);
-      const content = pdf
-        ? await extractUmsTextFromPdf(file, ({ progress, status }) => {
+      const image = !pdf && await isImageFile(file);
+      const updateProgress = ({ progress, status }) => {
             setFileProgress(progress);
             setFileStatus(status);
-          })
-        : await readFileAsText(file);
+          };
+      const content = pdf
+        ? await extractUmsTextFromPdf(file, updateProgress)
+        : image
+          ? await extractUmsTextFromImage(file, updateProgress)
+          : await readFileAsText(file);
 
       if (!content.trim()) throw new Error("This file is empty.");
       setRawHtml(content);
-      onParse(content, { format: pdf ? "pdf-text" : "web-page" });
+      onParse(content, { format: pdf ? "pdf-text" : image ? "image-text" : "web-page" });
     } catch (error) {
       const message = error?.message || "This file could not be read.";
       setFileName(message);
@@ -116,8 +121,8 @@ export default function ImportPanel({
           <span className="mb-3 grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-white/[.04] text-mint-400 transition group-hover:-translate-y-0.5">
             <UploadCloud size={23} />
           </span>
-          <span className="text-sm font-semibold text-slate-200">Drop your saved UMS page or PDF here</span>
-          <span className="mt-1 max-w-60 truncate text-xs text-slate-500">{fileStatus || fileName || "HTML, MHTML, PDF, or an extensionless Android download"}</span>
+          <span className="text-sm font-semibold text-slate-200">Drop your UMS page, PDF, or screenshot here</span>
+          <span className="mt-1 max-w-60 truncate text-xs text-slate-500">{fileStatus || fileName || "HTML, MHTML, PDF, PNG, JPG, WebP, or an extensionless Android download"}</span>
           {!fileName && !readingFile && (
             <span className="mt-1.5 text-[10px] text-slate-600">iPhone: Share → Markup → Done → Save to Files</span>
           )}

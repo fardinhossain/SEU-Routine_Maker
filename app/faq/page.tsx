@@ -3,7 +3,7 @@ import { ArrowLeft, CalendarDays } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'FAQ',
-  description: 'Answers about creating an SEU class routine from UMS HTML, using Magic Organizer, detecting schedule conflicts, privacy, and routine exports.',
+  description: 'Answers about creating an SEU class routine from UMS HTML, PDF, iPhone or iPad screenshots, using Magic Organizer, detecting conflicts, privacy, and exports.',
   alternates: {
     canonical: '/faq',
   },
@@ -16,7 +16,19 @@ const questions = [
   },
   {
     question: 'How do I create my SEU class routine?',
-    answer: 'Save the UMS Offered Sections or Registered Courses page as HTML or MHTML, upload it to the routine maker, then choose sections manually or with Magic Organizer.',
+    answer: 'Save the UMS Offered Sections or Registered Courses page as HTML, MHTML, or PDF, or use a clear schedule screenshot. Upload it to the routine maker, then choose sections manually or with Magic Organizer.',
+  },
+  {
+    question: 'How do I import from an iPhone or iPad?',
+    answer: 'Open the UMS Registered Courses page in Safari and wait until the schedules appear. Tap Share, choose Options, select PDF, tap Done, then Save to Files. Upload that PDF from the Add your UMS export box.',
+  },
+  {
+    question: 'What if Safari does not show a PDF option?',
+    answer: 'Use Safari’s Print action, open the print preview as a PDF by spreading two fingers apart on the preview, tap Share, and choose Save to Files. You can then upload the saved PDF.',
+  },
+  {
+    question: 'Can I use an Apple device screenshot instead?',
+    answer: 'Yes. Take a clear screenshot that shows the Registered Courses codes and their schedules, save it to Photos or Files, and upload it. For a long Safari page, take a screenshot, tap its preview, choose Full Page, and save the resulting PDF to Files.',
   },
   {
     question: 'Does it detect class conflicts?',
@@ -29,6 +41,10 @@ const questions = [
   {
     question: 'Which UMS pages can I use?',
     answer: 'You can import the Offered Sections page while planning courses or the Registered Courses page from the Student Dashboard after advising.',
+  },
+  {
+    question: 'Can I import a screenshot?',
+    answer: 'Yes. Drop a clear PNG, JPG, WebP, BMP, or TIFF screenshot into the importer. To build a routine directly, the image must show the Registered Courses codes and schedules; code-only screenshots can be used after importing Offered Sections data.',
   },
   {
     question: 'Can I download my finished routine?',
