@@ -351,6 +351,8 @@ assert.deepEqual(
   coursesWithoutUnscheduledFydp.map((course) => course.courseCode),
   ["CSE361.6", "CSE443.3"],
 );
+assert.deepEqual(coursesWithoutUnscheduledFydp.parseDebug.allSectionCodes, ["CSE361.6", "CSE443.3", "CSE460.1"]);
+assert.deepEqual(coursesWithoutUnscheduledFydp.parseDebug.skippedUnscheduledCodes, ["CSE460.1"]);
 assert.equal(
   coursesWithoutUnscheduledFydp.some((course) => course.courseCode === "CSE460.1"),
   false,

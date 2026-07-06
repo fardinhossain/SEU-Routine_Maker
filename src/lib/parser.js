@@ -324,6 +324,21 @@ function extractDashboardSectionCodes(source = "") {
   return extractDashboardSectionCodeMatches(source).map((match) => match.code);
 }
 
+function uniqueDashboardSectionCodes(sources = []) {
+  const seen = new Set();
+  const codes = [];
+
+  sources.forEach((source) => {
+    extractDashboardSectionCodes(source).forEach((code) => {
+      if (seen.has(code)) return;
+      seen.add(code);
+      codes.push(code);
+    });
+  });
+
+  return codes;
+}
+
 function parseDashboardSchedules(source = "") {
   const schedules = [];
   const normalizedSource = String(source).toUpperCase();
@@ -626,7 +641,11 @@ function parseDashboardRegisteredCourses(document, rawHtml = "") {
   );
   courses = mergeCourseEntries([...courses, ...textChunkEntries]);
 
-  return { courses, ...stats };
+  const parsedCodes = new Set(courses.map((course) => course.courseCode));
+  const allSectionCodes = uniqueDashboardSectionCodes(sources);
+  const skippedUnscheduledCodes = allSectionCodes.filter((code) => !parsedCodes.has(code));
+
+  return { courses, allSectionCodes, skippedUnscheduledCodes, ...stats };
 }
 
 function attachParseDebug(courses, debug) {
@@ -736,6 +755,8 @@ export function parseUmsHtml(rawHtml) {
     const debug = {
       courseSectionCodesFound: dashboardResult.courseSectionCodeCount,
       scheduleLinesFound: dashboardResult.scheduleLineCount,
+      allSectionCodes: dashboardResult.allSectionCodes || [],
+      skippedUnscheduledCodes: dashboardResult.skippedUnscheduledCodes || [],
       sourceType: DASHBOARD_SOURCE_TYPE,
       courses: [],
     };
@@ -747,6 +768,8 @@ export function parseUmsHtml(rawHtml) {
     const debug = {
       courseSectionCodesFound: dashboardResult.courseSectionCodeCount,
       scheduleLinesFound: dashboardResult.scheduleLineCount,
+      allSectionCodes: dashboardResult.allSectionCodes || [],
+      skippedUnscheduledCodes: dashboardResult.skippedUnscheduledCodes || [],
       sourceType: DASHBOARD_SOURCE_TYPE,
       courses: dashboardResult.courses,
     };

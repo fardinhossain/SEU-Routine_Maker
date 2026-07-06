@@ -506,8 +506,17 @@ export default function App() {
           writeStoredValue(STORAGE_KEYS.selectedCodes, dashboardCodes);
           setImageResetKey((current) => current + 1);
           pendingRoutineScrollRef.current = true;
-          setImportSuccessMessage(`${parsed.length} registered courses parsed. Routine generated automatically.`);
-          showMessage("warning", "Dashboard Registered Courses page detected. Routine generated from registered courses.");
+          const skippedCodes = parsed.parseDebug?.skippedUnscheduledCodes || [];
+          const skippedText = skippedCodes.length
+            ? ` ${skippedCodes.join(", ")} skipped because no schedule was found.`
+            : "";
+          setImportSuccessMessage(`${parsed.length} registered courses with schedules parsed. Routine generated automatically.${skippedText}`);
+          showMessage(
+            skippedCodes.length ? "warning" : "success",
+            skippedCodes.length
+              ? `Routine generated. Skipped no-schedule course${skippedCodes.length > 1 ? "s" : ""}: ${skippedCodes.join(", ")}.`
+              : "Dashboard Registered Courses page detected. Routine generated from registered courses.",
+          );
         } else {
           setImportSuccessMessage(`${parsed.length} course sections parsed and saved in this browser.`);
         }

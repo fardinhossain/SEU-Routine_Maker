@@ -86,7 +86,7 @@ function RoutinePreview({ onClick }) {
       <div className="pointer-events-none absolute -inset-x-8 bottom-0 h-24 rounded-[50%] bg-mint-400/10 blur-3xl" />
       <div
         onClick={onClick}
-        className="group relative mx-auto w-full max-w-[470px] animate-rise-in cursor-pointer overflow-hidden rounded-[1.75rem] border border-mint-400/20 bg-[#0a1629]/95 p-2 shadow-[0_35px_140px_-35px_rgba(32,222,214,.65)] transition-all hover:-translate-y-1 hover:border-mint-300/45 sm:max-w-[520px]"
+        className="group relative mx-auto w-full max-w-[360px] animate-rise-in cursor-pointer overflow-hidden rounded-[1.75rem] border border-mint-400/20 bg-[#0a1629]/95 p-2 shadow-[0_35px_140px_-35px_rgba(32,222,214,.65)] transition-all hover:-translate-y-1 hover:border-mint-300/45 sm:max-w-[520px]"
       >
         <div className="rounded-[1.35rem] border border-white/5 bg-[#081422] p-4 sm:p-5">
           <div className="mb-4 flex items-center justify-between">
@@ -99,7 +99,7 @@ function RoutinePreview({ onClick }) {
             <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-mono text-mint-300">LIVE</div>
           </div>
 
-          <div className="space-y-2.5 text-sm group-hover:[&>div]:scale-[1.01]">
+          <div className="grid grid-cols-1 gap-2.5 text-sm group-hover:[&>div]:scale-[1.01] min-[430px]:grid-cols-3 min-[430px]:items-stretch sm:block sm:space-y-2.5">
             {[
               ["SAT", "CSE361.3", "Operating Systems • R-301", "09:00–10:20", "cyan"],
               ["SUN–TUE", "CSE443.1", "Computer Networks • Lab 4", "11:00–12:20", "violet"],
@@ -107,10 +107,10 @@ function RoutinePreview({ onClick }) {
             ].map(([day, code, title, time, color], index) => (
               <div
                 key={day}
-                className="flex gap-2.5 transition-all duration-300 group-hover:-translate-y-px"
+                className="grid min-h-[150px] grid-rows-[auto_1fr] gap-2.5 transition-all duration-300 group-hover:-translate-y-px min-[430px]:min-h-[175px] sm:flex sm:min-h-0 sm:gap-2.5"
                 style={{ animationDelay: `${420 + index * 90}ms` }}
               >
-                <div className={`w-14 shrink-0 rounded-2xl py-2.5 text-center text-[11px] font-bold tracking-[1px] sm:w-16 ${
+                <div className={`grid min-h-[44px] place-items-center rounded-2xl px-2 py-2 text-center text-[11px] font-bold tracking-[1px] sm:w-16 sm:shrink-0 sm:py-2.5 ${
                   color === "cyan"
                     ? "bg-cyan-400/10 text-cyan-300"
                     : color === "violet"
@@ -119,26 +119,26 @@ function RoutinePreview({ onClick }) {
                 }`}>
                   {day}
                 </div>
-                <div className={`flex-1 rounded-2xl border px-3.5 py-2.5 ${
+                <div className={`grid min-h-[92px] flex-1 place-items-center rounded-2xl border px-3 py-3 text-center sm:block sm:min-h-0 sm:px-3.5 sm:py-2.5 sm:text-left ${
                   color === "cyan"
                     ? "border-cyan-400/20 bg-cyan-400/[0.035]"
                     : color === "violet"
                       ? "border-violet-400/20 bg-violet-400/[0.035]"
                       : "border-amber-400/20 bg-amber-400/[0.035]"
                 }`}>
-                  <div className="flex justify-between gap-3 text-xs">
+                  <div className="flex w-full flex-col items-center justify-center gap-1 text-xs sm:flex-row sm:justify-between sm:gap-3">
                     <span className={`font-mono ${
                       color === "cyan" ? "text-cyan-300" : color === "violet" ? "text-violet-300" : "text-amber-300"
                     }`}>{code}</span>
                     <span className="text-slate-500">{time}</span>
                   </div>
-                  <div className="mt-1 text-sm font-semibold leading-tight text-white sm:text-[15px]">{title}</div>
+                  <div className="mt-2 text-sm font-semibold leading-tight text-white sm:mt-1 sm:text-[15px]">{title}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-[11px] text-slate-500">
+          <div className="mt-4 flex flex-col items-center justify-center gap-2 border-t border-white/10 pt-3 text-center text-[11px] text-slate-500 min-[430px]:flex-row min-[430px]:justify-between">
             <div>4 courses • 12 sessions • 18.5h</div>
             <div className="font-medium text-mint-400">Ready to export →</div>
           </div>
@@ -182,7 +182,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
         <div className="pointer-events-none absolute bottom-[26%] left-0 h-48 w-full bg-[linear-gradient(180deg,transparent,rgba(32,222,214,.035),transparent)]" />
 
         <div className="relative mx-auto max-w-[1280px]">
-          <div className="flex min-h-[calc(100svh-145px)] flex-col items-center justify-center gap-6 py-3 text-center xl:min-h-[calc(100svh-135px)]">
+          <div className="flex flex-col items-center justify-center gap-8 py-3 text-center lg:min-h-[calc(100svh-145px)] lg:gap-6 xl:min-h-[calc(100svh-135px)]">
             <div className="max-w-5xl">
               <div
                 className="mx-auto inline-flex animate-fade-in items-center gap-2 rounded-full border border-mint-400/20 bg-mint-400/[0.07] px-4 py-1.5 text-xs font-medium tracking-[0.5px] text-mint-300"
@@ -246,11 +246,11 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                 </button>
               </div>
 
-              <div className="mx-auto mt-4 flex max-w-3xl flex-wrap justify-center gap-2.5 text-sm">
+              <div className="mx-auto mt-4 grid max-w-3xl grid-cols-1 gap-2.5 text-sm min-[430px]:grid-cols-3 sm:flex sm:flex-wrap sm:justify-center">
                 {heroFeatures.map(({ icon: Icon, title, meta }, index) => (
                   <div
                     key={title}
-                    className="flex min-w-[170px] flex-1 animate-fade-up items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.025] px-3.5 py-2.5 text-left"
+                    className="flex min-h-[74px] animate-fade-up items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.025] px-3.5 py-2.5 text-left sm:min-w-[170px] sm:flex-1"
                     style={{ animationDelay: `${620 + index * 100}ms` }}
                   >
                     <div className="rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
