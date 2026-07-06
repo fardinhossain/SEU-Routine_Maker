@@ -126,7 +126,6 @@ export default function ImportPanel({
           {!fileName && !readingFile && (
             <>
               <span className="mt-1.5 text-[10px] text-slate-600">iPhone: Share → Markup → Done → Save to Files</span>
-              <span className="mt-1 text-[10px] text-amber-200/60">Screenshot OCR is processed by PaddleOCR AI Studio.</span>
             </>
           )}
           {readingFile && (
