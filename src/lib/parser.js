@@ -443,16 +443,15 @@ function findDashboardCourseBlocks(document) {
 
     while (current && current !== document.body) {
       const source = structuralText(current);
-      const codes = extractDashboardSectionCodes(source);
+      const codes = [...new Set(extractDashboardSectionCodes(source))];
       const schedules = parseDashboardSchedules(source);
 
-      if (codes.includes(sectionCode) && schedules.length) {
-        const candidate = { source, sectionCode };
-        if (codes.length === 1) {
-          fallback = candidate;
-          break;
-        }
-        if (!fallback) fallback = candidate;
+      // A parent container can include every registered course. Its schedules
+      // must not be assigned to a child course whose own row has no schedule
+      // (for example, an FYDP course with a schedule arranged separately).
+      if (codes.length === 1 && codes[0] === sectionCode && schedules.length) {
+        fallback = { source, sectionCode };
+        break;
       }
 
       current = current.parentElement;

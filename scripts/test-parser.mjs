@@ -138,6 +138,45 @@ assert.deepEqual(rawPayloadCourses.find((course) => course.courseCode === "CSE44
   { day: "WED", start: "13:30", end: "14:50", room: "SEU213B" },
 ]);
 
+const dashboardWithUnscheduledFydp = `
+  <main>
+    <section>
+      <h2>Registered Courses</h2>
+      <div class="student-count grid items-center">
+        <div><div>CSE361.6</div><div>Operating Systems</div></div>
+        <div><div>[MRRR] Mst Rubaiya Raktin Raha</div></div>
+        <div>
+          <div>SUN # 13:30 ~ 14:50 @ SEU516</div>
+          <div>TUE # 13:30 ~ 14:50 @ SEU516</div>
+        </div>
+      </div>
+      <div class="student-count grid items-center">
+        <div><div>CSE443.3</div><div>Computer Graphics &amp; Animation</div></div>
+        <div><div>[MHSU] Mahjabin Sultana</div></div>
+        <div>
+          <div>MON # 13:30 ~ 14:50 @ SEU213B</div>
+          <div>WED # 13:30 ~ 14:50 @ SEU213B</div>
+        </div>
+      </div>
+      <div class="student-count grid items-center">
+        <div><div>CSE460.1</div><div>Final Year Design Project I</div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </section>
+  </main>`;
+
+const coursesWithoutUnscheduledFydp = parseUmsHtml(dashboardWithUnscheduledFydp);
+assert.deepEqual(
+  coursesWithoutUnscheduledFydp.map((course) => course.courseCode),
+  ["CSE361.6", "CSE443.3"],
+);
+assert.equal(
+  coursesWithoutUnscheduledFydp.some((course) => course.courseCode === "CSE460.1"),
+  false,
+);
+assert.equal(buildRoutine(coursesWithoutUnscheduledFydp).conflicts.length, 0);
+
 const conflictRoutine = buildRoutine([
   {
     courseCode: "CSE361.3",
