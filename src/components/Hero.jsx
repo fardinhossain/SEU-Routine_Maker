@@ -86,20 +86,20 @@ function RoutinePreview({ onClick }) {
       <div className="pointer-events-none absolute -inset-x-8 bottom-0 h-24 rounded-[50%] bg-mint-400/10 blur-3xl" />
       <div
         onClick={onClick}
-        className="group relative mx-auto w-full max-w-[560px] animate-rise-in cursor-pointer overflow-hidden rounded-[2rem] border border-mint-400/20 bg-[#0a1629]/95 p-2.5 shadow-[0_35px_140px_-30px_rgba(32,222,214,.55)] transition-all hover:-translate-y-1 hover:border-mint-300/45"
+        className="group relative mx-auto w-full max-w-[470px] animate-rise-in cursor-pointer overflow-hidden rounded-[1.75rem] border border-mint-400/20 bg-[#0a1629]/95 p-2 shadow-[0_35px_140px_-35px_rgba(32,222,214,.65)] transition-all hover:-translate-y-1 hover:border-mint-300/45 sm:max-w-[520px]"
       >
-        <div className="rounded-[1.5rem] border border-white/5 bg-[#081422] p-5 sm:p-6">
-          <div className="mb-5 flex items-center justify-between">
+        <div className="rounded-[1.35rem] border border-white/5 bg-[#081422] p-4 sm:p-5">
+          <div className="mb-4 flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-2 text-base font-semibold tracking-tight text-white">
-                <CalendarDays size={18} className="text-mint-400" /> SEU Weekly Routine
+              <div className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white sm:text-base">
+                <CalendarDays size={16} className="text-mint-400" /> SEU Weekly Routine
               </div>
               <div className="text-[10px] uppercase tracking-[2px] text-slate-500">7 days • one clean view</div>
             </div>
             <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-mono text-mint-300">LIVE</div>
           </div>
 
-          <div className="space-y-3 text-sm group-hover:[&>div]:scale-[1.01]">
+          <div className="space-y-2.5 text-sm group-hover:[&>div]:scale-[1.01]">
             {[
               ["SAT", "CSE361.3", "Operating Systems • R-301", "09:00–10:20", "cyan"],
               ["SUN–TUE", "CSE443.1", "Computer Networks • Lab 4", "11:00–12:20", "violet"],
@@ -107,10 +107,10 @@ function RoutinePreview({ onClick }) {
             ].map(([day, code, title, time, color], index) => (
               <div
                 key={day}
-                className="flex gap-3 transition-all duration-300 group-hover:-translate-y-px"
+                className="flex gap-2.5 transition-all duration-300 group-hover:-translate-y-px"
                 style={{ animationDelay: `${420 + index * 90}ms` }}
               >
-                <div className={`w-16 shrink-0 rounded-2xl py-3 text-center text-xs font-bold tracking-[1px] ${
+                <div className={`w-14 shrink-0 rounded-2xl py-2.5 text-center text-[11px] font-bold tracking-[1px] sm:w-16 ${
                   color === "cyan"
                     ? "bg-cyan-400/10 text-cyan-300"
                     : color === "violet"
@@ -119,7 +119,7 @@ function RoutinePreview({ onClick }) {
                 }`}>
                   {day}
                 </div>
-                <div className={`flex-1 rounded-2xl border px-4 py-3 ${
+                <div className={`flex-1 rounded-2xl border px-3.5 py-2.5 ${
                   color === "cyan"
                     ? "border-cyan-400/20 bg-cyan-400/[0.035]"
                     : color === "violet"
@@ -132,20 +132,20 @@ function RoutinePreview({ onClick }) {
                     }`}>{code}</span>
                     <span className="text-slate-500">{time}</span>
                   </div>
-                  <div className="mt-1 text-sm font-semibold leading-tight text-white sm:text-base">{title}</div>
+                  <div className="mt-1 text-sm font-semibold leading-tight text-white sm:text-[15px]">{title}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-xs text-slate-500">
+          <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-[11px] text-slate-500">
             <div>4 courses • 12 sessions • 18.5h</div>
             <div className="font-medium text-mint-400">Ready to export →</div>
           </div>
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap justify-center gap-1.5 text-[10px] text-slate-500">
+      <div className="mt-2 flex flex-wrap justify-center gap-1.5 text-[10px] text-slate-500">
         {["PC", "Modern", "Futuristic", "Mobile"].map((label) => (
           <span key={label} className="rounded border border-white/10 bg-white/[0.03] px-2 py-px">{label}</span>
         ))}
@@ -182,7 +182,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
         <div className="pointer-events-none absolute bottom-[26%] left-0 h-48 w-full bg-[linear-gradient(180deg,transparent,rgba(32,222,214,.035),transparent)]" />
 
         <div className="relative mx-auto max-w-[1280px]">
-          <div className="flex min-h-[calc(100svh-185px)] flex-col items-center justify-center gap-8 py-4 text-center xl:min-h-[calc(100svh-170px)]">
+          <div className="flex min-h-[calc(100svh-145px)] flex-col items-center justify-center gap-6 py-3 text-center xl:min-h-[calc(100svh-135px)]">
             <div className="max-w-5xl">
               <div
                 className="mx-auto inline-flex animate-fade-in items-center gap-2 rounded-full border border-mint-400/20 bg-mint-400/[0.07] px-4 py-1.5 text-xs font-medium tracking-[0.5px] text-mint-300"
@@ -193,7 +193,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
               </div>
 
               <h1
-                className="mx-auto mt-6 max-w-4xl text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.05em] text-white sm:text-6xl lg:text-[72px]"
+                className="mx-auto mt-5 max-w-3xl text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.05em] text-white sm:text-5xl lg:text-[58px] xl:text-[64px]"
                 aria-label={HEADLINE_TEXT}
               >
                 <span className="sr-only">{HEADLINE_TEXT}</span>
@@ -218,10 +218,10 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
               </div>
 
               <div
-                className="mt-8 flex animate-fade-up flex-col items-center justify-center gap-3 sm:flex-row"
+                className="mt-7 flex animate-fade-up flex-col items-center justify-center gap-3 sm:flex-row"
                 style={{ animationDelay: "500ms" }}
               >
-                <button onClick={scrollToTools} className="primary-button group h-12 min-w-[230px] px-8 text-base">
+                <button onClick={scrollToTools} className="primary-button group h-11 min-w-[205px] px-7 text-sm">
                   Import your UMS file
                   <ArrowRight className="transition group-hover:translate-x-0.5" size={18} />
                 </button>
@@ -231,7 +231,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                     if (onOpenOrganizer) onOpenOrganizer();
                     else window.open("#section-organizer", "_blank");
                   }}
-                  className="secondary-button h-12 min-w-[230px] px-7 text-base"
+                  className="secondary-button h-11 min-w-[205px] px-6 text-sm"
                 >
                   <WandSparkles size={18} />
                   Use Magic Organizer
@@ -239,18 +239,18 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
 
                 <button
                   onClick={() => setShowExportModal(true)}
-                  className="secondary-button hidden h-12 min-w-[210px] items-center gap-2 px-5 text-sm sm:inline-flex"
+                  className="secondary-button hidden h-11 min-w-[185px] items-center gap-2 px-5 text-sm sm:inline-flex"
                 >
                   See export examples
                   <Download size={16} />
                 </button>
               </div>
 
-              <div className="mx-auto mt-5 flex max-w-3xl flex-wrap justify-center gap-2.5 text-sm">
+              <div className="mx-auto mt-4 flex max-w-3xl flex-wrap justify-center gap-2.5 text-sm">
                 {heroFeatures.map(({ icon: Icon, title, meta }, index) => (
                   <div
                     key={title}
-                    className="flex min-w-[180px] flex-1 animate-fade-up items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.025] px-3.5 py-2.5 text-left"
+                    className="flex min-w-[170px] flex-1 animate-fade-up items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.025] px-3.5 py-2.5 text-left"
                     style={{ animationDelay: `${620 + index * 100}ms` }}
                   >
                     <div className="rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
