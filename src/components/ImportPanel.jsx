@@ -27,18 +27,23 @@ export default function ImportPanel({
 
   function loadFile(file) {
     if (!file) return;
-    const fileName = file.name.toLowerCase();
-    const supported = [".html", ".htm", ".mhtml", ".mht"].some((extension) => fileName.endsWith(extension));
-    if (!supported) {
-      setFileName("Choose an HTML or MHTML file");
-      return;
-    }
+
+    // Some Android browsers save an MHTML page without a file extension and
+    // report it as a generic file. Read first and let the UMS parser validate
+    // the actual contents instead of trusting the filename or MIME type.
     const reader = new FileReader();
     reader.onload = () => {
       const html = String(reader.result || "");
+      if (!html.trim()) {
+        setFileName("This file is empty");
+        return;
+      }
       setRawHtml(html);
-      setFileName(file.name);
+      setFileName(file.name || "Saved UMS page");
       onParse(html);
+    };
+    reader.onerror = () => {
+      setFileName("This file could not be read");
     };
     reader.readAsText(file);
   }
@@ -88,13 +93,12 @@ export default function ImportPanel({
           <span className="mb-3 grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-white/[.04] text-mint-400 transition group-hover:-translate-y-0.5">
             <UploadCloud size={23} />
           </span>
-          <span className="text-sm font-semibold text-slate-200">Drop your HTML or MHTML file here</span>
-          <span className="mt-1 max-w-60 truncate text-xs text-slate-500">{fileName || ".html, .htm, .mhtml, and .mht supported"}</span>
+          <span className="text-sm font-semibold text-slate-200">Drop your saved UMS page here</span>
+          <span className="mt-1 max-w-60 truncate text-xs text-slate-500">{fileName || "HTML, MHTML, or an extensionless Android download"}</span>
           <input
             ref={inputRef}
             className="hidden"
             type="file"
-            accept=".html,.htm,.mhtml,.mht,text/html,multipart/related"
             onChange={(event) => loadFile(event.target.files?.[0])}
           />
         </button>
