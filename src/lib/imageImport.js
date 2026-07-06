@@ -1,7 +1,8 @@
-import { normalizePdfText, chooseBestPdfText } from "./pdfImport.js";
-import { prepareCanvasForOcr } from "./ocrPreprocess.js";
+import { normalizePdfText } from "./pdfImport.js";
 
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
+const OCR_MAX_DIMENSION = 1800;
+const OCR_MIN_DIMENSION = 1200;
 const OCR_SETUP_TIMEOUT_MS = 60000;
 const OCR_RECOGNIZE_TIMEOUT_MS = 120000;
 const OCR_ASSET_PATH = "/tesseract";
@@ -54,9 +55,69 @@ function ocrStatus(message) {
   return "Preparing image scanner";
 }
 
-// prepareImage kept for backward compatibility in case other code imports it, but now delegates to strong shared version.
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(image);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("This image format cannot be opened. Use a PNG, JPG, WebP, BMP, or TIFF screenshot."));
+    };
+    image.src = objectUrl;
+  });
+}
+
 async function prepareImage(file) {
-  return prepareCanvasForOcr(file);
+  const image = await loadImage(file);
+  const longest = Math.max(image.naturalWidth, image.naturalHeight);
+  if (!longest) throw new Error("This image has no readable pixels.");
+
+  const scale = longest > OCR_MAX_DIMENSION
+    ? OCR_MAX_DIMENSION / longest
+    : longest < OCR_MIN_DIMENSION
+      ? Math.min(2.5, OCR_MIN_DIMENSION / longest)
+      : 1;
+  const width = Math.max(1, Math.round(image.naturalWidth * scale));
+  const height = Math.max(1, Math.round(image.naturalHeight * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d", { alpha: false });
+  if (!context) throw new Error("Your browser could not prepare this image for OCR.");
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  context.fillStyle = "#fff";
+  context.fillRect(0, 0, width, height);
+  context.drawImage(image, 0, 0, width, height);
+
+  const samplePoints = [
+    [2, 2], [width - 3, 2], [2, height - 3], [width - 3, height - 3],
+    [Math.floor(width / 2), 2], [Math.floor(width / 2), height - 3],
+  ];
+  const averageLuminance = samplePoints.reduce((sum, [x, y]) => {
+    const pixel = context.getImageData(Math.max(0, x), Math.max(0, y), 1, 1).data;
+    return sum + 0.299 * pixel[0] + 0.587 * pixel[1] + 0.114 * pixel[2];
+  }, 0) / samplePoints.length;
+
+  if (averageLuminance < 110) {
+    const imageData = context.getImageData(0, 0, width, height);
+    const pixels = imageData.data;
+    for (let index = 0; index < pixels.length; index += 4) {
+      const gray = 0.299 * pixels[index] + 0.587 * pixels[index + 1] + 0.114 * pixels[index + 2];
+      const inverted = 255 - gray;
+      const value = inverted > 128 ? Math.min(255, inverted + 45) : Math.max(0, inverted - 45);
+      pixels[index] = value;
+      pixels[index + 1] = value;
+      pixels[index + 2] = value;
+    }
+    context.putImageData(imageData, 0, 0);
+  }
+
+  return canvas;
 }
 
 export async function extractUmsTextFromImage(file, onProgress) {
@@ -66,7 +127,7 @@ export async function extractUmsTextFromImage(file, onProgress) {
   }
 
   onProgress?.({ progress: 2, status: "Preparing image" });
-  const canvas = await prepareCanvasForOcr(file);
+  const canvas = await prepareImage(file);
   let worker;
 
   try {
@@ -81,34 +142,17 @@ export async function extractUmsTextFromImage(file, onProgress) {
       }),
     }), OCR_SETUP_TIMEOUT_MS, "Image OCR setup timed out. Please try again.");
 
-    // Run two passes with different segmentation modes + choose best result.
-    // SPARSE_TEXT good for scattered screenshot blocks; SINGLE_COLUMN good for list-style.
-    const candidates = [];
-    const baseParams = {
-      tessedit_ocr_engine_mode: "3",
+    await worker.setParameters({
+      tessedit_pageseg_mode: PSM.SPARSE_TEXT,
       preserve_interword_spaces: "1",
-      user_defined_dpi: "300",
-      tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;#-_[]()|/\\~@&",
-    };
-
-    await worker.setParameters({ ...baseParams, tessedit_pageseg_mode: PSM.SPARSE_TEXT });
-    const r1 = await withTimeout(
+      tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;#-_[]|/\\~@&()",
+    });
+    const result = await withTimeout(
       worker.recognize(canvas),
       OCR_RECOGNIZE_TIMEOUT_MS,
       "Image OCR timed out. Try a clearer or more tightly cropped screenshot.",
     );
-    candidates.push(r1.data.text);
-
-    await worker.setParameters({ ...baseParams, tessedit_pageseg_mode: PSM.SINGLE_COLUMN });
-    const r2 = await withTimeout(
-      worker.recognize(canvas),
-      OCR_RECOGNIZE_TIMEOUT_MS,
-      "Image OCR timed out. Try a clearer or more tightly cropped screenshot.",
-    );
-    candidates.push(r2.data.text);
-
-    const rawText = chooseBestPdfText(candidates) || candidates[0] || "";
-    const text = normalizePdfText(rawText);
+    const text = normalizePdfText(result.data.text);
     if (!text.trim()) {
       throw new Error("No readable text was found. Try a clearer or more tightly cropped screenshot.");
     }

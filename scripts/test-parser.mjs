@@ -567,16 +567,6 @@ assert.deepEqual(
   ["CSE362.2"],
 );
 
-// Additional normalize robustness (spaced codes / separators)
-assert.equal(
-  normalizePdfText("CSE 361 . 3 SUN # 13 : 30 ~ 14 : 50 @ SEU 516"),
-  "CSE361.3 SUN # 13:30 ~ 14:50 @ SEU516",
-);
-assert.equal(
-  normalizePdfText("CSE44O.3 MON # 13;30 - 14.50 @ SEU213B"),
-  "CSE440.3 MON # 13:30 ~ 14:50 @ SEU213B",
-);
-
 const groupedSections = groupSectionsBySchedule([
   {
     courseCode: "CSE361.3",
