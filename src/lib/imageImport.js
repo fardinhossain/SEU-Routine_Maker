@@ -1,11 +1,9 @@
 import { normalizePdfText } from "./pdfImport.js";
+import { extractEnglishTextWithPaddleApi } from "./paddleOcrApi.js";
 
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
 const OCR_MAX_DIMENSION = 1800;
 const OCR_MIN_DIMENSION = 1200;
-const OCR_SETUP_TIMEOUT_MS = 60000;
-const OCR_RECOGNIZE_TIMEOUT_MS = 120000;
-const OCR_ASSET_PATH = "/tesseract";
 
 function startsWith(bytes, signature) {
   return signature.every((byte, index) => bytes[index] === byte);
@@ -28,31 +26,6 @@ export async function isImageFile(file) {
   if (String(file.type || "").toLowerCase().startsWith("image/")) return true;
   const header = new Uint8Array(await file.slice(0, 12).arrayBuffer());
   return hasImageSignature(header);
-}
-
-function withTimeout(promise, timeoutMs, message) {
-  let timer;
-  const timeout = new Promise((_, reject) => {
-    timer = setTimeout(() => reject(new Error(message)), timeoutMs);
-  });
-  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
-}
-
-function ocrProgress(message) {
-  const status = String(message.status || "").toLowerCase();
-  const progress = typeof message.progress === "number" ? message.progress : 0;
-  if (status.includes("recognizing")) return 45 + progress * 50;
-  if (status.includes("loading language")) return 20 + progress * 20;
-  if (status.includes("initializing")) return 10 + progress * 25;
-  return 5 + progress * 40;
-}
-
-function ocrStatus(message) {
-  const status = String(message.status || "").toLowerCase();
-  if (status.includes("recognizing")) return "Reading image text";
-  if (status.includes("loading language")) return "Loading OCR language";
-  if (status.includes("initializing")) return "Starting OCR engine";
-  return "Preparing image scanner";
 }
 
 function loadImage(file) {
@@ -120,6 +93,22 @@ async function prepareImage(file) {
   return canvas;
 }
 
+function canvasToPngFile(canvas, originalFile) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error("Your browser could not prepare this image for OCR."));
+        return;
+      }
+
+      const baseName = String(originalFile?.name || "ums-screenshot")
+        .replace(/\.[a-z0-9]+$/i, "")
+        .trim() || "ums-screenshot";
+      resolve(new File([blob], `${baseName}.png`, { type: "image/png" }));
+    }, "image/png");
+  });
+}
+
 export async function extractUmsTextFromImage(file, onProgress) {
   if (!file) throw new Error("Choose an image first.");
   if (file.size > MAX_IMAGE_SIZE) {
@@ -128,31 +117,16 @@ export async function extractUmsTextFromImage(file, onProgress) {
 
   onProgress?.({ progress: 2, status: "Preparing image" });
   const canvas = await prepareImage(file);
-  let worker;
 
   try {
-    const { createWorker, PSM } = await import("tesseract.js");
-    worker = await withTimeout(createWorker("eng", 1, {
-      workerPath: `${OCR_ASSET_PATH}/worker.min.js`,
-      corePath: OCR_ASSET_PATH,
-      langPath: `${OCR_ASSET_PATH}/lang`,
-      logger: (message) => onProgress?.({
-        progress: Math.round(ocrProgress(message)),
-        status: ocrStatus(message),
+    onProgress?.({ progress: 8, status: "Sending image to PaddleOCR" });
+    const preparedFile = await canvasToPngFile(canvas, file);
+    const text = normalizePdfText(await extractEnglishTextWithPaddleApi(preparedFile, {
+      onProgress: ({ progress, status }) => onProgress?.({
+        progress: Math.max(10, Math.min(99, progress)),
+        status,
       }),
-    }), OCR_SETUP_TIMEOUT_MS, "Image OCR setup timed out. Please try again.");
-
-    await worker.setParameters({
-      tessedit_pageseg_mode: PSM.SPARSE_TEXT,
-      preserve_interword_spaces: "1",
-      tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;#-_[]|/\\~@&()",
-    });
-    const result = await withTimeout(
-      worker.recognize(canvas),
-      OCR_RECOGNIZE_TIMEOUT_MS,
-      "Image OCR timed out. Try a clearer or more tightly cropped screenshot.",
-    );
-    const text = normalizePdfText(result.data.text);
+    }));
     if (!text.trim()) {
       throw new Error("No readable text was found. Try a clearer or more tightly cropped screenshot.");
     }
@@ -160,10 +134,9 @@ export async function extractUmsTextFromImage(file, onProgress) {
     return text;
   } catch (error) {
     if (/timed out|no readable|cannot be opened|too large/i.test(error?.message || "")) throw error;
-    throw new Error("The image could not be read. Try a clear PNG, JPG, or WebP screenshot of the UMS course schedule.");
+    throw new Error(error?.message || "The image could not be read. Try a clear PNG, JPG, or WebP screenshot of the UMS course schedule.");
   } finally {
     canvas.width = 1;
     canvas.height = 1;
-    if (worker) await worker.terminate().catch(() => {});
   }
 }

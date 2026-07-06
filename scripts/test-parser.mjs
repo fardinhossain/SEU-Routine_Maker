@@ -357,6 +357,21 @@ assert.equal(
 );
 assert.equal(buildRoutine(coursesWithoutUnscheduledFydp).conflicts.length, 0);
 
+const ocrMixedColumnNoiseCourses = parseUmsText([
+  "Registered Courses",
+  "CSE361.6 CSE444.3 Operating Systems SUN # 13:30 ~ 14:50 @ SEU516",
+  "CSE361.6 Operating Systems [MRRR] Mst Rubaiya Raktin Raha",
+  "SUN # 13:30 ~ 14:50 @ SEU516",
+  "TUE # 13:30 ~ 14:50 @ SEU516",
+  "CSE444.3 Computer Graphics & Animation Lab [MHSU] Mahjabin Sultana",
+  "MON # 08:00 ~ 10:00 @ SEU804",
+].join("\n"));
+assert.deepEqual(
+  ocrMixedColumnNoiseCourses.find((course) => course.courseCode === "CSE444.3").meetings,
+  [{ day: "MON", start: "08:00", end: "10:00", room: "SEU804" }],
+);
+assert.equal(buildRoutine(ocrMixedColumnNoiseCourses).conflicts.length, 0);
+
 const conflictRoutine = buildRoutine([
   {
     courseCode: "CSE361.3",

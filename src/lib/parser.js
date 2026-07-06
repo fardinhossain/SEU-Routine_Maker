@@ -240,6 +240,46 @@ function isPlausibleMeeting(start, end) {
   return duration > 0 && duration <= 6 * 60;
 }
 
+function meetingDurationMinutes(meeting = {}) {
+  const startMinutes = timeToMinutes(meeting.start);
+  const endMinutes = timeToMinutes(meeting.end);
+  if (startMinutes === null || endMinutes === null) return null;
+  return endMinutes - startMinutes;
+}
+
+function isLikelyLabCourse(course = {}) {
+  const { baseCourseCode } = sectionCodeParts(course.courseCode || course.sectionCode || "");
+  return /\blab(?:oratory)?\b/i.test([
+    course.courseTitle,
+    course.shortTitle,
+    course.shortName,
+    KNOWN_COURSE_TITLES[baseCourseCode],
+  ].filter(Boolean).join(" "));
+}
+
+function removeOcrTheorySlotNoise(course = {}) {
+  if (!isLikelyLabCourse(course)) return course;
+
+  const meetings = uniqueMeetings(course.meetings || []);
+  const hasLabLengthMeeting = meetings.some((meeting) => {
+    const duration = meetingDurationMinutes(meeting);
+    return duration !== null && duration >= 100;
+  });
+
+  if (!hasLabLengthMeeting) return { ...course, meetings, schedules: meetings };
+
+  const filteredMeetings = meetings.filter((meeting) => {
+    const duration = meetingDurationMinutes(meeting);
+    return duration === null || duration >= 100;
+  });
+
+  return {
+    ...course,
+    meetings: filteredMeetings,
+    schedules: filteredMeetings,
+  };
+}
+
 export function parseMeetings(element) {
   const source = textWithBreaks(element);
   const meetings = [];
@@ -485,9 +525,12 @@ function mergeCourseEntries(entries = []) {
     }
   });
 
-  return [...courses.values()].sort((a, b) =>
-    a.courseCode.localeCompare(b.courseCode, undefined, { numeric: true }),
-  );
+  return [...courses.values()]
+    .map(removeOcrTheorySlotNoise)
+    .filter((course) => course.meetings.length)
+    .sort((a, b) =>
+      a.courseCode.localeCompare(b.courseCode, undefined, { numeric: true }),
+    );
 }
 
 function findDashboardCourseBlocks(document) {

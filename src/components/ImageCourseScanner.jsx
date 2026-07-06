@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { CheckCircle2, ClipboardPaste, ImageUp, LoaderCircle, ScanText, X } from "lucide-react";
+import { extractEnglishTextWithPaddleApi } from "../lib/paddleOcrApi";
 import { extractCourseCodesFromOcr } from "../lib/ocr";
 
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
@@ -9,40 +10,6 @@ const OCR_MAX_DIMENSION = 1800;
 const OCR_MOBILE_MAX_DIMENSION = 1600;
 const OCR_MIN_DIMENSION = 1200;
 const OCR_MOBILE_MIN_DIMENSION = 1100;
-const OCR_SETUP_TIMEOUT_MS = 60000;
-const OCR_RECOGNIZE_TIMEOUT_MS = 120000;
-const OCR_ASSET_PATH = "/tesseract";
-
-function withTimeout(promise, timeoutMs, message) {
-  let timer;
-  const timeout = new Promise((_, reject) => {
-    timer = window.setTimeout(() => reject(new Error(message)), timeoutMs);
-  });
-
-  return Promise.race([promise, timeout]).finally(() => window.clearTimeout(timer));
-}
-
-function progressFromOcrMessage(message) {
-  const status = String(message.status || "").toLowerCase();
-  const progress = typeof message.progress === "number" ? message.progress : 0;
-
-  if (status.includes("recognizing")) return 45 + progress * 50;
-  if (status.includes("initializing api")) return 35 + progress * 10;
-  if (status.includes("loading language")) return 20 + progress * 15;
-  if (status.includes("initializing")) return 15 + progress * 20;
-  if (status.includes("loading")) return 5 + progress * 15;
-  return 5 + progress * 90;
-}
-
-function statusFromOcrMessage(message) {
-  const status = String(message.status || "").toLowerCase();
-
-  if (status.includes("recognizing")) return "Reading text";
-  if (status.includes("loading language")) return "Loading OCR language";
-  if (status.includes("initializing")) return "Starting OCR engine";
-  if (status.includes("loading")) return "Loading OCR engine";
-  return "Scanning image";
-}
 
 function getOcrScale(width, height) {
   const longest = Math.max(width, height);
@@ -63,7 +30,7 @@ function getOcrScale(width, height) {
 export default function ImageCourseScanner({ courses, onCodesDetected, resetKey }) {
   const imageInputId = useId();
   const inputRef = useRef(null);
-  const workerRef = useRef(null);
+  const abortRef = useRef(null);
   const scanIdRef = useRef(0);
   const [preview, setPreview] = useState("");
   const [fileName, setFileName] = useState("");
@@ -86,10 +53,8 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
 
   function cancelScan() {
     scanIdRef.current += 1;
-    if (workerRef.current) {
-      workerRef.current.terminate().catch(() => {});
-      workerRef.current = null;
-    }
+    abortRef.current?.abort();
+    abortRef.current = null;
     setScanning(false);
     setProgress(0);
     setScanStatus("");
@@ -100,10 +65,8 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
     if (courses.length) return;
 
     scanIdRef.current += 1;
-    if (workerRef.current) {
-      workerRef.current.terminate().catch(() => {});
-      workerRef.current = null;
-    }
+    abortRef.current?.abort();
+    abortRef.current = null;
     clearImage();
     setScanning(false);
   }, [courses.length]);
@@ -112,18 +75,16 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
     if (!resetKey) return;
 
     scanIdRef.current += 1;
-    if (workerRef.current) {
-      workerRef.current.terminate().catch(() => {});
-      workerRef.current = null;
-    }
+    abortRef.current?.abort();
+    abortRef.current = null;
     clearImage();
     setScanning(false);
   }, [resetKey]);
 
   /**
    * If the screenshot has a dark background (dark theme), invert and boost
-   * contrast so Tesseract — which is optimised for dark-on-light — can read
-   * the text reliably.  Falls back to the original file on any error.
+   * contrast before sending it to OCR. Falls back to the original file on
+   * any error.
    */
   async function preprocessImageForOcr(file) {
     return new Promise((resolve) => {
@@ -205,50 +166,31 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
     const scanId = scanIdRef.current + 1;
     scanIdRef.current = scanId;
 
-    let worker;
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
-      setScanStatus("Loading OCR engine");
-      const { createWorker, PSM } = await import("tesseract.js");
-      if (scanId !== scanIdRef.current) return;
-      worker = await withTimeout(createWorker("eng", 1, {
-        workerPath: `${OCR_ASSET_PATH}/worker.min.js`,
-        corePath: OCR_ASSET_PATH,
-        langPath: `${OCR_ASSET_PATH}/lang`,
-        logger: (message) => {
-          if (scanId === scanIdRef.current && typeof message.progress === "number") {
-            setScanStatus(statusFromOcrMessage(message));
-            setProgress((current) => Math.max(current, Math.round(progressFromOcrMessage(message))));
-          }
-        },
-      }), OCR_SETUP_TIMEOUT_MS, "OCR setup timed out.");
-      if (scanId !== scanIdRef.current) {
-        await worker.terminate();
-        return;
-      }
-      workerRef.current = worker;
       setScanStatus("Preparing screenshot");
       setProgress((current) => Math.max(current, 25));
-      await worker.setParameters({
-        tessedit_pageseg_mode: PSM.SPARSE_TEXT,
-        preserve_interword_spaces: "1",
-        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,:;#-_[]|/\\~",
-      });
       const processedFile = await preprocessImageForOcr(file);
       if (scanId !== scanIdRef.current) return;
-      setScanStatus("Reading text");
+      setScanStatus("Sending image to PaddleOCR");
       setProgress((current) => Math.max(current, 45));
-      const result = await withTimeout(
-        worker.recognize(processedFile),
-        OCR_RECOGNIZE_TIMEOUT_MS,
-        "OCR reading timed out.",
-      );
+      const text = await extractEnglishTextWithPaddleApi(processedFile, {
+        signal: controller.signal,
+        onProgress: ({ progress: nextProgress, status }) => {
+          if (scanId !== scanIdRef.current) return;
+          setScanStatus(status || "Reading image with PaddleOCR");
+          setProgress((current) => Math.max(current, Math.round(nextProgress)));
+        },
+      });
       if (scanId !== scanIdRef.current) return;
-      const codes = extractCourseCodesFromOcr(result.data.text, courses);
+      const codes = extractCourseCodesFromOcr(text, courses);
       console.debug("OCR scan debug", {
         fileName: file.name || "Pasted screenshot",
         detectedCodes: codes,
         availableCourseCount: courses.length,
-        rawText: result.data.text,
+        rawText: text,
       });
 
       if (!codes.length) {
@@ -267,21 +209,14 @@ export default function ImageCourseScanner({ courses, onCodesDetected, resetKey 
       setScanStatus("Done");
     } catch (err) {
       if (scanId !== scanIdRef.current) return;
-      const timedOut = /timed out/i.test(err?.message || "");
+      const timedOut = /timed out|took too long/i.test(err?.message || "");
       setError(
         timedOut
           ? "OCR is taking too long. Try a tighter crop of only the course list, or check your connection and scan again."
-          : "The image could not be read. Try a clearer, tighter screenshot of the course list.",
+          : err?.message || "The image could not be read. Try a clearer, tighter screenshot of the course list.",
       );
     } finally {
-      if (worker) {
-        try {
-          await worker.terminate();
-        } catch {
-          // The worker may already be closed after a recognition failure.
-        }
-      }
-      if (workerRef.current === worker) workerRef.current = null;
+      if (abortRef.current === controller) abortRef.current = null;
       if (scanId === scanIdRef.current) {
         setScanning(false);
         setScanStatus("");
