@@ -110,7 +110,7 @@ Use this method with the UMS **Offered Sections** page.
    - **Desktop:** press `Ctrl + S`, select **Webpage, Complete** or **HTML**, and save the file.
    - **Mobile:** open the browser menu `⋮` and choose **Download**. Mobile browsers may save the page as `.mhtml`, `.mht`, or without any file extension; all of these are supported.
 6. Open SEU Routine Maker.
-7. Under **Add your UMS export**, upload the saved page. The importer checks the file contents, so Android downloads without an extension also work.
+7. Under **Add your UMS export**, upload the saved page. The importer supports HTML, MHTML, Android downloads without an extension, and PDFs saved from iPhone Safari.
 8. Wait for the success message confirming that the course sections were parsed and saved automatically.
 9. Add section codes using any option:
    - Type or paste codes such as `CSE361.3`, one per line or separated by commas.

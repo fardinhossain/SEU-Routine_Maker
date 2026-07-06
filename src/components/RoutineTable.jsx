@@ -68,20 +68,25 @@ const RoutineTable = forwardRef(function RoutineTable(
     0,
   );
 
-  const [showFullCourse, setShowFullCourse] = useState(() =>
-    readStoredValue(STORAGE_KEYS.showFullCourse, false)
-  );
-  const [showFullTeacher, setShowFullTeacher] = useState(() =>
-    readStoredValue(STORAGE_KEYS.showFullTeacher, false)
-  );
+  const [showFullCourse, setShowFullCourse] = useState(false);
+  const [showFullTeacher, setShowFullTeacher] = useState(false);
+  const [settingsHydrated, setSettingsHydrated] = useState(false);
 
   useEffect(() => {
+    setShowFullCourse(readStoredValue(STORAGE_KEYS.showFullCourse, false));
+    setShowFullTeacher(readStoredValue(STORAGE_KEYS.showFullTeacher, false));
+    setSettingsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!settingsHydrated) return;
     writeStoredValue(STORAGE_KEYS.showFullCourse, showFullCourse);
-  }, [showFullCourse]);
+  }, [settingsHydrated, showFullCourse]);
 
   useEffect(() => {
+    if (!settingsHydrated) return;
     writeStoredValue(STORAGE_KEYS.showFullTeacher, showFullTeacher);
-  }, [showFullTeacher]);
+  }, [settingsHydrated, showFullTeacher]);
 
   return (
     <section

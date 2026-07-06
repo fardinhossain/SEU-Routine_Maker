@@ -23,6 +23,7 @@ import {
   X,
 } from "lucide-react";
 import RoutineTable from "./RoutineTable";
+import { normalizeCourseMetadata } from "../lib/parser";
 import {
   getDayPatternOptions,
   getTimeSlotOptions,
@@ -38,7 +39,7 @@ import {
 import { readStoredValue, STORAGE_KEYS, writeStoredValue } from "../lib/storage";
 
 function initialOrganizerData() {
-  const courses = readStoredValue(STORAGE_KEYS.courses, []);
+  const courses = readStoredValue(STORAGE_KEYS.courses, []).map(normalizeCourseMetadata);
   const shortNames = readStoredValue(STORAGE_KEYS.shortNames, {});
   const availableCodes = new Set(courses.map((course) => course.courseCode));
   const selected = uniqueCourseSelections(
@@ -62,10 +63,10 @@ function copyText(value) {
 }
 
 export default function SectionOrganizerPage() {
-  const initial = useMemo(initialOrganizerData, []);
-  const [courses] = useState(initial.courses);
-  const [shortNames] = useState(initial.shortNames);
-  const [selectedCodes, setSelectedCodes] = useState(initial.selected);
+  const [courses, setCourses] = useState([]);
+  const [shortNames, setShortNames] = useState({});
+  const [selectedCodes, setSelectedCodes] = useState([]);
+  const [storageHydrated, setStorageHydrated] = useState(false);
   const [search, setSearch] = useState("");
   const [dayFilter, setDayFilter] = useState("ALL");
   const [dayMenuOpen, setDayMenuOpen] = useState(false);
@@ -82,6 +83,14 @@ export default function SectionOrganizerPage() {
   const [pendingReplacement, setPendingReplacement] = useState(null);
   const [pendingConflict, setPendingConflict] = useState(null);
   const [showRoutinePreview, setShowRoutinePreview] = useState(false);
+
+  useEffect(() => {
+    const stored = initialOrganizerData();
+    setCourses(stored.courses);
+    setShortNames(stored.shortNames);
+    setSelectedCodes(stored.selected);
+    setStorageHydrated(true);
+  }, []);
 
   const allGroups = useMemo(() => groupSectionsBySchedule(courses), [courses]);
   const dayOptions = useMemo(() => getDayPatternOptions(courses), [courses]);
@@ -258,6 +267,14 @@ export default function SectionOrganizerPage() {
       return;
     }
     writeStoredValue(STORAGE_KEYS.selectedCodes, selectedCodes);
+  }
+
+  if (!storageHydrated) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-ink-950 px-4 text-center text-slate-200">
+        <p className="text-sm text-slate-400">Loading saved course data…</p>
+      </main>
+    );
   }
 
   if (!courses.length) {

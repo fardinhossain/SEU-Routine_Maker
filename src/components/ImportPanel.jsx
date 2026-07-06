@@ -2,6 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, FileCode2, LoaderCircle, Trash2, UploadCloud, WandSparkles } from "lucide-react";
+import { extractUmsTextFromPdf, isPdfFile } from "../lib/pdfImport";
+
+function readFileAsText(file) {
+  if (typeof file.text === "function") return file.text();
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("This file could not be read."));
+    reader.readAsText(file);
+  });
+}
 
 export default function ImportPanel({
   rawHtml,
@@ -11,13 +23,16 @@ export default function ImportPanel({
   courseCount,
   parsing,
   successMessage,
+  onImportError,
 }) {
   const inputRef = useRef(null);
   const [fileName, setFileName] = useState("");
   const [dragging, setDragging] = useState(false);
+  const [readingFile, setReadingFile] = useState(false);
+  const [fileProgress, setFileProgress] = useState(0);
+  const [fileStatus, setFileStatus] = useState("");
 
-  // Clear displayed filename (and file input) whenever the rawHtml is cleared by parent
-  // (e.g. Reset saved data, Clear HTML, or after parsing error)
+  // Clear displayed filename (and file input) whenever imported data is cleared by parent.
   useEffect(() => {
     if (!rawHtml) {
       setFileName("");
@@ -25,27 +40,35 @@ export default function ImportPanel({
     }
   }, [rawHtml]);
 
-  function loadFile(file) {
+  async function loadFile(file) {
     if (!file) return;
+    setReadingFile(true);
+    setFileProgress(1);
+    setFileStatus("Reading file");
+    setFileName(file.name || "Saved UMS page");
 
-    // Some Android browsers save an MHTML page without a file extension and
-    // report it as a generic file. Read first and let the UMS parser validate
-    // the actual contents instead of trusting the filename or MIME type.
-    const reader = new FileReader();
-    reader.onload = () => {
-      const html = String(reader.result || "");
-      if (!html.trim()) {
-        setFileName("This file is empty");
-        return;
-      }
-      setRawHtml(html);
-      setFileName(file.name || "Saved UMS page");
-      onParse(html);
-    };
-    reader.onerror = () => {
-      setFileName("This file could not be read");
-    };
-    reader.readAsText(file);
+    try {
+      const pdf = await isPdfFile(file);
+      const content = pdf
+        ? await extractUmsTextFromPdf(file, ({ progress, status }) => {
+            setFileProgress(progress);
+            setFileStatus(status);
+          })
+        : await readFileAsText(file);
+
+      if (!content.trim()) throw new Error("This file is empty.");
+      setRawHtml(content);
+      onParse(content, { format: pdf ? "pdf-text" : "web-page" });
+    } catch (error) {
+      const message = error?.message || "This file could not be read.";
+      setFileName(message);
+      onImportError?.(message);
+    } finally {
+      setReadingFile(false);
+      setFileProgress(0);
+      setFileStatus("");
+      if (inputRef.current) inputRef.current.value = "";
+    }
   }
 
   function clearHtmlInput() {
@@ -77,7 +100,7 @@ export default function ImportPanel({
       <div className="grid min-w-0 gap-3 sm:gap-4 lg:grid-cols-[.8fr_1.2fr]">
         <button
           type="button"
-          disabled={parsing}
+          disabled={parsing || readingFile}
           onClick={() => inputRef.current?.click()}
           onDragOver={(event) => { event.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
@@ -93,8 +116,16 @@ export default function ImportPanel({
           <span className="mb-3 grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-white/[.04] text-mint-400 transition group-hover:-translate-y-0.5">
             <UploadCloud size={23} />
           </span>
-          <span className="text-sm font-semibold text-slate-200">Drop your saved UMS page here</span>
-          <span className="mt-1 max-w-60 truncate text-xs text-slate-500">{fileName || "HTML, MHTML, or an extensionless Android download"}</span>
+          <span className="text-sm font-semibold text-slate-200">Drop your saved UMS page or PDF here</span>
+          <span className="mt-1 max-w-60 truncate text-xs text-slate-500">{fileStatus || fileName || "HTML, MHTML, PDF, or an extensionless Android download"}</span>
+          {!fileName && !readingFile && (
+            <span className="mt-1.5 text-[10px] text-slate-600">iPhone: Share → Markup → Done → Save to Files</span>
+          )}
+          {readingFile && (
+            <span className="mt-3 h-1.5 w-40 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
+              <span className="block h-full rounded-full bg-mint-400 transition-[width]" style={{ width: `${Math.max(5, fileProgress)}%` }} />
+            </span>
+          )}
           <input
             ref={inputRef}
             className="hidden"
@@ -120,7 +151,7 @@ export default function ImportPanel({
         </label>
       </div>
 
-      {!parsing && (successMessage || rawHtml) && (
+      {!parsing && !readingFile && (successMessage || rawHtml) && (
         <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:items-stretch">
           {successMessage && (
             <div className="flex flex-1 items-start gap-2.5 rounded-xl border border-mint-400/20 bg-mint-400/[.07] px-3.5 py-3 text-sm text-mint-300" role="status">
@@ -133,9 +164,9 @@ export default function ImportPanel({
               type="button"
               onClick={clearHtmlInput}
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-400/15 bg-rose-400/[.045] px-4 py-3 text-sm font-medium text-rose-300/80 transition hover:border-rose-400/30 hover:bg-rose-400/[.09] hover:text-rose-200"
-              title="Clear imported HTML, parsed sections, and routine data"
+              title="Clear imported data, parsed sections, and routine data"
             >
-              <Trash2 size={15} /> Clear HTML
+              <Trash2 size={15} /> Clear import
             </button>
           )}
           {successMessage && (
@@ -151,10 +182,10 @@ export default function ImportPanel({
         </div>
       )}
 
-      {parsing && (
+      {(parsing || readingFile) && (
         <div className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-mint-400/15 bg-mint-400/[.06] px-3.5 py-2.5 text-xs font-medium text-mint-300 sm:w-auto">
           <LoaderCircle className="animate-spin" size={15} />
-          Parsing and saving sections…
+          {readingFile ? fileStatus || "Reading file…" : "Parsing and saving sections…"}
         </div>
       )}
     </section>

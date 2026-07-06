@@ -23,7 +23,7 @@ import ImportPanel from "./components/ImportPanel";
 import LoadingScreen from "./components/LoadingScreen";
 import RoutineTable from "./components/RoutineTable";
 import ShortNameEditor from "./components/ShortNameEditor";
-import { parseUmsHtml } from "./lib/parser";
+import { normalizeCourseMetadata, parseUmsHtml, parseUmsText } from "./lib/parser";
 import { buildRoutine, courseIdentity, findDuplicateCourseSelections, formatTime12, parseCodeList, timeToMinutes, uniqueCourseSelections, WEEK_DAYS } from "./lib/routine";
 import { clearRoutineStorage, readStoredValue, STORAGE_KEYS, writeStoredValue } from "./lib/storage";
 
@@ -34,7 +34,7 @@ function loadInitialState() {
   const selectedCodes = readStoredValue(STORAGE_KEYS.selectedCodes, []);
   return {
     rawHtml: readStoredValue(STORAGE_KEYS.rawHtml, ""),
-    courses: readStoredValue(STORAGE_KEYS.courses, []),
+    courses: readStoredValue(STORAGE_KEYS.courses, []).map(normalizeCourseMetadata),
     selectedCodes,
     codeInput: selectedCodes.join("\n"),
     shortNames: readStoredValue(STORAGE_KEYS.shortNames, {}),
@@ -329,20 +329,16 @@ const MobileTableRoutineExport = forwardRef(function MobileTableRoutineExport(
 });
 
 export default function App() {
-  const initial = useMemo(loadInitialState, []);
-  const [rawHtml, setRawHtml] = useState(initial.rawHtml);
-  const [courses, setCourses] = useState(initial.courses);
-  const [selectedCodes, setSelectedCodes] = useState(initial.selectedCodes);
-  const [codeInput, setCodeInput] = useState(initial.codeInput);
-  const [shortNames, setShortNames] = useState(initial.shortNames);
+  const [rawHtml, setRawHtml] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [selectedCodes, setSelectedCodes] = useState([]);
+  const [codeInput, setCodeInput] = useState("");
+  const [shortNames, setShortNames] = useState({});
   const [message, setMessage] = useState(null);
   const [parsing, setParsing] = useState(false);
   const [exporting, setExporting] = useState("");
-  const [importSuccessMessage, setImportSuccessMessage] = useState(
-    initial.rawHtml && initial.courses.length
-      ? `${initial.courses.length} course sections parsed and saved in this browser.`
-      : "",
-  );
+  const [importSuccessMessage, setImportSuccessMessage] = useState("");
+  const [storageHydrated, setStorageHydrated] = useState(false);
   const [imageResetKey, setImageResetKey] = useState(0);
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
@@ -353,6 +349,19 @@ export default function App() {
   const futuristicRoutineRef = useRef(null);
   const mobileTableRoutineRef = useRef(null);
   const pendingRoutineScrollRef = useRef(false);
+
+  useEffect(() => {
+    const stored = loadInitialState();
+    setRawHtml(stored.rawHtml);
+    setCourses(stored.courses);
+    setSelectedCodes(stored.selectedCodes);
+    setCodeInput(stored.codeInput);
+    setShortNames(stored.shortNames);
+    if (stored.rawHtml && stored.courses.length) {
+      setImportSuccessMessage(`${stored.courses.length} course sections parsed and saved in this browser.`);
+    }
+    setStorageHydrated(true);
+  }, []);
 
   const selectedCourses = useMemo(() => {
     const lookup = new Map(courses.map((course) => [course.courseCode.toUpperCase(), course]));
@@ -392,8 +401,9 @@ export default function App() {
   }, [codeInput, courses]);
 
   useEffect(() => {
+    if (!storageHydrated) return;
     writeStoredValue(STORAGE_KEYS.shortNames, shortNames);
-  }, [shortNames]);
+  }, [shortNames, storageHydrated]);
 
   useLayoutEffect(() => {
     let alreadyShown = loadingScreenShown;
@@ -434,11 +444,12 @@ export default function App() {
   }, [showLoadingScreen]);
 
   useEffect(() => {
+    if (!storageHydrated) return;
     const available = new Set(courses.map((course) => course.courseCode.toUpperCase()));
     const validCodes = uniqueCourseSelections(parseCodeList(codeInput).filter((code) => available.has(code)));
     setSelectedCodes(validCodes);
     writeStoredValue(STORAGE_KEYS.selectedCodes, validCodes);
-  }, [codeInput, courses]);
+  }, [codeInput, courses, storageHydrated]);
 
   useEffect(() => {
     const hash = typeof window !== 'undefined' ? window.location.hash : '';
@@ -473,13 +484,15 @@ export default function App() {
     window.setTimeout(() => setMessage((current) => current?.text === text ? null : current), 6000);
   }
 
-  function handleParse(htmlOverride) {
+  function handleParse(htmlOverride, importOptions = {}) {
     const htmlToParse = typeof htmlOverride === "string" ? htmlOverride : rawHtml;
     setImportSuccessMessage("");
     setParsing(true);
     window.setTimeout(() => {
       try {
-        const parsed = parseUmsHtml(htmlToParse);
+        const parsed = importOptions.format === "pdf-text"
+          ? parseUmsText(htmlToParse)
+          : parseUmsHtml(htmlToParse);
         const sourceType = parsed.parseDebug?.sourceType || parsed[0]?.sourceType || "offered-sections";
         const dashboardCodes = sourceType === "dashboard-registered-courses"
           ? uniqueCourseSelections(parsed.map((course) => course.courseCode.toUpperCase()))
@@ -499,7 +512,7 @@ export default function App() {
           setImportSuccessMessage(`${parsed.length} course sections parsed and saved in this browser.`);
         }
       } catch (error) {
-        showMessage("error", error.message || "The HTML could not be parsed.");
+        showMessage("error", error.message || "The UMS file could not be parsed.");
       } finally {
         setParsing(false);
       }
@@ -523,11 +536,11 @@ export default function App() {
     setShortNames({});
     setImportSuccessMessage("");
     setImageResetKey((current) => current + 1);
-    showMessage("success", "Imported HTML, parsed sections, and routine data were cleared.");
+    showMessage("success", "Imported data, parsed sections, and routine data were cleared.");
   }
 
   function handleReset() {
-    if (!window.confirm("Reset the imported HTML, parsed courses, routine, and custom short names?")) return;
+    if (!window.confirm("Reset the imported UMS data, parsed courses, routine, and custom short names?")) return;
     clearRoutineStorage();
     setRawHtml("");
     setCourses([]);
@@ -768,7 +781,7 @@ export default function App() {
           }}
           onOpenOrganizer={() => {
             if (!courses.length) {
-              window.alert("Please upload your UMS HTML file first.");
+              window.alert("Please upload your UMS file first.");
               return;
             }
             window.location.assign("/organizer");
@@ -797,6 +810,7 @@ export default function App() {
             courseCount={courses.length}
             parsing={parsing}
             successMessage={importSuccessMessage}
+            onImportError={(text) => showMessage("error", text)}
           />
           <CoursePicker
             courses={courses}

@@ -1,6 +1,20 @@
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
-import { extractHtmlPayload, makeShortTitle, parseUmsHtml } from "../src/lib/parser.js";
+import {
+  extractHtmlPayload,
+  makeShortTitle,
+  normalizeCourseMetadata,
+  parseUmsHtml,
+  parseUmsText,
+} from "../src/lib/parser.js";
+import {
+  chooseBestPdfText,
+  hasPdfSignature,
+  mergePdfTextCandidates,
+  normalizePdfText,
+  pdfTextItemsInContentOrder,
+  pdfTextItemsToText,
+} from "../src/lib/pdfImport.js";
 import { extractCourseCodesFromOcr } from "../src/lib/ocr.js";
 import {
   dayPatternKey,
@@ -18,6 +32,95 @@ import {
 } from "../src/lib/routine.js";
 
 global.DOMParser = new JSDOM("").window.DOMParser;
+
+assert.equal(hasPdfSignature(new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31])), true);
+assert.equal(hasPdfSignature(new Uint8Array([0x3c, 0x68, 0x74, 0x6d, 0x6c])), false);
+assert.equal(
+  normalizePdfText("CSE 361 . 6  SUN # 13 : 30 – 14 : 50 @ SEU516"),
+  "CSE361.6 SUN # 13:30 ~ 14:50 @ SEU516",
+);
+assert.equal(
+  normalizePdfText("CSE\uE06E\uE06E\uE06D.\uE06D MON # \uE06C\uE06D:\uE06D0 ~ \uE06C\uE06E:50 @ SEU2\uE06C\uE06DB"),
+  "CSE443.3 MON # 13:30 ~ 14:50 @ SEU213B",
+);
+assert.equal(normalizePdfText("CSE4433 CSE3616 CSE3811"), "CSE443.3 CSE361.6 CSE381.1");
+assert.equal(normalizePdfText("CSE38I.I CSE44A:3 CSE362 2"), "CSE381.1 CSE444.3 CSE362.2");
+assert.equal(
+  normalizePdfText("C S E 4 4 3 . 3\nMON # 1 3 : 3 0 ~ 1 4:50 @\nS E U 2 1 3 B"),
+  "CSE443.3\nMON # 13:30 ~ 14:50 @\nSEU213B",
+);
+assert.equal(
+  normalizePdfText("R E G I S T E R E D  C O U R S E S\nCSE381.1 M0N # 11;30 - 12.50 © SEUS16"),
+  "Registered Courses\nCSE381.1 MON # 11:30 ~ 12:50 @ SEU516",
+);
+assert.equal(
+  pdfTextItemsToText([
+    { str: "SUN # 13:30 ~ 14:50 @ SEU516", transform: [1, 0, 0, 1, 300, 700], height: 12 },
+    { str: "CSE361.6", transform: [1, 0, 0, 1, 20, 700], height: 12 },
+    { str: "Operating Systems", transform: [1, 0, 0, 1, 20, 680], height: 12 },
+  ]),
+  "CSE361.6 SUN # 13:30 ~ 14:50 @ SEU516\nOperating Systems",
+);
+
+const pdfGridItems = [
+  { str: "CSE361.6", transform: [1, 0, 0, 1, 20, 700], height: 12, hasEOL: true },
+  { str: "Operating Systems", transform: [1, 0, 0, 1, 20, 680], height: 12, hasEOL: true },
+  { str: "[MRRR] Mst Rubaiya Raktin Raha", transform: [1, 0, 0, 1, 260, 700], height: 12, hasEOL: true },
+  { str: "rubaiya.raktinraha@seu.edu.bd", transform: [1, 0, 0, 1, 260, 680], height: 12, hasEOL: true },
+  { str: "SUN # 13:30 ~ 14:50 @ SEU516", transform: [1, 0, 0, 1, 520, 700], height: 12, hasEOL: true },
+  { str: "TUE # 13:30 ~ 14:50 @ SEU516", transform: [1, 0, 0, 1, 520, 680], height: 12, hasEOL: true },
+  { str: "CSE382.17", transform: [1, 0, 0, 1, 20, 620], height: 12, hasEOL: true },
+  { str: "Introduction to Embedded Systems Lab", transform: [1, 0, 0, 1, 20, 600], height: 12, hasEOL: true },
+  { str: "[SRAB] Sheikh Fazle Rabbi", transform: [1, 0, 0, 1, 260, 620], height: 12, hasEOL: true },
+  { str: "SUN # 16:30 ~ 18:30 @ SEU610", transform: [1, 0, 0, 1, 520, 620], height: 12, hasEOL: true },
+];
+const contentOrderPdfText = pdfTextItemsInContentOrder(pdfGridItems);
+assert.match(contentOrderPdfText, /CSE361\.6\nOperating Systems\n\[MRRR\]/);
+assert.match(contentOrderPdfText, /CSE382\.17\nIntroduction to Embedded Systems Lab\n\[SRAB\]/);
+assert.equal(
+  chooseBestPdfText([
+    "CSE361.6\nSUN # 13:30 ~ 14:50 @ SEU516\nSUN # 16:30 ~ 18:30 @ SEU610",
+    contentOrderPdfText,
+  ]),
+  contentOrderPdfText,
+);
+
+const mergedPartialPdfText = mergePdfTextCandidates([
+  [
+    "Registered Courses",
+    "CSE381.1",
+    "Introduction to Embedded Systems",
+    "[FUZ] Farhad Uz Zaman",
+    "MON # 11:30 ~ 12:50 @ SEU331",
+    "WED # 11:30 ~ 12:50 @ SEU331",
+    "CSE382.17",
+    "Introduction to Embedded Systems Lab",
+    "[SRAB] Sheikh Fazle Rabbi",
+    "SUN # 16:30 ~ 18:30 @ SEU610",
+  ].join("\n"),
+  [
+    "Registered Courses",
+    "CSE381.1 Course [FUZ] Farhad Uz Zaman",
+    "MON # 11:30 ~ 12:50 @ SEU331",
+    "WED # 11:30 ~ 12:50 @ SEU331",
+    "SUN # 16:30 ~ 18:30 @ SEU610",
+    "CSE443.3 Computer Graphics & Animation [MHSU] Mahjabin Sultana",
+    "MON # 13:30 ~ 14:50 @ SEU213B",
+    "WED # 13:30 ~ 14:50 @ SEU213B",
+  ].join("\n"),
+]);
+assert.deepEqual(
+  parseUmsText(mergedPartialPdfText).map(({ courseCode, shortTitle, meetings }) => ({
+    courseCode,
+    shortTitle,
+    meetingCount: meetings.length,
+  })),
+  [
+    { courseCode: "CSE381.1", shortTitle: "ES", meetingCount: 2 },
+    { courseCode: "CSE382.17", shortTitle: "ES Lab", meetingCount: 1 },
+    { courseCode: "CSE443.3", shortTitle: "CGA", meetingCount: 2 },
+  ],
+);
 
 const html = `
   <div class="ums-grid-offered-section">
@@ -44,6 +147,15 @@ assert.deepEqual(courses[0].meetings, [
 assert.equal(makeShortTitle("Operating Systems Lab"), "OS Lab");
 assert.equal(makeShortTitle("Introduction to Embedded Systems"), "ES");
 assert.equal(makeShortTitle("Computer Graphics & Animation Lab"), "CGA Lab");
+assert.deepEqual(
+  normalizeCourseMetadata({ courseCode: "CSE381.1", courseTitle: "Course", shortTitle: "COURS" }),
+  {
+    courseCode: "CSE381.1",
+    courseTitle: "Introduction to Embedded Systems",
+    shortTitle: "ES",
+    shortName: "ES",
+  },
+);
 
 const mhtmlBoundary = "----=_SEU_ROUTINE_TEST";
 const quotedPrintableHtml = html.replace(/=/g, "=3D");
@@ -110,6 +222,69 @@ assert.deepEqual(dashboardOs.schedules, [
   { day: "TUE", start: "13:30", end: "14:50", room: "SEU516" },
 ]);
 assert.equal(dashboardOs.sourceType, "dashboard-registered-courses");
+
+const registeredPdfTextCourses = parseUmsText([
+  "Registered Courses",
+  "CSE361.6 [MRRR] Mst Rubaiya Raktin Raha SUN # 13:30 ~ 14:50 @ SEU516",
+  "Operating Systems rubaiya.raktinraha@seu.edu.bd TUE # 13:30 ~ 14:50 @ SEU516",
+].join("\n"));
+assert.equal(registeredPdfTextCourses.parseDebug.sourceType, "dashboard-registered-courses");
+assert.deepEqual(registeredPdfTextCourses.map((course) => course.courseCode), ["CSE361.6"]);
+assert.equal(registeredPdfTextCourses[0].courseTitle, "Operating Systems");
+
+const malformedTitlePdfCourses = parseUmsText([
+  "Registered Courses",
+  "CSE362.2",
+  "Course",
+  "[MMIS] Md. Ismail",
+  "TUE # 11:30 ~ 13:30 @ SEU213A",
+  "CSE443.3",
+  "SEU213B",
+  "[MHSU] Mahjabin Sultana",
+  "MON # 13:30 ~ 14:50 @ SEU213B",
+].join("\n"));
+assert.deepEqual(
+  malformedTitlePdfCourses.map(({ courseCode, courseTitle, shortTitle }) => ({ courseCode, courseTitle, shortTitle })),
+  [
+    { courseCode: "CSE362.2", courseTitle: "Operating Systems Lab", shortTitle: "OS Lab" },
+    { courseCode: "CSE443.3", courseTitle: "Computer Graphics & Animation", shortTitle: "CGA" },
+  ],
+);
+
+const pdfWithImpossibleSchedule = parseUmsText([
+  "Registered Courses",
+  "CSE361.6 Operating Systems [MRRR] Mst Rubaiya Raktin Raha",
+  "SUN # 29:90 ~ 14:50 @ SEU516",
+  "TUE # 13:30 ~ 14:50 @ SEU516",
+].join("\n"));
+assert.deepEqual(pdfWithImpossibleSchedule[0].meetings, [
+  { day: "TUE", start: "13:30", end: "14:50", room: "SEU516" },
+]);
+
+const registeredGridPdfCourses = parseUmsText(`Registered Courses\n${contentOrderPdfText}`);
+assert.deepEqual(
+  registeredGridPdfCourses.map((course) => course.courseCode),
+  ["CSE361.6", "CSE382.17"],
+);
+assert.equal(
+  registeredGridPdfCourses.find((course) => course.courseCode === "CSE382.17").courseTitle,
+  "Introduction to Embedded Systems Lab",
+);
+assert.deepEqual(
+  registeredGridPdfCourses.find((course) => course.courseCode === "CSE382.17").meetings,
+  [{ day: "SUN", start: "16:30", end: "18:30", room: "SEU610" }],
+);
+
+const offeredPdfTextCourses = parseUmsText([
+  "Offered Sections",
+  "CSE361.6",
+  "Operating Systems",
+  "[MRRR] Mst Rubaiya Raktin Raha",
+  "SUN # 13:30 ~ 14:50 @ SEU516",
+  "TUE # 13:30 ~ 14:50 @ SEU516",
+].join("\n"));
+assert.equal(offeredPdfTextCourses.parseDebug.sourceType, "offered-sections");
+assert.equal(offeredPdfTextCourses[0].sourceType, "offered-sections");
 
 assert.throws(
   () => parseUmsHtml("<div>Registered Courses CSE361.6 Operating Systems [MRRR] Mst Rubaiya Raktin Raha</div>"),

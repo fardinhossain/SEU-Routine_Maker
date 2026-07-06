@@ -53,7 +53,9 @@ export default function FaqPage() {
   return (
     <div className="min-h-screen bg-ink-950 text-slate-200">
       <script
+        id="seu-routine-faq-jsonld"
         type="application/ld+json"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(faqStructuredData).replace(/</g, '\\u003c'),
         }}

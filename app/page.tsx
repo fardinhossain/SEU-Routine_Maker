@@ -106,7 +106,9 @@ export default function Home() {
   return (
     <>
       <script
+        id="seu-routine-jsonld"
         type="application/ld+json"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
         }}

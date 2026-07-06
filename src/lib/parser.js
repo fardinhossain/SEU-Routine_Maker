@@ -6,6 +6,22 @@ const DASHBOARD_SCHEDULE_PATTERN = /\b(SUN|MON|TUE|WED|THU|FRI|SAT)\s*#\s*(\d{1,
 const DASHBOARD_SCHEDULE_TEST = /\b(SUN|MON|TUE|WED|THU|FRI|SAT)\s*#\s*(\d{1,2}:\d{2})\s*~\s*(\d{1,2}:\d{2})\s*@\s*([A-Z0-9-]+)\b/i;
 const DASHBOARD_TEACHER_PATTERN = /\[([A-Z]{2,6})\]\s*([^<\n]+)/;
 const DASHBOARD_SOURCE_TYPE = "dashboard-registered-courses";
+const KNOWN_COURSE_TITLES = Object.freeze({
+  CSE361: "Operating Systems",
+  CSE362: "Operating Systems Lab",
+  CSE381: "Introduction to Embedded Systems",
+  CSE382: "Introduction to Embedded Systems Lab",
+  CSE443: "Computer Graphics & Animation",
+  CSE444: "Computer Graphics & Animation Lab",
+  CSE460: "Final Year Design Project I",
+});
+const KNOWN_FACULTY_NAMES = Object.freeze({
+  FUZ: "Farhad Uz Zaman",
+  MHSU: "Mahjabin Sultana",
+  MMIS: "Md. Ismail",
+  MRRR: "Mst Rubaiya Raktin Raha",
+  SRAB: "Sheikh Fazle Rabbi",
+});
 const MEETING_PATTERN = /\b(SAT|SUN|MON|TUE|WED|THU|FRI)\s*#\s*(\d{1,2}:\d{2})\s*(?:~|–|—|-)\s*(\d{1,2}:\d{2})\s*@\s*([^\s,;|<]+)/gi;
 
 function decodeBytes(bytes, charset = "utf-8") {
@@ -207,6 +223,23 @@ function uniqueMeetings(meetings = []) {
   });
 }
 
+function timeToMinutes(value = "") {
+  const match = String(value).match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours > 23 || minutes > 59) return null;
+  return hours * 60 + minutes;
+}
+
+function isPlausibleMeeting(start, end) {
+  const startMinutes = timeToMinutes(start);
+  const endMinutes = timeToMinutes(end);
+  if (startMinutes === null || endMinutes === null) return false;
+  const duration = endMinutes - startMinutes;
+  return duration > 0 && duration <= 6 * 60;
+}
+
 export function parseMeetings(element) {
   const source = textWithBreaks(element);
   const meetings = [];
@@ -214,6 +247,7 @@ export function parseMeetings(element) {
 
   MEETING_PATTERN.lastIndex = 0;
   while ((match = MEETING_PATTERN.exec(source)) !== null) {
+    if (!isPlausibleMeeting(match[2], match[3])) continue;
     const meeting = {
       day: match[1].toUpperCase(),
       start: match[2].padStart(5, "0"),
@@ -257,6 +291,7 @@ function parseDashboardSchedules(source = "") {
 
   DASHBOARD_SCHEDULE_PATTERN.lastIndex = 0;
   while ((match = DASHBOARD_SCHEDULE_PATTERN.exec(normalizedSource)) !== null) {
+    if (!isPlausibleMeeting(match[2], match[3])) continue;
     schedules.push({
       day: match[1].toUpperCase(),
       start: match[2].padStart(5, "0"),
@@ -300,9 +335,10 @@ function isDashboardTitleNoise(line = "", sectionCode = "") {
   if (DASHBOARD_SECTION_CODE_TEST.test(normalized)) return true;
   if (DASHBOARD_SCHEDULE_TEST.test(normalized)) return true;
   if (/^\[[A-Z]{2,6}\]/.test(upper)) return true;
+  if (/^SEU\d+[A-Z]?$/i.test(normalized)) return true;
   if (/<\/?[a-z][^>]*>/i.test(normalized)) return true;
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(normalized)) return true;
-  if (["COURSE", "FACULTY", "SCHEDULE", "REGISTERED COURSES", "STUDENT DASHBOARD"].includes(upper)) return true;
+  if (["COURS", "COURSE", "FACULT", "FACULTY", "SCHEDUL", "SCHEDULE", "REGISTERED COURSES", "STUDENT DASHBOARD"].includes(upper)) return true;
 
   return false;
 }
@@ -315,6 +351,14 @@ function inferDashboardTitle(source = "", sectionCode = "") {
   });
   const lineCandidate = lines
     .slice(Math.max(0, codeLineIndex + 1))
+    .map((line) => {
+      const stopIndexes = [
+        line.search(DASHBOARD_TEACHER_PATTERN),
+        line.search(DASHBOARD_SCHEDULE_TEST),
+        line.search(/[^\s@]+@[^\s@]+\.[^\s@]+/i),
+      ].filter((index) => index >= 0);
+      return cleanText(line.slice(0, stopIndexes.length ? Math.min(...stopIndexes) : line.length));
+    })
     .find((line) => !isDashboardTitleNoise(line, sectionCode));
 
   if (lineCandidate) return lineCandidate;
@@ -327,11 +371,14 @@ function inferDashboardTitle(source = "", sectionCode = "") {
   const stopIndexes = [
     afterCode.search(DASHBOARD_TEACHER_PATTERN),
     afterCode.search(DASHBOARD_SCHEDULE_TEST),
+    afterCode.search(/[^\s@]+@[^\s@]+\.[^\s@]+/i),
   ].filter((index) => index >= 0);
   const titleEnd = stopIndexes.length ? Math.min(...stopIndexes) : afterCode.length;
   const inlineTitle = cleanText(afterCode.slice(0, titleEnd));
 
-  return inlineTitle || "Untitled course";
+  return inlineTitle && !isDashboardTitleNoise(inlineTitle, sectionCode)
+    ? inlineTitle
+    : "Untitled course";
 }
 
 export function makeShortTitle(title = "") {
@@ -364,6 +411,22 @@ export function makeShortTitle(title = "") {
   return `${acronym}${isLab ? " Lab" : ""}`;
 }
 
+export function normalizeCourseMetadata(course = {}) {
+  const normalizedCode = normalizeSectionCode(course.courseCode || course.sectionCode || "");
+  const { baseCourseCode } = sectionCodeParts(normalizedCode);
+  const courseTitle = KNOWN_COURSE_TITLES[baseCourseCode]
+    || course.courseTitle
+    || "Untitled course";
+  const shortTitle = makeShortTitle(courseTitle);
+
+  return {
+    ...course,
+    courseTitle,
+    shortTitle,
+    shortName: shortTitle,
+  };
+}
+
 function parseDashboardCourseBlock(source = "", preferredCode = "") {
   const sectionCode = normalizeSectionCode(preferredCode || extractDashboardSectionCodes(source)[0] || "");
   if (!sectionCode) return null;
@@ -372,9 +435,11 @@ function parseDashboardCourseBlock(source = "", preferredCode = "") {
   if (!schedules.length) return null;
 
   const { baseCourseCode, section } = sectionCodeParts(sectionCode);
-  const courseTitle = inferDashboardTitle(source, sectionCode);
+  const courseTitle = KNOWN_COURSE_TITLES[baseCourseCode] || inferDashboardTitle(source, sectionCode);
   const shortTitle = makeShortTitle(courseTitle);
-  const { teacherInitial, teacherName } = parseDashboardTeacher(source);
+  const parsedTeacher = parseDashboardTeacher(source);
+  const teacherInitial = parsedTeacher.teacherInitial;
+  const teacherName = KNOWN_FACULTY_NAMES[teacherInitial] || parsedTeacher.teacherName;
 
   return {
     courseCode: sectionCode,
@@ -649,4 +714,25 @@ export function parseUmsHtml(rawHtml) {
   throw new Error(
     "No valid course sections with timetable data were found. Make sure this is a saved UMS Offered Sections HTML or MHTML page.",
   );
+}
+
+export function parseUmsText(rawText = "") {
+  const escapedText = String(rawText)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const courses = parseUmsHtml(`<main><pre>${escapedText}</pre></main>`);
+  const looksLikeOfferedSections = /\b(?:OFFERED SECTIONS?|ADVISING TABLE|PREREGISTERED)\b/i.test(rawText)
+    && !/\bREGISTERED COURSES\b/i.test(rawText);
+
+  if (!looksLikeOfferedSections) return courses;
+
+  courses.forEach((course) => {
+    course.sourceType = "offered-sections";
+  });
+  return attachParseDebug(courses, {
+    ...courses.parseDebug,
+    sourceType: "offered-sections",
+    courses,
+  });
 }

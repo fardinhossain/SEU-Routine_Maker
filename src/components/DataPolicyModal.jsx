@@ -5,22 +5,22 @@ const POLICY_ITEMS = [
   {
     icon: Database,
     title: "No server database",
-    text: "The app has no backend or cloud database. Your UMS HTML, courses, and routine are not sent to an application server.",
+    text: "The app has no backend or cloud database. Your UMS HTML, PDF, courses, and routine are not sent to an application server.",
   },
   {
     icon: HardDrive,
     title: "Browser-only storage",
-    text: "Raw HTML, parsed courses, selected codes, and custom labels stay in this browser's localStorage until you reset or clear site data.",
+    text: "Imported text, parsed courses, selected codes, and custom labels stay in this browser's localStorage until you reset or clear site data.",
   },
   {
     icon: Image,
-    title: "Images stay temporary",
-    text: "Uploaded screenshots are processed in browser memory for OCR. They are not saved by the app or uploaded to an application server.",
+    title: "Files stay private",
+    text: "Uploaded PDFs and screenshots are processed in browser memory. The original files are not saved by the app or uploaded to an application server.",
   },
   {
     icon: Trash2,
     title: "You control removal",
-    text: "Clear HTML removes imported and parsed data. Clear routine removes selections and the image preview. Reset saved data removes everything saved by the app.",
+    text: "Clear import removes imported and parsed data. Clear routine removes selections and the image preview. Reset saved data removes everything saved by the app.",
   },
 ];
 
