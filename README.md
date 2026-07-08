@@ -75,7 +75,7 @@ No account, backend, or external database is required for routine data. The app 
 
 ## Features
 
-- Upload a saved UMS `.html`, `.htm`, `.mhtml`, or `.mht` page.
+- Upload a saved UMS page in `.html`, `.htm`, `.mhtml`, or `.mht` format. PDF and image uploads are also supported.
 - Import PDF exports or clear PNG, JPG, WebP, BMP, and TIFF screenshots of the Registered Courses schedule.
 - Paste raw UMS HTML manually.
 - Parse UMS Offered Sections and Student Dashboard Registered Courses schedules.
