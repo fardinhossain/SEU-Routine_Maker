@@ -19,6 +19,7 @@
 - [PNG export showcase](#png-export-showcase)
 - [Features](#features)
 - [How to use the web app](#how-to-use-the-web-app)
+- [Class reminders and calendar export](#class-reminders-and-calendar-export)
 - [Course selection rules](#course-selection-rules)
 - [Data storage, privacy, and security](#data-storage-privacy-and-security)
 - [Deployment and search indexing](#deployment-and-search-indexing)
@@ -93,6 +94,8 @@ No account, backend, or external database is required for routine data. The app 
 - Prevent selecting more than one section of the same course.
 - Edit automatically generated short course names.
 - Switch routine cards between short/full course names and faculty initials/full names.
+- Enable browser class reminders for 5, 10, 15, or 30 minutes before each class.
+- Export the weekly routine as an `.ics` calendar file with built-in class alarms.
 - Print the routine, export it as PDF, or download PNG versions for PC, Modern, Futuristic, and Mobile layouts.
 - Restore the previous routine after reopening the browser.
 - Clear only the routine or reset all saved data.
@@ -194,6 +197,18 @@ When the routine has no unresolved conflicts or duplicate-course selections, use
 - **PNG** to choose **Download PC PNG**, **Download Modern PNG**, **Download Futuristic PNG**, or **Download Mobile PNG**.
 - **PDF** to download a landscape PDF.
 
+## Class reminders and calendar export
+
+After generating a routine, the **Class Reminders** panel can help you remember upcoming classes from the same browser.
+
+1. Choose when to be reminded: **5**, **10**, **15**, or **30** minutes before class.
+2. Select **Enable** and allow notification permission when the browser asks.
+3. Keep the site or installed PWA open for browser reminders. The reminder shows the course name and room, then checks the routine again every minute.
+4. Set the semester end date before exporting the calendar. The default can be reset from the same panel.
+5. Select **Export to Phone Calendar (.ics)** to download a calendar file with weekly class events and reminder alarms.
+
+Browser reminders are useful while the website is open. For daily phone notifications that still work after closing the website, import the `.ics` file into a calendar app such as Google Calendar, Apple Calendar, or Outlook.
+
 ## Course selection rules
 
 ### One section per course
@@ -236,6 +251,8 @@ The app uses browser `localStorage`, so routine data remains available in the sa
 | Selected course codes | Browser `localStorage` | Until **Clear routine**, **Clear HTML**, **Reset saved data**, or browser site data is cleared |
 | Custom short names | Browser `localStorage` | Until **Clear HTML**, **Reset saved data**, or browser site data is cleared |
 | Routine display preferences | Browser `localStorage` | Until **Clear HTML**, **Reset saved data**, or browser site data is cleared |
+| Reminder enabled state, reminder time, and semester end date | Browser `localStorage` | Until changed in the app or browser site data is cleared |
+| Calendar export file | Downloaded to the user's device by the browser | Managed by the user's device or calendar app after download |
 | Uploaded screenshots | Sent to PaddleOCR AI Studio for OCR, then kept only in browser memory by the app UI | Cleared from the app after reset, reload, or leaving the page |
 | Anonymous page-view metadata | Vercel Web Analytics | Managed under Vercel's analytics retention policy |
 
@@ -245,6 +262,8 @@ The app uses browser `localStorage`, so routine data remains available in the sa
 - No UMS password or login credential is requested or collected.
 - Uploaded screenshots are sent through the app server to PaddleOCR AI Studio for text extraction.
 - The saved UMS HTML is parsed locally and is never rendered as executable page content.
+- Browser reminders use the browser notification permission and local routine data; they do not require a routine database.
+- Calendar export creates a local `.ics` file for the user to import into a calendar app.
 - The deployed app uses [Vercel Web Analytics](https://vercel.com/docs/analytics/privacy-policy) for anonymous, cookie-free page-view statistics. It may record the page path, referrer, approximate location, browser, operating system, and device type, but it does not receive imported UMS data, screenshots, selected codes, or generated routines.
 - **Clear HTML** removes imported HTML, parsed sections, selected codes, custom labels, routine data, and image-scanner state.
 - **Clear routine** removes selected courses and resets the image scanner while keeping parsed UMS data.
