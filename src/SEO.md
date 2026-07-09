@@ -5,6 +5,7 @@ Site: `https://seuroutine.vercel.app/`
 Goal: help the site rank for searches such as:
 
 - `seu routine maker`
+- `routine maker seu`
 - `seu routine`
 - `seu class routine maker`
 - `seu schedule maker`
@@ -13,7 +14,7 @@ Goal: help the site rank for searches such as:
 ## Implemented technical SEO
 
 - Use the Next.js App Router Metadata API in `app/layout.tsx` and route pages.
-- Homepage title: `Build Your SEU Routine Within Seconds | SEU Routine Maker`.
+- Homepage title: `Routine Maker SEU | Build Your SEU Routine Within Seconds`.
 - Add descriptive metadata, keywords, Open Graph data, Twitter card data, and canonical URLs.
 - Add JSON-LD structured data in `app/page.tsx` using `WebSite`, `WebApplication`, and `Person`.
 - Add `app/robots.ts` and `app/sitemap.ts`.
@@ -72,6 +73,7 @@ To check Safari's provider: `Settings → Safari → Search Engine`.
 ## Content guidance
 
 - Keep the phrase `SEU Routine Maker` visible on the homepage.
+- Keep the phrase `Routine Maker SEU` visible on the homepage for exact-match search intent.
 - Keep `Southeast University` in descriptions and FAQ text.
 - Prefer natural language over keyword stuffing.
 - Add student-useful FAQ entries when real users ask repeated questions.

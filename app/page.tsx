@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 
 import App from '../src/App';
 
-const title = 'Build Your SEU Routine Within Seconds | SEU Routine Maker';
-const description = 'Create your SEU routine free from Southeast University UMS HTML or screenshots. Organize sections, detect class clashes, and export a printable weekly routine.';
+const title = 'Routine Maker SEU | Build Your SEU Routine Within Seconds';
+const description = 'Routine Maker SEU helps Southeast University students create a free SEU routine from UMS HTML, PDFs, or screenshots with conflict checks and printable exports.';
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   keywords: [
     'SEU routine',
     'SEU routine maker',
+    'routine maker seu',
+    'Routine Maker SEU',
     'SEU class routine',
     'SEU schedule maker',
     'SEU timetable',
@@ -64,7 +66,7 @@ const structuredData = {
       '@id': 'https://seuroutine.vercel.app/#website',
       url: 'https://seuroutine.vercel.app/',
       name: 'SEU Routine Maker',
-      alternateName: ['SEU Routine', 'Southeast University Routine Maker', 'seuroutine.vercel.app'],
+      alternateName: ['Routine Maker SEU', 'SEU Routine', 'Southeast University Routine Maker', 'seuroutine.vercel.app'],
       creator: { '@id': 'https://seuroutine.vercel.app/#creator' },
       inLanguage: 'en',
     },
@@ -73,7 +75,7 @@ const structuredData = {
       '@id': 'https://seuroutine.vercel.app/#application',
       url: 'https://seuroutine.vercel.app/',
       name: 'SEU Routine Maker',
-      alternateName: 'SEU Routine',
+      alternateName: ['Routine Maker SEU', 'SEU Routine'],
       description,
       applicationCategory: 'EducationalApplication',
       operatingSystem: 'Any',

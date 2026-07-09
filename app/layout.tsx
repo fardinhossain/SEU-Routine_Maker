@@ -7,10 +7,10 @@ const iconVersion = '2026-07-10';
 export const metadata: Metadata = {
   metadataBase: new URL('https://seuroutine.vercel.app'),
   title: {
-    default: 'SEU Routine Maker - Class Routine Builder for SEU Students',
+    default: 'Routine Maker SEU - Class Routine Builder for SEU Students',
     template: '%s | SEU Routine Maker',
   },
-  description: 'Create a clear, clash-free SEU class routine from UMS HTML or screenshots with this free routine maker for Southeast University students.',
+  description: 'Routine Maker SEU helps Southeast University students create a clear, clash-free class routine from UMS HTML, PDFs, or screenshots.',
   applicationName: 'SEU Routine Maker',
   generator: 'SEU Routine Maker',
   creator: 'Fardin Hossain',
@@ -20,6 +20,8 @@ export const metadata: Metadata = {
   keywords: [
     'SEU routine',
     'SEU routine maker',
+    'routine maker seu',
+    'Routine Maker SEU',
     'SEU class routine',
     'SEU schedule maker',
     'SEU timetable',
@@ -44,8 +46,8 @@ export const metadata: Metadata = {
     type: 'website',
     url: '/',
     siteName: 'SEU Routine Maker',
-    title: 'SEU Routine Maker - Class Routine Builder for SEU Students',
-    description: 'Create a clear, clash-free SEU class routine from UMS HTML or screenshots with this free routine maker for Southeast University students.',
+    title: 'Routine Maker SEU - Class Routine Builder for SEU Students',
+    description: 'Routine Maker SEU helps Southeast University students create a clear, clash-free class routine from UMS HTML, PDFs, or screenshots.',
     images: [{
       url: '/og-image.jpg',
       width: 1200,

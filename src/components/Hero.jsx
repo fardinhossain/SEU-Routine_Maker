@@ -12,7 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 
-const HEADLINE_TEXT = "Build your SEU routine within seconds.";
+const HEADLINE_TEXT = "Routine Maker SEU builds your SEU routine within seconds.";
 
 const heroFeatures = [
   { icon: Zap, title: "Instant import", meta: "HTML • PDF • OCR" },
@@ -189,14 +189,14 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                 style={{ animationDelay: "80ms" }}
               >
                 <Sparkles size={14} />
-                BUILT FOR SOUTHEAST UNIVERSITY STUDENTS
+                ROUTINE MAKER SEU - BUILT FOR SOUTHEAST UNIVERSITY STUDENTS
               </div>
 
               <h1
                 className="mx-auto mt-5 max-w-3xl text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.05em] text-white sm:text-5xl lg:text-[58px] xl:text-[64px]"
                 aria-label={HEADLINE_TEXT}
               >
-                <span className="sr-only">{HEADLINE_TEXT}</span>
+                  <span className="sr-only">{HEADLINE_TEXT}</span>
                 <span aria-hidden="true" className="block overflow-hidden">
                   <span className="hero-title-word" style={{ "--hero-delay": "0ms" }}>Build your</span>{" "}
                   <span className="hero-title-word hero-title-word-glow" style={{ "--hero-delay": "110ms" }}>SEU routine</span>
