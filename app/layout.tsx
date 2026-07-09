@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 
+const iconVersion = '2026-07-10';
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://seuroutine.vercel.app'),
   title: {
@@ -27,12 +29,13 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml', sizes: 'any' },
-      { url: '/favicon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: `/favicon.ico?v=${iconVersion}`, type: 'image/x-icon', sizes: '16x16 32x32 48x48' },
+      { url: `/favicon.svg?v=${iconVersion}`, type: 'image/svg+xml', sizes: 'any' },
+      { url: `/favicon-192.png?v=${iconVersion}`, type: 'image/png', sizes: '192x192' },
     ],
-    shortcut: '/favicon-192.png',
+    shortcut: `/favicon.ico?v=${iconVersion}`,
     apple: {
-      url: '/apple-touch-icon.png',
+      url: `/apple-touch-icon.png?v=${iconVersion}`,
       type: 'image/png',
       sizes: '180x180',
     },

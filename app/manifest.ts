@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next';
 
+const iconVersion = '2026-07-10';
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'SEU Routine Maker',
@@ -12,13 +14,13 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#20ded6',
     icons: [
       {
-        src: '/favicon-192.png',
+        src: `/favicon-192.png?v=${iconVersion}`,
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/apple-touch-icon.png',
+        src: `/apple-touch-icon.png?v=${iconVersion}`,
         sizes: '180x180',
         type: 'image/png',
       },
