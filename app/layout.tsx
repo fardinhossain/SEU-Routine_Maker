@@ -31,11 +31,14 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
-      { url: `/favicon.ico?v=${iconVersion}`, type: 'image/x-icon', sizes: '16x16 32x32 48x48' },
+      // Keep the conventional favicon URL stable for search-engine crawlers.
+      // The larger browser/PWA icons remain versioned so normal browser caches
+      // are still refreshed after a branding update.
+      { url: '/favicon.ico', type: 'image/x-icon', sizes: '16x16 32x32 48x48' },
       { url: `/favicon.svg?v=${iconVersion}`, type: 'image/svg+xml', sizes: 'any' },
       { url: `/favicon-192.png?v=${iconVersion}`, type: 'image/png', sizes: '192x192' },
     ],
-    shortcut: `/favicon.ico?v=${iconVersion}`,
+    shortcut: '/favicon.ico',
     apple: {
       url: `/apple-touch-icon.png?v=${iconVersion}`,
       type: 'image/png',
