@@ -1474,3 +1474,14 @@ textarea:focus-visible {
     transform: none;
   }
 }
+
+@keyframes topology-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+.animate-topology-dash {
+  stroke-dasharray: 6 6;
+  animation: topology-dash 1.2s linear infinite;
+}
