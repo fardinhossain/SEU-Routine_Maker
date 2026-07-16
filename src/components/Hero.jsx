@@ -182,7 +182,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
         <div className="pointer-events-none absolute bottom-[26%] left-0 h-48 w-full bg-[linear-gradient(180deg,transparent,rgba(32,222,214,.035),transparent)]" />
 
         <div className="relative mx-auto max-w-[1280px]">
-          <div className="flex flex-col items-center justify-center gap-8 py-3 text-center lg:min-h-[calc(100svh-145px)] lg:gap-6 xl:min-h-[calc(100svh-135px)]">
+          <div className="flex flex-col items-center justify-center gap-8 py-3 text-center lg:min-h-[calc(100svh-145px)] lg:gap-12 xl:min-h-[calc(100svh-135px)]">
             <div className="max-w-5xl">
               <div
                 className="mx-auto inline-flex animate-fade-in items-center gap-2 rounded-full border border-mint-400/20 bg-mint-400/[0.07] px-4 py-1.5 text-xs font-medium tracking-[0.5px] text-mint-300"
@@ -265,7 +265,6 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
               </div>
             </div>
 
-            <RoutinePreview onClick={() => setShowExportModal(true)} />
           </div>
 
           <div
