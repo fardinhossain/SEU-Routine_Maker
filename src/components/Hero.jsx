@@ -221,7 +221,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                 className="mt-7 flex animate-fade-up flex-col items-center justify-center gap-3 sm:flex-row"
                 style={{ animationDelay: "500ms" }}
               >
-                <button onClick={scrollToTools} className="primary-button group h-11 min-w-[205px] px-7 text-sm">
+                <button onClick={scrollToTools} className="primary-button group h-11 w-full max-w-[305px] px-7 text-sm sm:w-auto sm:min-w-[205px]">
                   Import your UMS file
                   <ArrowRight className="transition group-hover:translate-x-0.5" size={18} />
                 </button>
@@ -231,7 +231,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                     if (onOpenOrganizer) onOpenOrganizer();
                     else window.open("#section-organizer", "_blank");
                   }}
-                  className="secondary-button h-11 min-w-[205px] px-6 text-sm"
+                  className="secondary-button h-11 w-full max-w-[305px] px-6 text-sm sm:w-auto sm:min-w-[205px]"
                 >
                   <WandSparkles size={18} />
                   Use Magic Organizer
@@ -246,7 +246,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                 </button>
               </div>
 
-              <div className="mx-auto mt-4 grid max-w-3xl grid-cols-1 gap-2.5 text-sm min-[430px]:grid-cols-3 sm:flex sm:flex-wrap sm:justify-center">
+              <div className="mx-auto mt-4 grid max-w-[305px] grid-cols-1 gap-2.5 text-sm min-[430px]:max-w-3xl min-[430px]:grid-cols-3 sm:flex sm:flex-wrap sm:justify-center">
                 {heroFeatures.map(({ icon: Icon, title, meta }, index) => (
                   <div
                     key={title}
