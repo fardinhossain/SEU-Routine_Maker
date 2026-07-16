@@ -85,16 +85,42 @@ const exportExamples = [
 ];
 
 function UmsToRoutineAnimation() {
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCoords({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
   return (
-    <div className="group/hero-anim relative mx-auto flex h-[200px] w-full max-w-[480px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/[0.06] bg-[#071122]/40 backdrop-blur-sm p-4 shadow-2xl animate-rise-in transition-all duration-500 hover:border-white/10 hover:bg-[#071122]/50">
+    <div
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group/hero-anim relative mx-auto flex h-[200px] w-full max-w-[480px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/[0.06] bg-[#071122]/40 backdrop-blur-sm p-4 shadow-2xl animate-rise-in transition-all duration-500 hover:border-cyan-400/20 hover:bg-[#071122]/50 cursor-crosshair"
+    >
       {/* Background Tech Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,white,transparent_80%)]" />
+
+      {/* Interactive Cursor Glow */}
+      {isHovered && (
+        <div
+          className="pointer-events-none absolute -inset-px rounded-[2rem] opacity-100 transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(150px circle at ${coords.x}px ${coords.y}px, rgba(34, 211, 238, 0.12), transparent 80%)`,
+          }}
+        />
+      )}
 
       {/* Radar Expansion/Pulsing Waves */}
       <div className="absolute h-[100px] w-[100px] rounded-full border border-mint-400/10 animate-[ping_4s_infinite] group-hover/hero-anim:animate-[ping_2s_infinite] transition-all duration-500" />
       <div className="absolute h-[160px] w-[160px] rounded-full border border-mint-400/5 animate-[ping_5s_infinite_1.5s] group-hover/hero-anim:animate-[ping_2.5s_infinite_0.75s] transition-all duration-500" />
-      <div className="absolute h-[220px] w-[220px] rounded-full border border-white/5 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:border-white/10" />
-      <div className="absolute h-[320px] w-[320px] rounded-full border border-white/5 opacity-50 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:opacity-70" />
+      <div className="absolute h-[220px] w-[220px] rounded-full border border-dashed border-white/5 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:border-white/10 group-hover/hero-anim:animate-[spin_25s_linear_infinite]" />
+      <div className="absolute h-[320px] w-[320px] rounded-full border border-dashed border-white/5 opacity-50 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:opacity-70 group-hover/hero-anim:animate-[spin_35s_linear_infinite_reverse]" />
 
       {/* Content Layout */}
       <div className="relative flex items-center justify-between w-full max-w-[360px] gap-3">
@@ -112,6 +138,12 @@ function UmsToRoutineAnimation() {
           {/* Connector Line */}
           <div className="absolute left-[-16px] right-[-16px] top-[24px] h-[1px] bg-gradient-to-r from-transparent via-mint-500/30 to-transparent transition-all duration-500 group-hover/hero-anim:via-mint-400/50" />
           
+          {/* Traveling Energy Particles */}
+          <div className="absolute left-[-6px] right-[-6px] top-[20px] overflow-hidden h-[9px] pointer-events-none w-[calc(100%+12px)]">
+            <div className="absolute top-[4px] h-[1px] w-[15px] bg-gradient-to-r from-transparent via-cyan-300 to-transparent blur-[0.5px] animate-flow-particle" />
+            <div className="absolute top-[4px] h-[1px] w-[15px] bg-gradient-to-r from-transparent via-cyan-300 to-transparent blur-[0.5px] animate-flow-particle" style={{ animationDelay: "1s" }} />
+          </div>
+          
           {/* Sync Badge */}
           <div className="relative z-10 flex h-[48px] w-[48px] items-center justify-center rounded-full border border-mint-400/30 bg-[#0c1b35] shadow-[0_0_20px_rgba(32,222,214,0.15)] transition-all duration-500 hover:scale-110 group-hover/hero-anim:border-mint-400/50 group-hover/hero-anim:shadow-[0_0_30px_rgba(32,222,214,0.25)]">
             <RefreshCw size={18} className="text-mint-300 animate-[spin_10s_linear_infinite] group-hover/hero-anim:animate-[spin_4s_linear_infinite]" />
@@ -121,7 +153,7 @@ function UmsToRoutineAnimation() {
 
         {/* Right Side: Routine Calendar */}
         <div className="group/box flex flex-col items-center justify-center h-[96px] w-[86px] rounded-2xl border border-mint-400/20 bg-[#081424]/90 p-3 transition-all duration-300 hover:scale-105 hover:border-mint-400/40 hover:shadow-[0_0_30px_rgba(32,222,214,0.12)]">
-          <div className="flex flex-1 items-center justify-center text-mint-300">
+          <div className="flex flex-1 items-center justify-center text-mint-300 animate-pulse">
             <CalendarDays size={32} strokeWidth={1.5} />
           </div>
           <span className="mt-1.5 text-[11px] font-bold tracking-[0.08em] text-mint-300">ROUTINE</span>

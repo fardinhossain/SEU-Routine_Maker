@@ -1485,3 +1485,24 @@ textarea:focus-visible {
   stroke-dasharray: 6 6;
   animation: topology-dash 1.2s linear infinite;
 }
+
+@keyframes flow-particle {
+  0% {
+    left: -20px;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+.animate-flow-particle {
+  animation: flow-particle 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
