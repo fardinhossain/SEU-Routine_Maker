@@ -125,13 +125,19 @@ function UmsToRoutineAnimation() {
       {/* Content Layout */}
       <div className="relative flex items-center justify-between w-full max-w-[360px] gap-3">
         
-        {/* Left Side: UMS Doc */}
-        <div className="group/box flex flex-col items-center justify-center h-[96px] w-[86px] rounded-2xl border border-white/10 bg-[#081424]/90 p-3 transition-all duration-300 hover:scale-105 hover:border-white/20 hover:shadow-lg">
-          <div className="flex flex-1 items-center justify-center text-slate-400 group-hover/box:text-white transition-colors duration-300">
+        {/* Left Side: UMS Doc (Clickable Link) */}
+        <a
+          href="https://ums.seu.edu.bd/"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Go to SEU UMS website"
+          className="group/box flex flex-col items-center justify-center h-[96px] w-[86px] rounded-2xl border border-white/10 bg-[#081424]/90 p-3 transition-all duration-300 hover:scale-105 hover:border-cyan-400/30 hover:bg-[#0c1d35] hover:shadow-[0_0_15px_rgba(34,211,238,0.1)]"
+        >
+          <div className="flex flex-1 items-center justify-center text-slate-400 group-hover/box:text-cyan-300 transition-colors duration-300">
             <FileText size={32} strokeWidth={1.5} />
           </div>
-          <span className="mt-1.5 text-[11px] font-bold tracking-[0.08em] text-slate-400 group-hover/box:text-white transition-colors duration-300">UMS</span>
-        </div>
+          <span className="mt-1.5 text-[11px] font-bold tracking-[0.08em] text-slate-400 group-hover/box:text-cyan-300 transition-colors duration-300">UMS</span>
+        </a>
 
         {/* Center: Connect Line + Rotating Sync Badge */}
         <div className="flex flex-col items-center justify-center flex-1 relative">
