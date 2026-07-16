@@ -861,7 +861,7 @@ textarea:focus-visible {
 
 .mobile-table-routine-card-top p {
   margin: 0;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 800;
   letter-spacing: .02em;
   line-height: 1.2;
@@ -871,7 +871,7 @@ textarea:focus-visible {
 .mobile-table-routine-gap {
   margin: 0;
   color: currentColor;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 750;
   line-height: 1.15;
   opacity: .75;
@@ -880,7 +880,7 @@ textarea:focus-visible {
 .mobile-table-routine-title {
   margin: 0;
   color: inherit;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 700;
   line-height: 1.15;
   overflow-wrap: normal;
@@ -893,14 +893,14 @@ textarea:focus-visible {
   gap: 8px;
   min-width: 0;
   color: rgba(203, 213, 225, .78);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.15;
 }
 
 .mobile-table-routine-card-meta span {
   min-width: 0;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 @media (max-width: 1024px) {

@@ -294,8 +294,8 @@ const MobileTableRoutineExport = forwardRef(function MobileTableRoutineExport(
                   <td key={`${day}-${slot.key}`}>
                     {cellEntries.map((entry) => {
                       const courseCode = entry.course.courseCode;
-                      const courseTitle = entry.course.courseTitle || shortNames[courseCode] || entry.course.shortTitle;
-                      const teacher = entry.course.facultyName || entry.course.teacherName || entry.course.faculty || entry.course.teacherInitial;
+                      const courseTitle = shortNames[courseCode] || entry.course.shortTitle || entry.course.courseTitle;
+                      const teacher = entry.course.faculty || entry.course.teacherInitial || entry.course.facultyName || entry.course.teacherName;
 
                       return (
                         <article
