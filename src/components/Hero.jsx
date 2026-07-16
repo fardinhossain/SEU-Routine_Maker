@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   ArrowRight,
   CalendarDays,
+  ChevronDown,
   Download,
   Lock,
   Monitor,
@@ -156,6 +157,7 @@ function RoutinePreview({ onClick }) {
 
 export default function Hero({ onGetStarted, onOpenOrganizer }) {
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     if (!showExportModal) return undefined;
@@ -271,63 +273,79 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
             className="mt-7 animate-fade-up pt-6"
             style={{ animationDelay: "680ms" }}
           >
-            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <button
+              onClick={() => setShowGuide((prev) => !prev)}
+              className="flex w-full items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.025] px-5 py-3.5 text-left transition hover:border-mint-300/35 hover:bg-white/[0.04]"
+            >
               <div>
                 <div className="text-xs font-semibold uppercase tracking-[.18em] text-mint-300">Import guide</div>
-                <h2 className="mt-1 text-lg font-semibold tracking-[-.03em] text-white sm:text-xl">
-                  Choose your device and upload the easiest file.
-                </h2>
+                <div className="mt-0.5 text-sm font-semibold tracking-[-.02em] text-white sm:text-base">Choose your device and upload the easiest file.</div>
               </div>
-              <button
-                onClick={scrollToTools}
-                className="inline-flex w-fit items-center gap-2 rounded-full border border-mint-400/20 bg-mint-400/10 px-4 py-2 text-sm font-semibold text-mint-200 transition hover:border-mint-300/45 hover:bg-mint-400/15"
-              >
-                Go to importer <ArrowRight size={15} />
-              </button>
-            </div>
+              <ChevronDown
+                size={20}
+                className={`shrink-0 text-slate-400 transition-transform duration-300 ${showGuide ? "rotate-180" : ""}`}
+              />
+            </button>
 
-            <div className="grid gap-4 lg:grid-cols-3">
-              {deviceGuides.map(({ title, subtitle, icon: Icon, accent, badge, steps }) => (
-                <article
-                  key={title}
-                  className={`group relative overflow-hidden rounded-2xl border p-4 transition hover:-translate-y-0.5 ${
-                    badge
-                      ? "border-mint-400/25 bg-mint-400/[.04] shadow-[0_0_60px_rgba(32,222,214,.06)] hover:border-mint-300/45 hover:bg-mint-400/[.06]"
-                      : "border-white/10 bg-white/[.025] hover:border-mint-300/35 hover:bg-white/[.04]"
-                  }`}
-                >
-                  {badge && (
-                    <div className="absolute right-4 top-4 rounded-full bg-mint-300 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#061325]">
-                      {badge}
-                    </div>
-                  )}
-                  <div className={badge ? "flex items-center gap-3 pr-20" : "flex items-center gap-3"}>
-                    <span className={`grid h-11 w-11 place-items-center rounded-2xl border ${
-                      accent === "cyan"
-                        ? "border-cyan-400/15 bg-cyan-400/10 text-cyan-300"
-                        : "border-mint-400/15 bg-mint-400/10 text-mint-300"
-                    }`}>
-                      <Icon size={20} />
-                    </span>
-                    <div>
-                      <div className="text-sm font-semibold text-white">{title}</div>
-                      <div className="text-xs text-slate-500">{subtitle}</div>
-                    </div>
-                  </div>
-                  <ol className="mt-4 space-y-2.5 text-sm leading-6 text-slate-300">
-                    {steps.map((step, index) => (
-                      <li key={index} className="flex gap-3">
-                        <span className="font-mono text-mint-300">{index + 1}</span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </article>
-              ))}
-            </div>
+            <div
+              className={`grid transition-all duration-300 ease-in-out ${
+                showGuide ? "mt-4 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <div className="overflow-hidden">
+                <div className="mb-3 flex justify-end">
+                  <button
+                    onClick={scrollToTools}
+                    className="inline-flex w-fit items-center gap-2 rounded-full border border-mint-400/20 bg-mint-400/10 px-4 py-2 text-sm font-semibold text-mint-200 transition hover:border-mint-300/45 hover:bg-mint-400/15"
+                  >
+                    Go to importer <ArrowRight size={15} />
+                  </button>
+                </div>
 
-            <div className="mt-4 rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-center text-xs text-slate-400">
-              Fastest path: after advising, upload <strong className="text-slate-200">Registered Courses</strong>. Before advising, upload <strong className="text-slate-200">Offered Sections</strong> and use Magic Organizer.
+                <div className="grid gap-4 lg:grid-cols-3">
+                  {deviceGuides.map(({ title, subtitle, icon: Icon, accent, badge, steps }) => (
+                    <article
+                      key={title}
+                      className={`group relative overflow-hidden rounded-2xl border p-4 transition hover:-translate-y-0.5 ${
+                        badge
+                          ? "border-mint-400/25 bg-mint-400/[.04] shadow-[0_0_60px_rgba(32,222,214,.06)] hover:border-mint-300/45 hover:bg-mint-400/[.06]"
+                          : "border-white/10 bg-white/[.025] hover:border-mint-300/35 hover:bg-white/[.04]"
+                      }`}
+                    >
+                      {badge && (
+                        <div className="absolute right-4 top-4 rounded-full bg-mint-300 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#061325]">
+                          {badge}
+                        </div>
+                      )}
+                      <div className={badge ? "flex items-center gap-3 pr-20" : "flex items-center gap-3"}>
+                        <span className={`grid h-11 w-11 place-items-center rounded-2xl border ${
+                          accent === "cyan"
+                            ? "border-cyan-400/15 bg-cyan-400/10 text-cyan-300"
+                            : "border-mint-400/15 bg-mint-400/10 text-mint-300"
+                        }`}>
+                          <Icon size={20} />
+                        </span>
+                        <div>
+                          <div className="text-sm font-semibold text-white">{title}</div>
+                          <div className="text-xs text-slate-500">{subtitle}</div>
+                        </div>
+                      </div>
+                      <ol className="mt-4 space-y-2.5 text-sm leading-6 text-slate-300">
+                        {steps.map((step, index) => (
+                          <li key={index} className="flex gap-3">
+                            <span className="font-mono text-mint-300">{index + 1}</span>
+                            <span>{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </article>
+                  ))}
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-center text-xs text-slate-400">
+                  Fastest path: after advising, upload <strong className="text-slate-200">Registered Courses</strong>. Before advising, upload <strong className="text-slate-200">Offered Sections</strong> and use Magic Organizer.
+                </div>
+              </div>
             </div>
           </div>
         </div>
