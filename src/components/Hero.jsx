@@ -88,8 +88,8 @@ function RoutinePreview({ onClick }) {
         onClick={onClick}
         className="group relative mx-auto w-full max-w-[360px] animate-rise-in cursor-pointer overflow-hidden rounded-[1.75rem] border border-mint-400/20 bg-[#0a1629]/95 p-2 shadow-[0_35px_140px_-35px_rgba(32,222,214,.65)] transition-all hover:-translate-y-1 hover:border-mint-300/45 sm:max-w-[520px]"
       >
-        <div className="rounded-[1.35rem] border border-white/5 bg-[#081422] p-4 sm:p-5">
-          <div className="mb-4 flex items-center justify-between">
+        <div className="rounded-[1.35rem] border border-white/5 bg-[#081422] p-3 sm:p-5">
+          <div className="mb-2.5 flex items-center justify-between sm:mb-4">
             <div>
               <div className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white sm:text-base">
                 <CalendarDays size={16} className="text-mint-400" /> SEU Weekly Routine
@@ -99,7 +99,7 @@ function RoutinePreview({ onClick }) {
             <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-mono text-mint-300">LIVE</div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2.5 text-sm group-hover:[&>div]:scale-[1.01] min-[430px]:grid-cols-3 min-[430px]:items-stretch sm:block sm:space-y-2.5">
+          <div className="grid grid-cols-1 gap-1.5 text-sm group-hover:[&>div]:scale-[1.01] min-[430px]:grid-cols-3 min-[430px]:items-stretch sm:block sm:space-y-2.5">
             {[
               ["SAT", "CSE361.3", "Operating Systems • R-301", "09:00–10:20", "cyan"],
               ["SUN–TUE", "CSE443.1", "Computer Networks • Lab 4", "11:00–12:20", "violet"],
@@ -107,10 +107,10 @@ function RoutinePreview({ onClick }) {
             ].map(([day, code, title, time, color], index) => (
               <div
                 key={day}
-                className="grid min-h-[150px] grid-rows-[auto_1fr] gap-2.5 transition-all duration-300 group-hover:-translate-y-px min-[430px]:min-h-[175px] sm:flex sm:min-h-0 sm:gap-2.5"
+                className="grid min-h-0 grid-rows-[auto_1fr] gap-1.5 transition-all duration-300 group-hover:-translate-y-px min-[430px]:min-h-[175px] sm:flex sm:min-h-0 sm:gap-2.5"
                 style={{ animationDelay: `${420 + index * 90}ms` }}
               >
-                <div className={`grid min-h-[44px] place-items-center rounded-2xl px-2 py-2 text-center text-[11px] font-bold tracking-[1px] sm:w-16 sm:shrink-0 sm:py-2.5 ${
+                <div className={`grid min-h-[32px] place-items-center rounded-2xl px-2 py-1 text-center text-[11px] font-bold tracking-[1px] sm:w-16 sm:shrink-0 sm:min-h-[44px] sm:py-2.5 ${
                   color === "cyan"
                     ? "bg-cyan-400/10 text-cyan-300"
                     : color === "violet"
@@ -119,7 +119,7 @@ function RoutinePreview({ onClick }) {
                 }`}>
                   {day}
                 </div>
-                <div className={`grid min-h-[92px] flex-1 place-items-center rounded-2xl border px-3 py-3 text-center sm:block sm:min-h-0 sm:px-3.5 sm:py-2.5 sm:text-left ${
+                <div className={`grid min-h-[60px] flex-1 place-items-center rounded-2xl border px-3 py-2 text-center sm:block sm:min-h-0 sm:px-3.5 sm:py-2.5 sm:text-left ${
                   color === "cyan"
                     ? "border-cyan-400/20 bg-cyan-400/[0.035]"
                     : color === "violet"
@@ -138,7 +138,7 @@ function RoutinePreview({ onClick }) {
             ))}
           </div>
 
-          <div className="mt-4 flex flex-col items-center justify-center gap-2 border-t border-white/10 pt-3 text-center text-[11px] text-slate-500 min-[430px]:flex-row min-[430px]:justify-between">
+          <div className="mt-2.5 flex flex-col items-center justify-center gap-2 border-t border-white/10 pt-2.5 text-center text-[11px] text-slate-500 min-[430px]:flex-row min-[430px]:justify-between sm:mt-4 sm:pt-3">
             <div>4 courses • 12 sessions • 18.5h</div>
             <div className="font-medium text-mint-400">Ready to export →</div>
           </div>
