@@ -4,8 +4,10 @@ import {
   CalendarDays,
   ChevronDown,
   Download,
+  FileText,
   Lock,
   Monitor,
+  RefreshCw,
   Sparkles,
   Smartphone,
   WandSparkles,
@@ -82,75 +84,49 @@ const exportExamples = [
   },
 ];
 
-function RoutinePreview({ onClick }) {
+function UmsToRoutineAnimation() {
   return (
-    <div className="relative w-full max-w-4xl">
-      <div className="pointer-events-none absolute -inset-x-8 bottom-0 h-24 rounded-[50%] bg-mint-400/10 blur-3xl" />
-      <div
-        onClick={onClick}
-        className="group relative mx-auto w-full max-w-[360px] animate-rise-in cursor-pointer overflow-hidden rounded-[1.75rem] border border-mint-400/20 bg-[#0a1629]/95 p-2 shadow-[0_35px_140px_-35px_rgba(32,222,214,.65)] transition-all hover:-translate-y-1 hover:border-mint-300/45 sm:max-w-[520px]"
-      >
-        <div className="rounded-[1.35rem] border border-white/5 bg-[#081422] p-3 sm:p-5">
-          <div className="mb-2.5 flex items-center justify-between sm:mb-4">
-            <div>
-              <div className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white sm:text-base">
-                <CalendarDays size={16} className="text-mint-400" /> SEU Weekly Routine
-              </div>
-              <div className="text-[10px] uppercase tracking-[2px] text-slate-500">7 days • one clean view</div>
-            </div>
-            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-mono text-mint-300">LIVE</div>
-          </div>
+    <div className="group/hero-anim relative mx-auto flex h-[260px] w-full max-w-[540px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/[0.06] bg-[#071122]/40 backdrop-blur-sm p-6 shadow-2xl animate-rise-in transition-all duration-500 hover:border-white/10 hover:bg-[#071122]/50">
+      {/* Background Tech Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,white,transparent_80%)]" />
 
-          <div className="grid grid-cols-1 gap-1.5 text-sm group-hover:[&>div]:scale-[1.01] min-[430px]:grid-cols-3 min-[430px]:items-stretch sm:block sm:space-y-2.5">
-            {[
-              ["SAT", "CSE361.3", "Operating Systems • R-301", "09:00–10:20", "cyan"],
-              ["SUN–TUE", "CSE443.1", "Computer Networks • Lab 4", "11:00–12:20", "violet"],
-              ["WED", "CSE362.2", "Software Engineering • R-205", "14:00–16:50", "amber"],
-            ].map(([day, code, title, time, color], index) => (
-              <div
-                key={day}
-                className="grid min-h-0 grid-rows-[auto_1fr] gap-1.5 transition-all duration-300 group-hover:-translate-y-px min-[430px]:min-h-[175px] sm:flex sm:min-h-0 sm:gap-2.5"
-                style={{ animationDelay: `${420 + index * 90}ms` }}
-              >
-                <div className={`grid min-h-[32px] place-items-center rounded-2xl px-2 py-1 text-center text-[11px] font-bold tracking-[1px] sm:w-16 sm:shrink-0 sm:min-h-[44px] sm:py-2.5 ${
-                  color === "cyan"
-                    ? "bg-cyan-400/10 text-cyan-300"
-                    : color === "violet"
-                      ? "bg-violet-400/10 text-violet-300"
-                      : "bg-amber-400/10 text-amber-300"
-                }`}>
-                  {day}
-                </div>
-                <div className={`grid min-h-[60px] flex-1 place-items-center rounded-2xl border px-3 py-2 text-center sm:block sm:min-h-0 sm:px-3.5 sm:py-2.5 sm:text-left ${
-                  color === "cyan"
-                    ? "border-cyan-400/20 bg-cyan-400/[0.035]"
-                    : color === "violet"
-                      ? "border-violet-400/20 bg-violet-400/[0.035]"
-                      : "border-amber-400/20 bg-amber-400/[0.035]"
-                }`}>
-                  <div className="flex w-full flex-col items-center justify-center gap-1 text-xs sm:flex-row sm:justify-between sm:gap-3">
-                    <span className={`font-mono ${
-                      color === "cyan" ? "text-cyan-300" : color === "violet" ? "text-violet-300" : "text-amber-300"
-                    }`}>{code}</span>
-                    <span className="text-slate-500">{time}</span>
-                  </div>
-                  <div className="mt-2 text-sm font-semibold leading-tight text-white sm:mt-1 sm:text-[15px]">{title}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Radar Expansion/Pulsing Waves */}
+      <div className="absolute h-[140px] w-[140px] rounded-full border border-mint-400/10 animate-[ping_4s_infinite] group-hover/hero-anim:animate-[ping_2s_infinite] transition-all duration-500" />
+      <div className="absolute h-[220px] w-[220px] rounded-full border border-mint-400/5 animate-[ping_5s_infinite_1.5s] group-hover/hero-anim:animate-[ping_2.5s_infinite_0.75s] transition-all duration-500" />
+      <div className="absolute h-[300px] w-[300px] rounded-full border border-white/5 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:border-white/10" />
+      <div className="absolute h-[420px] w-[420px] rounded-full border border-white/5 opacity-50 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:opacity-70" />
 
-          <div className="mt-2.5 flex flex-col items-center justify-center gap-2 border-t border-white/10 pt-2.5 text-center text-[11px] text-slate-500 min-[430px]:flex-row min-[430px]:justify-between sm:mt-4 sm:pt-3">
-            <div>4 courses • 12 sessions • 18.5h</div>
-            <div className="font-medium text-mint-400">Ready to export →</div>
+      {/* Content Layout */}
+      <div className="relative flex items-center justify-between w-full max-w-[400px] gap-4">
+        
+        {/* Left Side: UMS Doc */}
+        <div className="group/box flex flex-col items-center justify-center h-[120px] w-[100px] rounded-2xl border border-white/10 bg-[#081424]/90 p-4 transition-all duration-300 hover:scale-105 hover:border-white/20 hover:shadow-lg">
+          <div className="flex flex-1 items-center justify-center text-slate-400 group-hover/box:text-white transition-colors duration-300">
+            <FileText size={40} strokeWidth={1.5} />
           </div>
+          <span className="mt-2 text-xs font-bold tracking-[0.08em] text-slate-400 group-hover/box:text-white transition-colors duration-300">UMS</span>
         </div>
-      </div>
 
-      <div className="mt-2 flex flex-wrap justify-center gap-1.5 text-[10px] text-slate-500">
-        {["PC", "Modern", "Futuristic", "Mobile"].map((label) => (
-          <span key={label} className="rounded border border-white/10 bg-white/[0.03] px-2 py-px">{label}</span>
-        ))}
+        {/* Center: Connect Line + Rotating Sync Badge */}
+        <div className="flex flex-col items-center justify-center flex-1 relative">
+          {/* Connector Line */}
+          <div className="absolute left-[-16px] right-[-16px] top-[30px] h-[1px] bg-gradient-to-r from-transparent via-mint-500/30 to-transparent transition-all duration-500 group-hover/hero-anim:via-mint-400/50" />
+          
+          {/* Sync Badge */}
+          <div className="relative z-10 flex h-[60px] w-[60px] items-center justify-center rounded-full border border-mint-400/30 bg-[#0c1b35] shadow-[0_0_20px_rgba(32,222,214,0.15)] transition-all duration-500 hover:scale-110 group-hover/hero-anim:border-mint-400/50 group-hover/hero-anim:shadow-[0_0_30px_rgba(32,222,214,0.25)]">
+            <RefreshCw size={22} className="text-mint-300 animate-[spin_10s_linear_infinite] group-hover/hero-anim:animate-[spin_4s_linear_infinite]" />
+          </div>
+          <span className="mt-2 text-[10px] font-bold tracking-[0.2em] text-slate-500 transition-colors duration-500 group-hover/hero-anim:text-mint-300">TO</span>
+        </div>
+
+        {/* Right Side: Routine Calendar */}
+        <div className="group/box flex flex-col items-center justify-center h-[120px] w-[100px] rounded-2xl border border-mint-400/20 bg-[#081424]/90 p-4 transition-all duration-300 hover:scale-105 hover:border-mint-400/40 hover:shadow-[0_0_30px_rgba(32,222,214,0.12)]">
+          <div className="flex flex-1 items-center justify-center text-mint-300">
+            <CalendarDays size={40} strokeWidth={1.5} />
+          </div>
+          <span className="mt-2 text-xs font-bold tracking-[0.08em] text-mint-300">ROUTINE</span>
+        </div>
+
       </div>
     </div>
   );
@@ -268,6 +244,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
               </div>
             </div>
 
+            <UmsToRoutineAnimation />
           </div>
 
           <div
