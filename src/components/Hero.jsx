@@ -157,13 +157,24 @@ function UmsToRoutineAnimation() {
           <span className="mt-1.5 text-[9px] font-bold tracking-[0.2em] text-slate-500 transition-colors duration-500 group-hover/hero-anim:text-mint-300">TO</span>
         </div>
 
-        {/* Right Side: Routine Calendar */}
-        <div className="group/box flex flex-col items-center justify-center h-[96px] w-[86px] rounded-2xl border border-mint-400/20 bg-[#081424]/90 p-3 transition-all duration-300 hover:scale-105 hover:border-mint-400/40 hover:shadow-[0_0_30px_rgba(32,222,214,0.12)]">
-          <div className="flex flex-1 items-center justify-center text-mint-300 animate-pulse">
+        {/* Right Side: Routine Calendar (Clickable Link) */}
+        <button
+          onClick={() => {
+            const routineEl = document.getElementById("routine");
+            if (routineEl) {
+              routineEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              document.getElementById("tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+          title="Scroll to routine section"
+          className="group/box flex flex-col items-center justify-center h-[96px] w-[86px] rounded-2xl border border-mint-400/20 bg-[#081424]/90 p-3 transition-all duration-300 hover:scale-105 hover:border-mint-400/40 hover:bg-[#0c1d35] hover:shadow-[0_0_30px_rgba(32,222,214,0.18)] cursor-pointer"
+        >
+          <div className="flex flex-1 items-center justify-center text-mint-300 animate-pulse group-hover/box:scale-110 transition-transform duration-300">
             <CalendarDays size={32} strokeWidth={1.5} />
           </div>
           <span className="mt-1.5 text-[11px] font-bold tracking-[0.08em] text-mint-300">ROUTINE</span>
-        </div>
+        </button>
 
       </div>
     </div>
