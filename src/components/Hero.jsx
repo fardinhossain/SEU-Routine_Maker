@@ -86,45 +86,45 @@ const exportExamples = [
 
 function UmsToRoutineAnimation() {
   return (
-    <div className="group/hero-anim relative mx-auto flex h-[260px] w-full max-w-[540px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/[0.06] bg-[#071122]/40 backdrop-blur-sm p-6 shadow-2xl animate-rise-in transition-all duration-500 hover:border-white/10 hover:bg-[#071122]/50">
+    <div className="group/hero-anim relative mx-auto flex h-[200px] w-full max-w-[480px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/[0.06] bg-[#071122]/40 backdrop-blur-sm p-4 shadow-2xl animate-rise-in transition-all duration-500 hover:border-white/10 hover:bg-[#071122]/50">
       {/* Background Tech Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,white,transparent_80%)]" />
 
       {/* Radar Expansion/Pulsing Waves */}
-      <div className="absolute h-[140px] w-[140px] rounded-full border border-mint-400/10 animate-[ping_4s_infinite] group-hover/hero-anim:animate-[ping_2s_infinite] transition-all duration-500" />
-      <div className="absolute h-[220px] w-[220px] rounded-full border border-mint-400/5 animate-[ping_5s_infinite_1.5s] group-hover/hero-anim:animate-[ping_2.5s_infinite_0.75s] transition-all duration-500" />
-      <div className="absolute h-[300px] w-[300px] rounded-full border border-white/5 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:border-white/10" />
-      <div className="absolute h-[420px] w-[420px] rounded-full border border-white/5 opacity-50 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:opacity-70" />
+      <div className="absolute h-[100px] w-[100px] rounded-full border border-mint-400/10 animate-[ping_4s_infinite] group-hover/hero-anim:animate-[ping_2s_infinite] transition-all duration-500" />
+      <div className="absolute h-[160px] w-[160px] rounded-full border border-mint-400/5 animate-[ping_5s_infinite_1.5s] group-hover/hero-anim:animate-[ping_2.5s_infinite_0.75s] transition-all duration-500" />
+      <div className="absolute h-[220px] w-[220px] rounded-full border border-white/5 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:border-white/10" />
+      <div className="absolute h-[320px] w-[320px] rounded-full border border-white/5 opacity-50 transition-all duration-500 group-hover/hero-anim:scale-105 group-hover/hero-anim:opacity-70" />
 
       {/* Content Layout */}
-      <div className="relative flex items-center justify-between w-full max-w-[400px] gap-4">
+      <div className="relative flex items-center justify-between w-full max-w-[360px] gap-3">
         
         {/* Left Side: UMS Doc */}
-        <div className="group/box flex flex-col items-center justify-center h-[120px] w-[100px] rounded-2xl border border-white/10 bg-[#081424]/90 p-4 transition-all duration-300 hover:scale-105 hover:border-white/20 hover:shadow-lg">
+        <div className="group/box flex flex-col items-center justify-center h-[96px] w-[86px] rounded-2xl border border-white/10 bg-[#081424]/90 p-3 transition-all duration-300 hover:scale-105 hover:border-white/20 hover:shadow-lg">
           <div className="flex flex-1 items-center justify-center text-slate-400 group-hover/box:text-white transition-colors duration-300">
-            <FileText size={40} strokeWidth={1.5} />
+            <FileText size={32} strokeWidth={1.5} />
           </div>
-          <span className="mt-2 text-xs font-bold tracking-[0.08em] text-slate-400 group-hover/box:text-white transition-colors duration-300">UMS</span>
+          <span className="mt-1.5 text-[11px] font-bold tracking-[0.08em] text-slate-400 group-hover/box:text-white transition-colors duration-300">UMS</span>
         </div>
 
         {/* Center: Connect Line + Rotating Sync Badge */}
         <div className="flex flex-col items-center justify-center flex-1 relative">
           {/* Connector Line */}
-          <div className="absolute left-[-16px] right-[-16px] top-[30px] h-[1px] bg-gradient-to-r from-transparent via-mint-500/30 to-transparent transition-all duration-500 group-hover/hero-anim:via-mint-400/50" />
+          <div className="absolute left-[-16px] right-[-16px] top-[24px] h-[1px] bg-gradient-to-r from-transparent via-mint-500/30 to-transparent transition-all duration-500 group-hover/hero-anim:via-mint-400/50" />
           
           {/* Sync Badge */}
-          <div className="relative z-10 flex h-[60px] w-[60px] items-center justify-center rounded-full border border-mint-400/30 bg-[#0c1b35] shadow-[0_0_20px_rgba(32,222,214,0.15)] transition-all duration-500 hover:scale-110 group-hover/hero-anim:border-mint-400/50 group-hover/hero-anim:shadow-[0_0_30px_rgba(32,222,214,0.25)]">
-            <RefreshCw size={22} className="text-mint-300 animate-[spin_10s_linear_infinite] group-hover/hero-anim:animate-[spin_4s_linear_infinite]" />
+          <div className="relative z-10 flex h-[48px] w-[48px] items-center justify-center rounded-full border border-mint-400/30 bg-[#0c1b35] shadow-[0_0_20px_rgba(32,222,214,0.15)] transition-all duration-500 hover:scale-110 group-hover/hero-anim:border-mint-400/50 group-hover/hero-anim:shadow-[0_0_30px_rgba(32,222,214,0.25)]">
+            <RefreshCw size={18} className="text-mint-300 animate-[spin_10s_linear_infinite] group-hover/hero-anim:animate-[spin_4s_linear_infinite]" />
           </div>
-          <span className="mt-2 text-[10px] font-bold tracking-[0.2em] text-slate-500 transition-colors duration-500 group-hover/hero-anim:text-mint-300">TO</span>
+          <span className="mt-1.5 text-[9px] font-bold tracking-[0.2em] text-slate-500 transition-colors duration-500 group-hover/hero-anim:text-mint-300">TO</span>
         </div>
 
         {/* Right Side: Routine Calendar */}
-        <div className="group/box flex flex-col items-center justify-center h-[120px] w-[100px] rounded-2xl border border-mint-400/20 bg-[#081424]/90 p-4 transition-all duration-300 hover:scale-105 hover:border-mint-400/40 hover:shadow-[0_0_30px_rgba(32,222,214,0.12)]">
+        <div className="group/box flex flex-col items-center justify-center h-[96px] w-[86px] rounded-2xl border border-mint-400/20 bg-[#081424]/90 p-3 transition-all duration-300 hover:scale-105 hover:border-mint-400/40 hover:shadow-[0_0_30px_rgba(32,222,214,0.12)]">
           <div className="flex flex-1 items-center justify-center text-mint-300">
-            <CalendarDays size={40} strokeWidth={1.5} />
+            <CalendarDays size={32} strokeWidth={1.5} />
           </div>
-          <span className="mt-2 text-xs font-bold tracking-[0.08em] text-mint-300">ROUTINE</span>
+          <span className="mt-1.5 text-[11px] font-bold tracking-[0.08em] text-mint-300">ROUTINE</span>
         </div>
 
       </div>
@@ -155,13 +155,13 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
 
   return (
     <>
-      <section className="relative mb-8 w-full overflow-hidden rounded-3xl border border-white/[0.06] bg-[radial-gradient(circle_at_88%_12%,rgba(32,222,214,0.09),transparent_42%),linear-gradient(145deg,#0b172f_0%,#091326_55%)] px-5 py-6 sm:mb-10 sm:px-8 sm:py-8 lg:px-10 lg:py-9">
+      <section className="relative mb-8 w-full overflow-hidden rounded-3xl border border-white/[0.06] bg-[radial-gradient(circle_at_88%_12%,rgba(32,222,214,0.09),transparent_42%),linear-gradient(145deg,#0b172f_0%,#091326_55%)] px-5 py-6 sm:mb-10 sm:px-8 sm:py-8 lg:px-10 lg:py-6">
         <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full border border-mint-400/10" />
         <div className="pointer-events-none absolute -right-8 top-12 h-40 w-40 rounded-full border border-mint-400/10" />
         <div className="pointer-events-none absolute bottom-[26%] left-0 h-48 w-full bg-[linear-gradient(180deg,transparent,rgba(32,222,214,.035),transparent)]" />
 
         <div className="relative mx-auto max-w-[1280px]">
-          <div className="flex flex-col items-center justify-center gap-8 py-3 text-center lg:gap-12">
+          <div className="flex flex-col items-center justify-center gap-8 py-3 text-center lg:gap-6">
             <div className="max-w-5xl">
               <div
                 className="mx-auto inline-flex animate-fade-in items-center gap-2 rounded-full border border-mint-400/20 bg-mint-400/[0.07] px-4 py-1.5 text-xs font-medium tracking-[0.5px] text-mint-300"
@@ -185,16 +185,7 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                 </span>
               </h1>
 
-              <div
-                className="mt-5 flex animate-fade-up flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-slate-400"
-                style={{ animationDelay: "380ms" }}
-              >
-                <div className="flex items-center gap-1.5">
-                  <Lock size={15} className="text-mint-400" /> Private routine storage
-                </div>
-                <div className="hidden h-1 w-1 rounded-full bg-white/30 sm:block" />
-                <div>No login • OCR only when you upload an image</div>
-              </div>
+
 
               <div
                 className="mt-7 flex animate-fade-up flex-col items-center justify-center gap-3 sm:flex-row"
