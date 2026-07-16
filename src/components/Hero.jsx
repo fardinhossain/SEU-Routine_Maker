@@ -132,6 +132,67 @@ function UmsToRoutineAnimation() {
   );
 }
 
+function StarTopologyFeatures() {
+  return (
+    <div className="relative h-[230px] w-[340px] shrink-0 animate-rise-in">
+      {/* SVG Connection Lines */}
+      <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 0 }}>
+        {/* Line straight up to Top Box */}
+        <line x1="170" y1="115" x2="170" y2="38" stroke="rgba(32, 222, 214, 0.25)" strokeWidth="2" className="animate-topology-dash" />
+        {/* Line down-left to Left Box */}
+        <line x1="170" y1="115" x2="75" y2="170" stroke="rgba(32, 222, 214, 0.25)" strokeWidth="2" className="animate-topology-dash" />
+        {/* Line down-right to Right Box */}
+        <line x1="170" y1="115" x2="265" y2="170" stroke="rgba(32, 222, 214, 0.25)" strokeWidth="2" className="animate-topology-dash" />
+      </svg>
+
+      {/* Top Card: Instant Import */}
+      <div className="absolute left-[100px] top-[10px] w-[140px] z-10">
+        <div className="flex h-[56px] items-center gap-2 rounded-xl border border-white/10 bg-[#081424]/95 p-2 text-left transition-all duration-300 hover:scale-[1.03] hover:border-mint-400/30 hover:shadow-[0_0_15px_rgba(32,222,214,0.08)]">
+          <div className="rounded-lg bg-mint-400/10 p-1 text-mint-300 shrink-0">
+            <Zap size={14} />
+          </div>
+          <div className="min-w-0 flex-1 leading-tight">
+            <div className="font-semibold text-white text-[10.5px] truncate">Instant import</div>
+            <div className="text-[8.5px] text-slate-500 truncate">HTML • PDF • OCR</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Central Hub Node */}
+      <div className="absolute left-[142px] top-[87px] z-10 flex h-[56px] w-[56px] items-center justify-center rounded-full border border-mint-400/30 bg-[#0c1b35] shadow-[0_0_20px_rgba(32,222,214,0.18)]">
+        <div className="absolute inset-0 rounded-full border border-mint-400/10 animate-ping" />
+        <Sparkles size={20} className="text-mint-300" />
+      </div>
+
+      {/* Left Card: Conflict Smart */}
+      <div className="absolute left-[5px] top-[142px] w-[140px] z-10">
+        <div className="flex h-[56px] items-center gap-2 rounded-xl border border-white/10 bg-[#081424]/95 p-2 text-left transition-all duration-300 hover:scale-[1.03] hover:border-mint-400/30 hover:shadow-[0_0_15px_rgba(32,222,214,0.08)]">
+          <div className="rounded-lg bg-mint-400/10 p-1 text-mint-300 shrink-0">
+            <CalendarDays size={14} />
+          </div>
+          <div className="min-w-0 flex-1 leading-tight">
+            <div className="font-semibold text-white text-[10.5px] truncate">Conflict smart</div>
+            <div className="text-[8.5px] text-slate-500 truncate">Overlap warnings</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Card: Clean Exports */}
+      <div className="absolute right-[5px] top-[142px] w-[140px] z-10">
+        <div className="flex h-[56px] items-center gap-2 rounded-xl border border-white/10 bg-[#081424]/95 p-2 text-left transition-all duration-300 hover:scale-[1.03] hover:border-mint-400/30 hover:shadow-[0_0_15px_rgba(32,222,214,0.08)]">
+          <div className="rounded-lg bg-mint-400/10 p-1 text-mint-300 shrink-0">
+            <Sparkles size={14} />
+          </div>
+          <div className="min-w-0 flex-1 leading-tight">
+            <div className="font-semibold text-white text-[10.5px] truncate">Clean exports</div>
+            <div className="text-[8.5px] text-slate-500 truncate">PNG + PDF</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Hero({ onGetStarted, onOpenOrganizer }) {
   const [showExportModal, setShowExportModal] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
@@ -215,116 +276,13 @@ export default function Hero({ onGetStarted, onOpenOrganizer }) {
                   <Download size={16} />
                 </button>
               </div>
-
-              {/* Star Topology Feature Layout (Desktop) */}
-              <div className="relative mx-auto mt-6 hidden h-[220px] w-full max-w-[700px] md:block">
-                {/* SVG Connections */}
-                <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 0 }}>
-                  <line x1="350" y1="110" x2="100" y2="110" stroke="rgba(32, 222, 214, 0.25)" strokeWidth="2" className="animate-topology-dash" />
-                  <line x1="350" y1="110" x2="600" y2="55" stroke="rgba(32, 222, 214, 0.25)" strokeWidth="2" className="animate-topology-dash" />
-                  <line x1="350" y1="110" x2="600" y2="165" stroke="rgba(32, 222, 214, 0.25)" strokeWidth="2" className="animate-topology-dash" />
-                </svg>
-
-                {/* Left Card: Instant Import */}
-                <div className="absolute left-0 top-[73px] w-[200px] z-10">
-                  <div className="flex h-[74px] items-center gap-3 rounded-2xl border border-white/10 bg-[#081424]/90 px-3.5 py-2.5 text-left transition-all duration-300 hover:scale-[1.03] hover:border-mint-400/30 hover:shadow-[0_0_20px_rgba(32,222,214,0.08)]">
-                    <div className="rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
-                      <Zap size={17} />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white text-xs">Instant import</div>
-                      <div className="text-[10px] text-slate-500">HTML • PDF • OCR</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Central Hub Node */}
-                <div className="absolute left-[314px] top-[74px] z-10 flex h-[72px] w-[72px] items-center justify-center rounded-full border border-mint-400/30 bg-[#0c1b35] shadow-[0_0_25px_rgba(32,222,214,0.18)]">
-                  <div className="absolute inset-0 rounded-full border border-mint-400/10 animate-ping" />
-                  <Sparkles size={24} className="text-mint-300" />
-                </div>
-
-                {/* Right Top Card: Conflict Smart */}
-                <div className="absolute right-0 top-[18px] w-[200px] z-10">
-                  <div className="flex h-[74px] items-center gap-3 rounded-2xl border border-white/10 bg-[#081424]/90 px-3.5 py-2.5 text-left transition-all duration-300 hover:scale-[1.03] hover:border-mint-400/30 hover:shadow-[0_0_20px_rgba(32,222,214,0.08)]">
-                    <div className="rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
-                      <CalendarDays size={17} />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white text-xs">Conflict smart</div>
-                      <div className="text-[10px] text-slate-500">Overlap warnings</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Bottom Card: Clean Exports */}
-                <div className="absolute right-0 bottom-[18px] w-[200px] z-10">
-                  <div className="flex h-[74px] items-center gap-3 rounded-2xl border border-white/10 bg-[#081424]/90 px-3.5 py-2.5 text-left transition-all duration-300 hover:scale-[1.03] hover:border-mint-400/30 hover:shadow-[0_0_20px_rgba(32,222,214,0.08)]">
-                    <div className="rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
-                      <Sparkles size={17} />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white text-xs">Clean exports</div>
-                      <div className="text-[10px] text-slate-500">PNG + PDF</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Star Topology Feature Layout (Mobile Stack) */}
-              <div className="md:hidden flex flex-col items-center gap-3 mt-6">
-                {/* Card 1 */}
-                <div className="w-full max-w-[280px] rounded-2xl border border-white/10 bg-[#081424]/90 p-3 text-left transition-all duration-300">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
-                      <Zap size={17} />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white text-xs">Instant import</div>
-                      <div className="text-[10px] text-slate-500">HTML • PDF • OCR</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Connecting Node */}
-                <div className="h-4 w-[2px] bg-gradient-to-b from-mint-500/40 to-mint-500/40 relative">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-mint-400 border border-slate-900 shadow-[0_0_8px_#20ded6]" />
-                </div>
-
-                {/* Card 2 */}
-                <div className="w-full max-w-[280px] rounded-2xl border border-white/10 bg-[#081424]/90 p-3 text-left transition-all duration-300">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
-                      <CalendarDays size={17} />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white text-xs">Conflict smart</div>
-                      <div className="text-[10px] text-slate-500">Overlap warnings</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Connecting Node */}
-                <div className="h-4 w-[2px] bg-gradient-to-b from-mint-500/40 to-mint-500/40 relative">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-mint-400 border border-slate-900 shadow-[0_0_8px_#20ded6]" />
-                </div>
-
-                {/* Card 3 */}
-                <div className="w-full max-w-[280px] rounded-2xl border border-white/10 bg-[#081424]/90 p-3 text-left transition-all duration-300">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-mint-400/10 p-1.5 text-mint-300">
-                      <Sparkles size={17} />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white text-xs">Clean exports</div>
-                      <div className="text-[10px] text-slate-500">PNG + PDF</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            <UmsToRoutineAnimation />
+            {/* Side-by-Side Animation & Star Topology Section */}
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 w-full max-w-5xl mt-4">
+              <UmsToRoutineAnimation />
+              <StarTopologyFeatures />
+            </div>
           </div>
 
           <div
