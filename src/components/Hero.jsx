@@ -54,6 +54,7 @@ const deviceGuides = [
       <>Open Registered Courses in Safari and wait until schedules load.</>,
       <>Tap <strong>Share</strong> → <strong>Options</strong> → <strong>PDF</strong> → Save to Files.</>,
       <>If PDF is missing, use <strong>Print</strong>, pinch open preview, then Share → Save to Files.</>,
+      <>Or in Chrome, tap <strong>Reading Mode</strong> → <strong>Share</strong> → <strong>Print</strong> → <strong>Save as PDF</strong>.</>,
     ],
   },
 ];
