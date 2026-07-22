@@ -70,6 +70,19 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         {children}
         <Analytics />
+        {/* Register service worker for offline PWA support */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js')
+                    .catch(function(err) { console.warn('SW registration failed:', err); });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );
