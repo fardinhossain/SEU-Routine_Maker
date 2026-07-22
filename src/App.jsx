@@ -968,7 +968,9 @@ export default function App() {
             <span className="text-base font-extrabold text-white">
               SEU <span className="text-[#E1DCC9]">Routine Maker</span>
             </span>
-            <span className="text-xs text-[#C7BFD0]">• Made with ❤️ for SEU students</span>
+            <span className="text-xs text-[#C7BFD0]">
+              <span className="hidden sm:inline">• </span>Made with ❤️ for SEU students
+            </span>
           </div>
 
           <div className="text-xs text-[#C7BFD0]">
