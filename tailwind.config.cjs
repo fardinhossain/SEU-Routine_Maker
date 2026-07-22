@@ -1,27 +1,49 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}", "./app/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
         ink: {
-          950: "#091326",
-          900: "#0d182b",
-          850: "#142138",
-          800: "#1d2a3e",
-          700: "#2b394f"
+          950: "#000000",
+          900: "rgba(31, 21, 12, 0.35)",
+          850: "rgba(46, 30, 18, 0.30)",
+          800: "rgba(65, 45, 21, 0.22)",
+          700: "rgba(94, 66, 33, 0.35)",
         },
         mint: {
-          300: "#6ff7f0",
-          400: "#20ded6",
-          500: "#08bdb7"
-        }
+          300: "#EFEBDC",
+          400: "#E1DCC9",
+          500: "#D1C7AE",
+        },
+        gold: {
+          300: "#EFEBDC",
+          400: "#E1DCC9",
+          500: "#D1C7AE",
+        },
+        cream: {
+          300: "#EFEBDC",
+          400: "#E1DCC9",
+          500: "#D1C7AE",
+        },
+        violet: {
+          300: "#D6B588",
+          400: "#C49A62",
+          500: "#B0834B",
+        },
+        lavender: {
+          300: "#D6B588",
+          400: "#C49A62",
+          500: "#B0834B",
+        },
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(32,222,214,.08), 0 24px 80px rgba(2,7,18,.28)",
+        glow: "0 0 0 1px rgba(225, 220, 201, 0.18), 0 24px 80px rgba(0, 0, 0, 0.5)",
+        "glow-violet": "0 0 0 1px rgba(196, 154, 98, 0.2), 0 24px 80px rgba(0, 0, 0, 0.5)",
       },
       fontFamily: {
-        sans: ["Inter", "Aptos", "Segoe UI", "sans-serif"],
+        sans: ["'Libre Baskerville'", "Georgia", "serif"],
+        serif: ["'Libre Baskerville'", "Georgia", "serif"],
       },
     },
   },

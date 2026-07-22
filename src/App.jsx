@@ -575,7 +575,7 @@ export default function App() {
     const exportHeight = Math.max(target.scrollHeight, 1024);
 
     return html2canvas(target, {
-      backgroundColor: "#0d182b",
+      backgroundColor: "#000000",
       scale: 2,
       useCORS: true,
       logging: false,
@@ -614,7 +614,7 @@ export default function App() {
     const exportHeight = Math.ceil(target.scrollHeight);
 
     return html2canvas(target, {
-      backgroundColor: "#06111f",
+      backgroundColor: "#000000",
       scale: 2,
       useCORS: true,
       logging: false,
@@ -636,7 +636,7 @@ export default function App() {
     const exportWidth = Math.ceil(target.scrollWidth);
 
     return html2canvas(target, {
-      backgroundColor: "#06111f",
+      backgroundColor: "#000000",
       scale: 2,
       useCORS: true,
       logging: false,
@@ -658,7 +658,7 @@ export default function App() {
     const exportWidth = Math.ceil(target.scrollWidth);
 
     return html2canvas(target, {
-      backgroundColor: "#06111f",
+      backgroundColor: "#000000",
       scale: 3,
       useCORS: true,
       logging: false,
@@ -778,7 +778,14 @@ export default function App() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-ink-950 text-slate-200">
       {showLoadingScreen && <LoadingScreen leaving={loadingScreenLeaving} />}
-      <AppHeader />
+      <AppHeader
+        onNavClick={(target) => {
+          if (target === 'home') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}
+        onOpenDataPolicy={() => setShowDataPolicy(true)}
+      />
 
       <main className="mx-auto w-full min-w-0 max-w-[1500px] px-4 pb-12 pt-5 sm:px-6 sm:pb-16 sm:pt-7 lg:px-8 lg:pt-10">
         <Hero
@@ -786,6 +793,20 @@ export default function App() {
             const tools = document.getElementById("tools");
             if (tools) {
               tools.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+          onGoToImport={() => {
+            const tools = document.getElementById("tools");
+            if (tools) {
+              tools.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+          onGoToRoutine={() => {
+            const routineView = document.getElementById("routine-view");
+            if (routineView) {
+              routineView.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              document.getElementById("tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }
           }}
           onOpenOrganizer={() => {
@@ -871,7 +892,7 @@ export default function App() {
                   </button>
 
                   {pngMenuOpen && (
-                    <div className="absolute left-0 z-40 mt-2 w-60 overflow-hidden rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50 sm:left-auto sm:right-0" role="menu">
+                    <div className="absolute right-0 z-50 mt-2 w-56 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-[#412D15] bg-[#170F08] p-1.5 shadow-2xl shadow-black/90 backdrop-blur-xl" role="menu">
                       <button
                         type="button"
                         role="menuitem"
@@ -913,12 +934,14 @@ export default function App() {
               </div>
             </div>
 
-            <div className="flex items-start gap-2.5 rounded-xl border border-sky-400/20 bg-sky-400/[.07] px-3.5 py-3 text-xs leading-5 text-sky-200 sm:hidden">
+            <div className="flex items-start gap-2.5 rounded-xl border border-cream-400/20 bg-cream-400/[.07] px-3.5 py-3 text-xs leading-5 text-cream-200 sm:hidden">
               <MonitorSmartphone className="mt-0.5 shrink-0" size={17} />
-              <p><strong className="text-sky-100">Use Desktop Mode for a better view.</strong></p>
+              <p><strong className="text-cream-100">Use Desktop Mode for a better view.</strong></p>
             </div>
 
-            <RoutineTable ref={routineRef} selectedCourses={selectedCourses} routine={routine} shortNames={shortNames} />
+            <div id="routine-view" className="scroll-mt-6">
+              <RoutineTable ref={routineRef} selectedCourses={selectedCourses} routine={routine} shortNames={shortNames} />
+            </div>
             <div className="mobile-routine-export-host" aria-hidden="true">
               <ModernRoutineExport ref={modernRoutineRef} routine={routine} shortNames={shortNames} />
               <FuturisticRoutineExport ref={futuristicRoutineRef} routine={routine} shortNames={shortNames} />
@@ -939,45 +962,27 @@ export default function App() {
 
       </main>
 
-      <footer className="border-t border-white/[.06] bg-[#060d18] px-4 py-12 text-center sm:py-14">
-        <div className="mb-5 flex flex-wrap items-center justify-center gap-2">
-          <a
-            href="/about"
-            className="inline-flex items-center rounded-full border border-white/10 bg-white/[.035] px-3.5 py-1.5 text-xs font-medium text-slate-400 transition hover:border-mint-400/25 hover:bg-mint-400/[.06] hover:text-mint-300"
-          >
-            About
-          </a>
-          <a
-            href="/faq"
-            className="inline-flex items-center rounded-full border border-white/10 bg-white/[.035] px-3.5 py-1.5 text-xs font-medium text-slate-400 transition hover:border-mint-400/25 hover:bg-mint-400/[.06] hover:text-mint-300"
-          >
-            FAQ
-          </a>
-          <button
-            type="button"
-            onClick={() => setShowDataPolicy(true)}
-            className="inline-flex items-center rounded-full border border-white/10 bg-white/[.035] px-3.5 py-1.5 text-xs font-medium text-slate-400 transition hover:border-mint-400/25 hover:bg-mint-400/[.06] hover:text-mint-300"
-          >
-            User Data Policy
-          </button>
+      <footer className="border-t border-[#412D15]/50 bg-black px-4 py-6 text-center">
+        <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-2 text-center">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-center">
+            <span className="text-base font-extrabold text-white">
+              SEU <span className="text-[#E1DCC9]">Routine Maker</span>
+            </span>
+            <span className="text-xs text-[#C7BFD0]">• Made with ❤️ for SEU students</span>
+          </div>
+
+          <div className="text-xs text-[#C7BFD0]">
+            Developed by{" "}
+            <a
+              href="https://mdfardin.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-[#E1DCC9] transition hover:underline"
+            >
+              @Fardin_Hossain
+            </a>
+          </div>
         </div>
-        <p className="text-xl font-bold tracking-[-.03em] text-white sm:text-2xl">
-          SEU <span className="text-mint-400">Routine Maker</span>
-        </p>
-        <p className="mt-2 text-sm text-slate-400 sm:text-base">
-          Made with <span role="img" aria-label="love">❤️</span> for SEU students.
-        </p>
-        <p className="mt-5 text-sm text-slate-500">
-          Developed by{" "}
-          <a
-            href="https://mdfardin.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-mint-400 transition hover:text-mint-300 hover:underline hover:underline-offset-4"
-          >
-            @Fardin_Hossain
-          </a>
-        </p>
       </footer>
 
       {showDataPolicy && <DataPolicyModal onClose={() => setShowDataPolicy(false)} />}

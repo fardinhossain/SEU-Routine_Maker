@@ -41,7 +41,7 @@ export default function DataPolicyModal({ onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-5"
+      className="fixed inset-0 z-[90] flex items-end justify-center bg-black/90 p-0 backdrop-blur-md sm:items-center sm:p-5"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -50,22 +50,22 @@ export default function DataPolicyModal({ onClose }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="data-policy-title"
-        className="max-h-[92vh] w-full overflow-y-auto rounded-t-3xl border border-[#34445c] bg-ink-800 shadow-2xl sm:max-w-2xl sm:rounded-3xl"
+        className="max-h-[92vh] w-full overflow-y-auto rounded-t-3xl border border-[#412D15] bg-[#120B05] shadow-2xl sm:max-w-2xl sm:rounded-3xl"
       >
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-white/[.07] bg-ink-800/95 px-5 py-5 backdrop-blur sm:px-7">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-[#412D15] bg-[#120B05] px-5 py-5 sm:px-7">
           <div className="flex items-center gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-mint-400/10 text-mint-300">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#E1DCC9] text-[#000000]">
               <ShieldCheck size={20} />
             </span>
             <div>
               <h2 id="data-policy-title" className="text-lg font-semibold text-white">User Data Policy</h2>
-              <p className="mt-0.5 text-xs text-slate-500">Private by design · Last updated June 2026</p>
+              <p className="mt-0.5 text-xs text-[#C7BFD0]">Private by design · Last updated June 2026</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[.035] text-slate-400 transition hover:bg-white/[.07] hover:text-white"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[#412D15] bg-[#1F150C]/50 text-slate-400 transition hover:bg-white/[.07] hover:text-white cursor-pointer"
             aria-label="Close data policy"
           >
             <X size={17} />
@@ -79,10 +79,10 @@ export default function DataPolicyModal({ onClose }) {
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {POLICY_ITEMS.map(({ icon: Icon, title, text }) => (
-              <article key={title} className="rounded-2xl border border-white/[.07] bg-ink-950/35 p-4">
-                <Icon size={17} className="text-mint-400" />
+              <article key={title} className="rounded-2xl border border-[#412D15]/60 bg-[#1A1108] p-4">
+                <Icon size={17} className="text-[#E1DCC9]" />
                 <h3 className="mt-3 text-sm font-semibold text-slate-100">{title}</h3>
-                <p className="mt-1 text-xs leading-5 text-slate-500">{text}</p>
+                <p className="mt-1 text-xs leading-5 text-[#C7BFD0]">{text}</p>
               </article>
             ))}
           </div>

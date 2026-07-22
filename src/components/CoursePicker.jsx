@@ -195,16 +195,15 @@ export default function CoursePicker({
       )}
 
       <div className="relative mt-4">
-        <Search className="pointer-events-none absolute left-3.5 top-3.5 text-slate-500" size={16} />
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          className="field pl-10 text-sm"
+          className="field px-3.5 text-sm"
           placeholder={courses.length ? "Search saved sections…" : "Parse course data to enable search"}
           disabled={!courses.length}
         />
         {matches.length > 0 && (
-          <div className="absolute z-30 mt-2 max-h-72 w-full overflow-auto rounded-xl border border-[#40516b] bg-ink-850 p-1.5 shadow-2xl">
+          <div className="absolute z-50 mt-2 max-h-72 w-full overflow-auto rounded-xl border border-[#412D15] bg-[#170F08] p-1.5 shadow-2xl backdrop-blur-xl">
             {matches.map((course) => (
               <button
                 type="button"
