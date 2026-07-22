@@ -349,6 +349,7 @@ export default function App() {
   const futuristicRoutineRef = useRef(null);
   const mobileTableRoutineRef = useRef(null);
   const pendingRoutineScrollRef = useRef(false);
+  const hasStoredRoutineRef = useRef(false);
 
   useEffect(() => {
     const stored = loadInitialState();
@@ -359,6 +360,11 @@ export default function App() {
     setShortNames(stored.shortNames);
     if (stored.rawHtml && stored.courses.length) {
       setImportSuccessMessage(`${stored.courses.length} course sections parsed and saved in this browser.`);
+    }
+    // Flag if the user already has a saved routine so we can auto-scroll after the
+    // loading screen finishes (or immediately on revisits that skip the loading screen).
+    if (stored.selectedCodes.length > 0) {
+      hasStoredRoutineRef.current = true;
     }
     setStorageHydrated(true);
   }, []);
@@ -441,6 +447,22 @@ export default function App() {
       window.clearTimeout(removeTimer);
       document.body.style.overflow = previousOverflow;
     };
+  }, [showLoadingScreen]);
+
+  // Auto-scroll to the routine section after the loading screen finishes
+  // if the user already has a saved routine from a previous visit.
+  useEffect(() => {
+    if (showLoadingScreen) return undefined;
+    if (!hasStoredRoutineRef.current) return undefined;
+    // Reset the flag so subsequent state changes don't re-trigger scrolling.
+    hasStoredRoutineRef.current = false;
+    const scrollTimer = window.setTimeout(() => {
+      routineRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 300);
+    return () => window.clearTimeout(scrollTimer);
   }, [showLoadingScreen]);
 
   useEffect(() => {
