@@ -961,10 +961,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="flex items-start gap-2.5 rounded-xl border border-cream-400/20 bg-cream-400/[.07] px-3.5 py-3 text-xs leading-5 text-cream-200 sm:hidden">
-              <MonitorSmartphone className="mt-0.5 shrink-0" size={17} />
-              <p><strong className="text-cream-100">Use Desktop Mode for a better view.</strong></p>
-            </div>
+
 
             <div id="routine-view" className="scroll-mt-6">
               <RoutineTable ref={routineRef} selectedCourses={selectedCourses} routine={routine} shortNames={shortNames} />
