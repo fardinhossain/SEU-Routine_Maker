@@ -27,8 +27,20 @@ import { normalizeCourseMetadata, parseUmsHtml, parseUmsText } from "./lib/parse
 import { buildRoutine, courseIdentity, findDuplicateCourseSelections, formatTime12, parseCodeList, timeToMinutes, uniqueCourseSelections, WEEK_DAYS } from "./lib/routine";
 import { clearRoutineStorage, readStoredValue, STORAGE_KEYS, writeStoredValue } from "./lib/storage";
 
+
 const LOADING_SCREEN_SESSION_KEY = "seu-routine-loading-screen-shown";
 let loadingScreenShown = false;
+
+/** Read sessionStorage synchronously so the initial useState value is correct. */
+function shouldShowSplash() {
+  if (loadingScreenShown) return false;
+  try {
+    if (window.sessionStorage.getItem(LOADING_SCREEN_SESSION_KEY) === "true") return false;
+  } catch {
+    // sessionStorage unavailable — fall through, show the splash.
+  }
+  return true;
+}
 
 function loadInitialState() {
   const selectedCodes = readStoredValue(STORAGE_KEYS.selectedCodes, []);
@@ -340,7 +352,7 @@ export default function App() {
   const [importSuccessMessage, setImportSuccessMessage] = useState("");
   const [storageHydrated, setStorageHydrated] = useState(false);
   const [imageResetKey, setImageResetKey] = useState(0);
-  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(() => shouldShowSplash());
   const [loadingScreenLeaving, setLoadingScreenLeaving] = useState(false);
   const [showDataPolicy, setShowDataPolicy] = useState(false);
   const [pngMenuOpen, setPngMenuOpen] = useState(false);
@@ -412,35 +424,28 @@ export default function App() {
   }, [shortNames, storageHydrated]);
 
   useLayoutEffect(() => {
-    let alreadyShown = loadingScreenShown;
-
-    try {
-      alreadyShown ||= window.sessionStorage.getItem(LOADING_SCREEN_SESSION_KEY) === "true";
-    } catch {
-      // The in-memory guard still prevents duplicate mounts when storage is unavailable.
-    }
-
-    if (alreadyShown) return;
-
+    if (!showLoadingScreen) return;
+    // Mark as shown so hot-reloads and back-navigations skip it.
     loadingScreenShown = true;
     try {
       window.sessionStorage.setItem(LOADING_SCREEN_SESSION_KEY, "true");
     } catch {
-      // Storage can be disabled without affecting the rest of the app.
+      // Storage disabled — in-memory guard still works.
     }
-    setShowLoadingScreen(true);
-  }, []);
+  }, [showLoadingScreen]);
 
   useEffect(() => {
     if (!showLoadingScreen) return undefined;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const fadeTimer = window.setTimeout(() => setLoadingScreenLeaving(true), 2500);
+    // Start fade-out at 2.4s, fully unmount at 3.1s (safely after the 550ms CSS transition).
+    const fadeTimer  = window.setTimeout(() => setLoadingScreenLeaving(true), 2400);
     const removeTimer = window.setTimeout(() => {
       setShowLoadingScreen(false);
+      setLoadingScreenLeaving(false);
       document.body.style.overflow = previousOverflow;
-    }, 3000);
+    }, 3100);
 
     return () => {
       window.clearTimeout(fadeTimer);
