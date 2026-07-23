@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { Bell, BellOff, Calendar, Download } from "lucide-react";
+import { Bell, BellOff, Calendar, Download, FlaskConical } from "lucide-react";
 import {
   isRemindersEnabled,
   setRemindersEnabled,
@@ -91,6 +91,58 @@ export default function ClassReminders({ selectedCourses, routine, shortNames })
     }
   };
 
+  const sendTestNotification = async () => {
+    // Request permission if not yet granted
+    if (typeof Notification === "undefined") {
+      setStatus("❌ Notifications are not supported in this browser.");
+      setTimeout(() => setStatus(""), 4000);
+      return;
+    }
+
+    let perm = Notification.permission;
+    if (perm === "default") {
+      perm = await requestNotificationPermission();
+      setPermission(perm);
+    }
+
+    if (perm === "denied") {
+      setStatus("❌ Notifications are blocked. Please enable them in browser settings.");
+      setTimeout(() => setStatus(""), 5000);
+      return;
+    }
+
+    if (perm !== "granted") {
+      setStatus("⚠️ Notification permission was not granted.");
+      setTimeout(() => setStatus(""), 4000);
+      return;
+    }
+
+    const title = "📚 Test — Data Structures • Room 501";
+    const options = {
+      body: `Starts at 10:00 AM · This is how your reminders will look.`,
+      icon: "/icon/android-chrome-192x192.png",
+      badge: "/favicon.svg",
+      tag: "seu-test-notification",
+      requireInteraction: false,
+    };
+
+    try {
+      if (navigator.serviceWorker?.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: "SHOW_NOTIFICATION",
+          title,
+          options,
+        });
+      } else {
+        new Notification(title, options);
+      }
+      setStatus("✅ Test notification sent! Check your notifications.");
+    } catch (e) {
+      setStatus("❌ Failed to send notification: " + e.message);
+    }
+    setTimeout(() => setStatus(""), 5000);
+  };
+
   if (!hasRoutine) return null;
 
   return (
@@ -106,17 +158,28 @@ export default function ClassReminders({ selectedCourses, routine, shortNames })
           </p>
         </div>
 
-        <button
-          onClick={toggleReminders}
-          className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium transition ${
-            enabled 
-              ? "bg-mint-400/10 text-mint-300 hover:bg-mint-400/20" 
-              : "bg-white/5 text-slate-300 hover:bg-white/10"
-          }`}
-        >
-          {enabled ? <BellOff size={15} /> : <Bell size={15} />}
-          {enabled ? "Disable" : "Enable"}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={toggleReminders}
+            className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium transition ${
+              enabled 
+                ? "bg-mint-400/10 text-mint-300 hover:bg-mint-400/20" 
+                : "bg-white/5 text-slate-300 hover:bg-white/10"
+            }`}
+          >
+            {enabled ? <BellOff size={15} /> : <Bell size={15} />}
+            {enabled ? "Disable" : "Enable"}
+          </button>
+
+          <button
+            onClick={sendTestNotification}
+            className="inline-flex items-center gap-2 rounded-xl border border-violet-400/25 bg-violet-400/10 px-3 py-1.5 text-sm font-medium text-violet-300 transition hover:bg-violet-400/20 hover:text-violet-200"
+            title="Send a test notification right now to verify it works"
+          >
+            <FlaskConical size={15} />
+            Test
+          </button>
+        </div>
       </div>
 
       {/* Reminder time selector */}
