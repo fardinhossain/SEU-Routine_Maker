@@ -370,7 +370,7 @@ export default function SectionOrganizerPage() {
           )}
         </section>
 
-        <section className="panel mt-3 min-w-0 p-3 sm:p-5">
+        <section className="panel mt-3 min-w-0 overflow-visible p-3 sm:p-5">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-4">
             <div>
               <p className="text-sm font-semibold text-white">Filter sections</p>
@@ -436,7 +436,7 @@ export default function SectionOrganizerPage() {
                 <div
                   role="listbox"
                   aria-label="Courses"
-                  className="absolute left-0 right-0 z-40 mt-2 max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50"
+                  className="absolute left-0 right-0 z-50 mt-2 max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50"
                 >
                   {[["ALL", "All courses"], ...courseOptions].map(([code, title]) => {
                     const label = code === "ALL" ? title : `${code} — ${title}`;
@@ -489,7 +489,7 @@ export default function SectionOrganizerPage() {
                 <div
                   role="listbox"
                   aria-label="Teachers"
-                  className="absolute left-0 right-0 z-40 mt-2 max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50"
+                  className="absolute left-0 right-0 z-50 mt-2 max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50"
                 >
                   {[["ALL", "All teachers"], ...teacherOptions].map(([faculty, label]) => {
                     const active = teacherFilter === faculty;
@@ -540,7 +540,7 @@ export default function SectionOrganizerPage() {
                 <div
                   role="listbox"
                   aria-label="Time slots"
-                  className="absolute left-0 z-40 mt-2 max-h-72 w-max min-w-full max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50"
+                  className="absolute left-0 z-50 mt-2 max-h-72 w-max min-w-full max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50"
                 >
                   {[{ value: "ALL", label: "All" }, ...timeOptions].map((option) => {
                     const active = timeFilter === option.value;
@@ -591,7 +591,7 @@ export default function SectionOrganizerPage() {
                 <div
                   role="listbox"
                   aria-label="Meeting days"
-                  className="absolute left-0 right-0 z-40 mt-2 max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50"
+                  className="absolute left-0 right-0 z-50 mt-2 max-h-72 overflow-y-auto rounded-xl border border-white/10 bg-ink-900 p-1.5 shadow-2xl shadow-black/50"
                 >
                   {[{ value: "ALL", label: "All" }, ...dayOptions].map((option) => {
                     const active = dayFilter === option.value;
