@@ -67,6 +67,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Preload splash logo so it's in cache before React renders */}
+        <link
+          rel="preload"
+          href="/icon/android-chrome-512x512.png"
+          as="image"
+          type="image/png"
+          fetchPriority="high"
+        />
+      </head>
       <body suppressHydrationWarning>
         {children}
         <Analytics />

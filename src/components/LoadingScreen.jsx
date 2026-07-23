@@ -1,6 +1,6 @@
 const KEYFRAMES = `
   @keyframes _spl_fade_in  { from{opacity:0} to{opacity:1} }
-  @keyframes _spl_logo_in  { 0%{opacity:0;transform:scale(.55) translateY(32px);filter:blur(14px)} 55%{transform:scale(1.06) translateY(-4px);filter:blur(0)} 78%{transform:scale(.97) translateY(1px)} 100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)} }
+  @keyframes _spl_logo_in  { 0%{opacity:0;transform:scale(.6) translateY(28px)} 55%{transform:scale(1.06) translateY(-4px)} 78%{transform:scale(.97) translateY(1px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
   @keyframes _spl_ring     { 0%{opacity:0;transform:scale(.4)} 55%{opacity:.65;transform:scale(1.14)} 100%{opacity:0;transform:scale(1.6)} }
   @keyframes _spl_title_in { 0%{opacity:0;transform:translateY(24px)} 100%{opacity:1;transform:translateY(0)} }
   @keyframes _spl_tag_in   { 0%{opacity:0;transform:translateY(16px)} 100%{opacity:1;transform:translateY(0)} }
@@ -92,6 +92,9 @@ export default function LoadingScreen({ leaving }) {
               src="/icon/android-chrome-512x512.png"
               alt="SEU Routine Maker"
               draggable={false}
+              fetchPriority="high"
+              loading="eager"
+              decoding="sync"
               style={{
                 width:        "100%",
                 height:       "100%",
