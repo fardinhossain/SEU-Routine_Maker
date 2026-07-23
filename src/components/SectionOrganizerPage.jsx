@@ -370,7 +370,7 @@ export default function SectionOrganizerPage() {
           )}
         </section>
 
-        <section className="panel mt-3 min-w-0 overflow-visible p-3 sm:p-5">
+        <section className="panel relative z-10 mt-3 min-w-0 overflow-visible p-3 sm:p-5">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3 sm:mb-4">
             <div>
               <p className="text-sm font-semibold text-white">Filter sections</p>
