@@ -16,7 +16,6 @@
 ## Table of contents
 
 - [About](#about)
-- [PNG export showcase](#png-export-showcase)
 - [Features](#features)
 - [How to use the web app](#how-to-use-the-web-app)
 - [Class reminders and calendar export](#class-reminders-and-calendar-export)
@@ -33,46 +32,6 @@
 SEU Routine Maker converts course information from the Southeast University UMS into a readable weekly routine. It parses course codes, titles, faculty initials, class days, start and end times, and rooms from both Offered Sections and Student Dashboard exports directly in the browser.
 
 No account, backend, or external database is required for routine data. The app is designed for both desktop and mobile devices and uses a dark theme inspired by the SEU UMS.
-
-## PNG export showcase
-
-<div align="center">
-  <p>
-    SEU Routine Maker can export the same routine in four polished PNG styles for different use cases.
-  </p>
-</div>
-
-### PC Version
-
-<div align="center">
-  <img src="./docs/images/seu-weekly-routine-pc.png" alt="SEU Weekly Routine PC version PNG export with wide desktop table layout" width="100%" />
-  <br />
-  <sub>Wide desktop table export for full-screen viewing, printing, and sharing on larger displays.</sub>
-</div>
-
-### Modern Version
-
-<div align="center">
-  <img src="./docs/images/seu-weekly-routine-modern.png" alt="SEU Weekly Routine modern PNG export with dark mobile-friendly card layout" width="70%" />
-  <br />
-  <sub>Modern dark card layout with large readable text and a premium mobile-friendly presentation.</sub>
-</div>
-
-### Futuristic Version
-
-<div align="center">
-  <img src="./docs/images/seu-weekly-routine-futuristic.png" alt="SEU Weekly Routine futuristic PNG export with neon dashboard-style routine cards" width="100%" />
-  <br />
-  <sub>Futuristic dashboard export with glassy day rows, neon accents, and large subject cards.</sub>
-</div>
-
-### Mobile Version
-
-<div align="center">
-  <img src="./docs/images/seu-routine-mobile.png" alt="SEU Weekly Routine mobile PNG export with compact PC-style table layout" width="70%" />
-  <br />
-  <sub>Compact phone-friendly table export that keeps the real PC grid identity while reducing wasted space.</sub>
-</div>
 
 ## Features
 
@@ -298,11 +257,6 @@ If the PaddleOCR token was shared publicly or pasted into chat, rotate it in AI 
    - `https://seuroutine.vercel.app/7e4d2c0a9b8f4e6db1a3c5f0e2d9a718.txt`
 2. In Google Search Console, submit `https://seuroutine.vercel.app/sitemap.xml` and request indexing for the homepage.
 3. In Bing Webmaster Tools, add the site, submit the same sitemap, and verify the site.
-4. After the IndexNow key file is live, run:
-
-```bash
-npm run submit:indexnow
-```
 
 Search engines can take hours to weeks to update site names, favicons, snippets, and rankings after a deploy. Bing/Edge uses Bing's index; iPhone Safari usually uses Google unless the user changes the Safari search engine in settings.
 
@@ -310,19 +264,16 @@ Search engines can take hours to weeks to update site names, favicons, snippets,
 
 ```text
 Seu-Routine_Maker/
-├── docs/
-│   └── images/
 ├── public/
-│   ├── tesseract/
 │   └── favicon.svg
-├── scripts/
-│   └── test-parser.mjs
 ├── src/
 │   ├── components/
 │   │   ├── AppHeader.jsx
+│   │   ├── ClassReminders.jsx
 │   │   ├── ConflictAlert.jsx
 │   │   ├── CoursePicker.jsx
 │   │   ├── DataPolicyModal.jsx
+│   │   ├── Hero.jsx
 │   │   ├── ImageCourseScanner.jsx
 │   │   ├── ImportPanel.jsx
 │   │   ├── LoadingScreen.jsx
@@ -330,6 +281,7 @@ Seu-Routine_Maker/
 │   │   ├── SectionOrganizerPage.jsx
 │   │   └── ShortNameEditor.jsx
 │   ├── lib/
+│   │   ├── notifications.js
 │   │   ├── ocr.js
 │   │   ├── parser.js
 │   │   ├── routine.js
