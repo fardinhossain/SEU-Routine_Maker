@@ -20,7 +20,11 @@ const questions = [
   },
   {
     question: 'How do I import from an iPhone or iPad?',
-    answer: 'Open the UMS Registered Courses page in Safari and wait until the schedules appear. Tap Share, choose Options, select PDF, tap Done, then Save to Files. Upload that PDF from the Add your UMS export box.',
+    answer: 'In Safari: Open UMS, tap Share → Options → select PDF → Save to Files. In Chrome for iPhone: Tap Share (or 3-dots menu → Share) → Print, pinch open the print preview to expand it into a PDF, tap Share at top right → Save to Files. Upload that saved PDF into the routine maker.',
+  },
+  {
+    question: 'How do I save a UMS page as PDF in Chrome on iPhone?',
+    answer: 'Open the UMS page in Chrome on iPhone or iPad, tap the Share button (or 3-dots menu → Share), choose Print, pinch open (zoom out with two fingers) on the print preview thumbnail to convert it to a PDF view, then tap Share at the top right and select Save to Files.',
   },
   {
     question: 'What if Safari does not show a PDF option?',
